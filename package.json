@@ -1,0 +1,56 @@
+{
+	"name": "@kinescope-dev/react-kinescope-player",
+	"version": "0.0.1",
+	"description": "React.js wrapper for Kinescope player",
+	"scripts": {
+		"prettier": "node node_modules/prettier/bin-prettier.js --parser typescript --write '{src,packages}/**/*.{tsx,ts}'",
+		"dev": "node node_modules/microbundle/dist/cli.js watch --jsx React.createElement --compress false --sourcemap false",
+		"build": "node node_modules/microbundle/dist/cli.js --name=KinescopePlayer --globals react=React --jsx React.createElement --compress false --sourcemap false",
+		"release": "node node_modules/standard-version/bin/cli.js -a"
+	},
+	"keywords": [
+		"React",
+		"Kinescope",
+		"Player",
+		"component"
+	],
+	"bugs": {
+		"url": "https://github.com/kinescope-dev/react-kinescope-player/issues"
+	},
+	"homepage": "https://github.com/kinescope-dev/react-kinescope-player#readme",
+	"author": "Vadim Burlakov <vadim@kinescope.io>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kinescope-dev/react-kinescope-player.git"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/kinescope-dev"
+	},
+	"main": "dist/player.js",
+	"exports": "dist/player.modern.js",
+	"module": "dist/player.module.js",
+	"unpkg": "dist/player.umd.js",
+	"types": "dist/player.d.ts",
+	"typings": "dist/player.d.ts",
+	"source": "src/player.tsx",
+	"peerDependencies": {
+		"react": "^16.0.0 || ^17.0.0",
+		"react-dom": "^16.0.0 || ^17.0.0"
+	},
+	"devDependencies": {
+		"@types/react": "^17.0.0",
+		"@types/react-dom": "^17.0.0",
+		"microbundle": "^0.12.4",
+		"prettier": "^2.2.1",
+		"react": "^17.0.1",
+		"react-dom": "^17.0.1",
+		"standard-version": "^9.0.0",
+		"typescript": "^4.1.3"
+	},
+	"standard-version": {
+		"scripts": {
+			"postchangelog": "npm run build && git add -A"
+		}
+	}
+}
