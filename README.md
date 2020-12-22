@@ -235,27 +235,120 @@ functions handleMuteClick(){
 </table>
 
 ##Methods
-| Method | Params | Result |
-| --- | --- |
-| isPaused | No | `Promise<boolean>` |
-| isEnded | No | `Promise<boolean>` |
-| play | No | `Promise<void>` |
-| pause | No | `Promise<boolean>` |
-| stop | No | `Promise<void>` |
-| getCurrentTime | No | `Promise<number>` |
-| getDuration | No | `Promise<number>` |
-| seekTo | `(time: number)` | `Promise<void>` |
-| isMuted | No | `Promise<boolean>` |
-| mute | No | `Promise<void>` |
-| unmute | No | `Promise<void>` |
-| getVolume | No | `Promise<number>` |
-| setVolume | `(value: number)` | `Promise<void>` |
-| getPlaybackRate | No | `Promise<number>` |
-| setPlaybackRate | `(value: number)` | `Promise<void>` |
-| getVideoQualityList | No | `Promise<VideoQuality[]>` |
-| getCurrentVideoQuality | No | `Promise<VideoQuality>` |
-| setVideoQuality | `(quality: VideoQuality)` | `Promise<void>` |
-| enableTextTrack | `(lang: string)` | `Promise<void>` |
-| disableTextTrack | No | `Promise<void>` |
-| isFullscreen | No | `Promise<boolean>` |
-| setFullscreen | (fullscreen: boolean) | `Promise<void>` |
+<table>
+  <tr>
+    <th>Method</th>
+    <th>Params</th>
+    <th>Result</th>
+  </tr>
+  <tr>
+      <td>isPaused</td>
+      <td>No</td>
+      <td>Promise&lt;boolean&gt;</td>
+  </tr>
+  <tr>
+      <td>isEnded</td>
+      <td>No</td>
+      <td>Promise&lt;boolean&gt;</td>
+  </tr>
+  <tr>
+      <td>play</td>
+      <td>No</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>pause</td>
+      <td>No</td>
+      <td>Promise&lt;boolean&gt;</td>
+  </tr>
+  <tr>
+      <td>stop</td>
+      <td>No</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>getCurrentTime</td>
+      <td>No</td>
+      <td>Promise&lt;number&gt;</td>
+  </tr>
+  <tr>
+      <td>getDuration</td>
+      <td>No</td>
+      <td>Promise&lt;number&gt;</td>
+  </tr>
+  <tr>
+      <td>seekTo</td>
+      <td>(time: number)</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>isMuted</td>
+      <td>No</td>
+      <td>Promise&lt;boolean&gt;</td>
+  </tr>
+  <tr>
+      <td>mute</td>
+      <td>No</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>unmute</td>
+      <td>No</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>getVolume</td>
+      <td>No</td>
+      <td>Promise&lt;number&gt;</td>
+  </tr>
+  <tr>
+      <td>setVolume</td>
+      <td>(value: number)</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>getPlaybackRate</td>
+      <td>No</td>
+      <td>Promise&lt;number&gt;</td>
+  </tr>
+  <tr>
+      <td>setPlaybackRate</td>
+      <td>(value: number)</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>getVideoQualityList</td>
+      <td>No</td>
+      <td>Promise&lt;VideoQuality[]&gt;</td>
+  </tr>
+  <tr>
+      <td>getCurrentVideoQuality</td>
+      <td>No</td>
+      <td>Promise&lt;VideoQuality&gt;</td>
+  </tr>
+  <tr>
+      <td>setVideoQuality</td>
+      <td>(quality: VideoQuality)</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>enableTextTrack</td>
+      <td>(lang: string)</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>disableTextTrack</td>
+      <td>No</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>isFullscreen</td>
+      <td>No</td>
+      <td>Promise&lt;boolean&gt;</td>
+  </tr>
+  <tr>
+      <td>setFullscreen</td>
+      <td>(fullscreen: boolean)</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+</table>
