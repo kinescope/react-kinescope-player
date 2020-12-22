@@ -5,13 +5,13 @@
 Using npm:
 
 ```sh
-npm install @kinescope-dev/react-kinescope-player --save
+npm install @kinescope/react-kinescope-player --save
 ```
 
 Using yarn:
 
 ```sh
-yarn add @kinescope-dev/react-kinescope-player
+yarn add @kinescope/react-kinescope-player
 ```
 
 ## Getting Started
@@ -19,7 +19,7 @@ yarn add @kinescope-dev/react-kinescope-player
 ```jsx
 // basic usage
 import React from 'react'
-import KinescopePlayer from '@kinescope-dev/react-kinescope-player';
+import KinescopePlayer from '@kinescope/react-kinescope-player';
 
 function Player() {
   return (

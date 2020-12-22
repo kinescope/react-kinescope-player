@@ -1,5 +1,5 @@
 {
-	"name": "@kinescope-dev/react-kinescope-player",
+	"name": "@kinescope/react-kinescope-player",
 	"version": "0.0.4",
 	"description": "React.js wrapper for Kinescope player",
 	"scripts": {
@@ -15,17 +15,17 @@
 		"component"
 	],
 	"bugs": {
-		"url": "https://github.com/kinescope-dev/react-kinescope-player/issues"
+		"url": "https://github.com/kinescope/react-kinescope-player/issues"
 	},
-	"homepage": "https://github.com/kinescope-dev/react-kinescope-player#readme",
+	"homepage": "https://github.com/kinescope/react-kinescope-player#readme",
 	"author": "Vadim Burlakov <vadim@kinescope.io>",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/kinescope-dev/react-kinescope-player.git"
+		"url": "git+https://github.com/kinescope/react-kinescope-player.git"
 	},
 	"publishConfig": {
-		"registry": "https://npm.pkg.github.com/kinescope-dev"
+		"registry": "https://npm.pkg.github.com/kinescope"
 	},
 	"main": "dist/player.js",
 	"exports": "dist/player.modern.js",
