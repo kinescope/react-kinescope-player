@@ -129,7 +129,7 @@ functions handleMuteClick(){
   </tr>
 </table>
 
-##Events
+## Events
 <table>
   <tr>
     <th>Event</th>
@@ -234,7 +234,7 @@ functions handleMuteClick(){
   </tr>
 </table>
 
-##Methods
+## Methods
 <table>
   <tr>
     <th>Method</th>
