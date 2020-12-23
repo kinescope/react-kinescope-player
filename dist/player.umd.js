@@ -3,7 +3,9 @@
   typeof define === 'function' && define.amd ? define(['react'], factory) :
   (global = global || self, global.KinescopePlayer = factory(global.React));
 }(this, (function (React) {
-  var React__default = 'default' in React ? React['default'] : React;
+  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+  var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
 
   function _inheritsLoose(subClass, superClass) {
     subClass.prototype = Object.create(superClass.prototype);
@@ -510,10 +512,10 @@
           className = _this$props2.className,
           style = _this$props2.style,
           onJSLoadError = _this$props2.onJSLoadError;
-      return React__default.createElement(Loader, {
+      return React__default['default'].createElement(Loader, {
         onJSLoad: this.handleJSLoad,
         onJSLoadError: onJSLoadError
-      }, React__default.createElement("span", {
+      }, React__default['default'].createElement("span", {
         ref: this.parentsRef,
         className: className,
         style: style

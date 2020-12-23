@@ -1,7 +1,8 @@
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
 var React = require('react');
-var React__default = _interopDefault(React);
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
 
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
@@ -508,10 +509,10 @@ var Player = /*#__PURE__*/function (_Component) {
         className = _this$props2.className,
         style = _this$props2.style,
         onJSLoadError = _this$props2.onJSLoadError;
-    return React__default.createElement(Loader, {
+    return React__default['default'].createElement(Loader, {
       onJSLoad: this.handleJSLoad,
       onJSLoadError: onJSLoadError
-    }, React__default.createElement("span", {
+    }, React__default['default'].createElement("span", {
       ref: this.parentsRef,
       className: className,
       style: style
