@@ -1,0 +1,44 @@
+name: Publish to NPM
+
+on:
+  release:
+    types: [published]
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # "ref" specifies the branch to check out.
+          # "github.event.release.target_commitish" is a global variable and specifies the branch the release targeted
+          ref: ${{ github.event.release.target_commitish }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+      - run: npm ci
+      - run: npm test
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.release.target_commitish }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+          scope: '@kinescope'
+      - run: npm ci
+      - run: git config --global user.name "GitHub CD bot"
+      - run: git config --global user.email "github-cd-bot@kinescope.io"
+      # upgrade npm version in package.json to the tag used in the release.
+      - run: npm version ${{ github.event.release.tag_name }}
+      - run: npm run build
+      - run: npm publish --access public --tag ${{ github.event.release.target_commitish }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      # push the version changes to GitHub
+      - run: git push
