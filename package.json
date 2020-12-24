@@ -25,7 +25,8 @@
 		"url": "https://github.com/kinescope/react-kinescope-player.git"
 	},
 	"publishConfig": {
-		"access": "public"
+		"access": "public",
+		"tag": "latest"
 	},
 	"main": "dist/player.js",
 	"exports": "dist/player.modern.js",
