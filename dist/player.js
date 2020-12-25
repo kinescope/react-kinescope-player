@@ -10,6 +10,140 @@ function _inheritsLoose(subClass, superClass) {
   subClass.__proto__ = superClass;
 }
 
+/* global Map:readonly, Set:readonly, ArrayBuffer:readonly */
+var hasElementType = typeof Element !== 'undefined';
+var hasMap = typeof Map === 'function';
+var hasSet = typeof Set === 'function';
+var hasArrayBuffer = typeof ArrayBuffer === 'function' && !!ArrayBuffer.isView;
+
+// Note: We **don't** need `envHasBigInt64Array` in fde es6/index.js
+
+function equal(a, b) {
+  // START: fast-deep-equal es6/index.js 3.1.1
+  if (a === b) return true;
+
+  if (a && b && typeof a == 'object' && typeof b == 'object') {
+    if (a.constructor !== b.constructor) return false;
+
+    var length, i, keys;
+    if (Array.isArray(a)) {
+      length = a.length;
+      if (length != b.length) return false;
+      for (i = length; i-- !== 0;)
+        if (!equal(a[i], b[i])) return false;
+      return true;
+    }
+
+    // START: Modifications:
+    // 1. Extra `has<Type> &&` helpers in initial condition allow es6 code
+    //    to co-exist with es5.
+    // 2. Replace `for of` with es5 compliant iteration using `for`.
+    //    Basically, take:
+    //
+    //    ```js
+    //    for (i of a.entries())
+    //      if (!b.has(i[0])) return false;
+    //    ```
+    //
+    //    ... and convert to:
+    //
+    //    ```js
+    //    it = a.entries();
+    //    while (!(i = it.next()).done)
+    //      if (!b.has(i.value[0])) return false;
+    //    ```
+    //
+    //    **Note**: `i` access switches to `i.value`.
+    var it;
+    if (hasMap && (a instanceof Map) && (b instanceof Map)) {
+      if (a.size !== b.size) return false;
+      it = a.entries();
+      while (!(i = it.next()).done)
+        if (!b.has(i.value[0])) return false;
+      it = a.entries();
+      while (!(i = it.next()).done)
+        if (!equal(i.value[1], b.get(i.value[0]))) return false;
+      return true;
+    }
+
+    if (hasSet && (a instanceof Set) && (b instanceof Set)) {
+      if (a.size !== b.size) return false;
+      it = a.entries();
+      while (!(i = it.next()).done)
+        if (!b.has(i.value[0])) return false;
+      return true;
+    }
+    // END: Modifications
+
+    if (hasArrayBuffer && ArrayBuffer.isView(a) && ArrayBuffer.isView(b)) {
+      length = a.length;
+      if (length != b.length) return false;
+      for (i = length; i-- !== 0;)
+        if (a[i] !== b[i]) return false;
+      return true;
+    }
+
+    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
+    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
+    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
+
+    keys = Object.keys(a);
+    length = keys.length;
+    if (length !== Object.keys(b).length) return false;
+
+    for (i = length; i-- !== 0;)
+      if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+    // END: fast-deep-equal
+
+    // START: react-fast-compare
+    // custom handling for DOM elements
+    if (hasElementType && a instanceof Element) return false;
+
+    // custom handling for React/Preact
+    for (i = length; i-- !== 0;) {
+      if ((keys[i] === '_owner' || keys[i] === '__v' || keys[i] === '__o') && a.$$typeof) {
+        // React-specific: avoid traversing React elements' _owner
+        // Preact-specific: avoid traversing Preact elements' __v and __o
+        //    __v = $_original / $_vnode
+        //    __o = $_owner
+        // These properties contain circular references and are not needed when
+        // comparing the actual elements (and not their owners)
+        // .$$typeof and ._store on just reasonable markers of elements
+
+        continue;
+      }
+
+      // all other properties should be traversed as usual
+      if (!equal(a[keys[i]], b[keys[i]])) return false;
+    }
+    // END: react-fast-compare
+
+    // START: fast-deep-equal
+    return true;
+  }
+
+  return a !== a && b !== b;
+}
+// end fast-deep-equal
+
+var reactFastCompare = function isEqual(a, b) {
+  try {
+    return equal(a, b);
+  } catch (error) {
+    if (((error.message || '').match(/stack|recursion/i))) {
+      // warn on circular references, don't crash
+      // browsers give this different errors name and messages:
+      // chrome/safari: "RangeError", "Maximum call stack size exceeded"
+      // firefox: "InternalError", too much recursion"
+      // edge: "Error", "Out of stack space"
+      console.warn('react-fast-compare cannot handle circular refs');
+      return false;
+    }
+    // some other error. we should definitely know about these
+    throw error;
+  }
+};
+
 var VIDEO_HOST = 'https://kinescope.io/embed/';
 var PLAYER_LATEST = 'https://player.kinescope.io/latest/iframe.player.js';
 
@@ -98,6 +232,75 @@ var Player = /*#__PURE__*/function (_Component) {
       }
     };
 
+    _this.shouldPlayerUpdate = function (prevProps) {
+      try {
+        var _this$props = _this.props,
+            videoId = _this$props.videoId,
+            width = _this$props.width,
+            height = _this$props.height,
+            autoPause = _this$props.autoPause,
+            autoPlay = _this$props.autoPlay,
+            loop = _this$props.loop,
+            muted = _this$props.muted,
+            playsInline = _this$props.playsInline,
+            language = _this$props.language;
+
+        var _temp2 = function () {
+          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language) {
+            return Promise.resolve(_this.destroy()).then(function () {
+              return Promise.resolve(_this.create()).then(function () {});
+            });
+          }
+        }();
+
+        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.shouldPlaylistUpdate = function (prevProps) {
+      try {
+        var _this$props2 = _this.props,
+            title = _this$props2.title,
+            subtitle = _this$props2.subtitle,
+            poster = _this$props2.poster,
+            chapters = _this$props2.chapters,
+            vtt = _this$props2.vtt;
+
+        var _temp4 = function () {
+          if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt)) {
+            return Promise.resolve(_this.updatePlaylistOptions()).then(function () {});
+          }
+        }();
+
+        return Promise.resolve(_temp4 && _temp4.then ? _temp4.then(function () {}) : void 0);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.updatePlaylistOptions = function () {
+      try {
+        var _this$props3 = _this.props,
+            title = _this$props3.title,
+            subtitle = _this$props3.subtitle,
+            poster = _this$props3.poster,
+            chapters = _this$props3.chapters,
+            vtt = _this$props3.vtt;
+        var options = {
+          title: title,
+          poster: poster,
+          subtitle: subtitle,
+          chapters: chapters,
+          vtt: vtt
+        };
+        return Promise.resolve(_this.setPlaylistItemOptions(options)).then(function () {});
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
     _this.create = function () {
       try {
         if (!_this.playerLoad) {
@@ -122,6 +325,8 @@ var Player = /*#__PURE__*/function (_Component) {
 
             (_this$player = _this.player) == null ? void 0 : _this$player.on(event[0], event[1]);
           });
+
+          return Promise.resolve(_this.updatePlaylistOptions()).then(function () {});
         });
       } catch (e) {
         return Promise.reject(e);
@@ -156,15 +361,15 @@ var Player = /*#__PURE__*/function (_Component) {
     };
 
     _this.createPlayer = function (playerId) {
-      var _this$props = _this.props,
-          width = _this$props.width,
-          height = _this$props.height,
-          autoPause = _this$props.autoPause,
-          autoPlay = _this$props.autoPlay,
-          loop = _this$props.loop,
-          muted = _this$props.muted,
-          playsInline = _this$props.playsInline,
-          language = _this$props.language;
+      var _this$props4 = _this.props,
+          width = _this$props4.width,
+          height = _this$props4.height,
+          autoPause = _this$props4.autoPause,
+          autoPlay = _this$props4.autoPlay,
+          loop = _this$props4.loop,
+          muted = _this$props4.muted,
+          playsInline = _this$props4.playsInline,
+          language = _this$props4.language;
       var options = {
         url: _this.getIFrameUrl(),
         size: {
@@ -184,6 +389,14 @@ var Player = /*#__PURE__*/function (_Component) {
         }
       };
       return window.Kinescope.IframePlayer.create(playerId, options);
+    };
+
+    _this.setPlaylistItemOptions = function (options) {
+      if (_this.player) {
+        return _this.player.setPlaylistItemOptions(options);
+      }
+
+      throw THROW_PLAYER_NOT_READY;
     };
 
     _this.isPaused = function () {
@@ -475,26 +688,9 @@ var Player = /*#__PURE__*/function (_Component) {
     try {
       var _this3 = this;
 
-      var _this3$props = _this3.props,
-          videoId = _this3$props.videoId,
-          width = _this3$props.width,
-          height = _this3$props.height,
-          autoPause = _this3$props.autoPause,
-          autoPlay = _this3$props.autoPlay,
-          loop = _this3$props.loop,
-          muted = _this3$props.muted,
-          playsInline = _this3$props.playsInline,
-          language = _this3$props.language;
-
-      var _temp2 = function () {
-        if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language) {
-          return Promise.resolve(_this3.destroy()).then(function () {
-            return Promise.resolve(_this3.create()).then(function () {});
-          });
-        }
-      }();
-
-      return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+      return Promise.resolve(_this3.shouldPlayerUpdate(prevProps)).then(function () {
+        return Promise.resolve(_this3.shouldPlaylistUpdate(prevProps)).then(function () {});
+      });
     } catch (e) {
       return Promise.reject(e);
     }
@@ -505,10 +701,10 @@ var Player = /*#__PURE__*/function (_Component) {
   };
 
   _proto.render = function render() {
-    var _this$props2 = this.props,
-        className = _this$props2.className,
-        style = _this$props2.style,
-        onJSLoadError = _this$props2.onJSLoadError;
+    var _this$props5 = this.props,
+        className = _this$props5.className,
+        style = _this$props5.style,
+        onJSLoadError = _this$props5.onJSLoadError;
     return React__default['default'].createElement(Loader, {
       onJSLoad: this.handleJSLoad,
       onJSLoadError: onJSLoadError

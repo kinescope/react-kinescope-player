@@ -19,6 +19,21 @@ export enum KinescopePlayerEvent {
 	Destroy,
 }
 
+export interface PlaylistItemOptions {
+	title?: string;
+	subtitle?: string;
+	poster?: string;
+	vtt?: {
+		label: string;
+		src: string;
+		srcLang: string;
+	}[];
+	chapters?: {
+		position: number;
+		title: string;
+	}[];
+}
+
 export type VideoQuality = 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
 
 export interface KinescopePlayer {
@@ -47,6 +62,7 @@ export interface KinescopePlayer {
 	disableTextTrack(): Promise<void>;
 	isFullscreen(): Promise<boolean>;
 	setFullscreen(fullscreen: boolean): Promise<void>;
+	setPlaylistItemOptions(options: PlaylistItemOptions): Promise<void>;
 	destroy(): void;
 }
 

@@ -1,5 +1,14 @@
 import { Component } from 'react';
 import { VideoQuality } from './kinescope';
+declare type VttTypes = {
+    label: string;
+    src: string;
+    srcLang: string;
+};
+declare type ChapterTypes = {
+    position: number;
+    title: string;
+};
 declare type onReadyTypes = {
     currentTime: number;
     duration: number;
@@ -41,6 +50,9 @@ declare type PlayerProps = {
     style?: any;
     onJSLoad?: () => void;
     onJSLoadError?: () => void;
+    title?: string;
+    subtitle?: string;
+    poster?: string;
     width?: number | string;
     height?: number | string;
     autoPlay?: boolean | 'viewable';
@@ -49,6 +61,8 @@ declare type PlayerProps = {
     playsInline?: boolean;
     muted?: boolean;
     language?: 'ru' | 'en';
+    chapters?: ChapterTypes[];
+    vtt?: VttTypes[];
     onReady?: (data: onReadyTypes) => void;
     onQualityChanged?: (data: onQualityChangedTypes) => void;
     onAutoQualityChanged?: (data: onQualityChangedTypes) => void;
@@ -82,11 +96,15 @@ declare class Player extends Component<PlayerProps> {
     componentDidUpdate(prevProps: Readonly<PlayerProps>): Promise<void>;
     componentWillUnmount(): void;
     private handleJSLoad;
+    private shouldPlayerUpdate;
+    private shouldPlaylistUpdate;
+    private updatePlaylistOptions;
     private create;
     private destroy;
     private getEventList;
     private getIFrameUrl;
     private createPlayer;
+    private setPlaylistItemOptions;
     isPaused: () => Promise<boolean>;
     isEnded: () => Promise<boolean>;
     play: () => Promise<void>;

@@ -78,6 +78,36 @@ functions handleMuteClick(){
       <td>any</td>
       <td>No</td>
       <td>No</td>
+  </tr>
+  <tr>
+      <td>title</td>
+      <td>string</td>
+      <td>No</td>
+      <td>No</td>
+  </tr> 
+  <tr>
+      <td>subtitle</td>
+      <td>string</td>
+      <td>No</td>
+      <td>No</td>
+  </tr> 
+  <tr>
+      <td>poster</td>
+      <td>string</td>
+      <td>No</td>
+      <td>No</td>
+  </tr> 
+  <tr>
+      <td>chapters</td>
+      <td><a href="#chapters">Chapter</a>[]</td>
+      <td>No</td>
+      <td>No</td>
+  </tr> 
+  <tr>
+      <td>vtt</td>
+      <td><a href="#vtt">Vtt</a>[]</td>
+      <td>No</td>
+      <td>No</td>
   </tr> 
   <tr>
       <td>width</td>
@@ -128,6 +158,23 @@ functions handleMuteClick(){
       <td>No</td>
   </tr>
 </table>
+
+##### Chapters
+```ts
+type Chapter = {
+	position: number;
+	title: string;
+};
+```
+
+##### vtt
+```ts
+type Vtt = {
+	label: string;
+	src: string;
+	srcLang: string;
+};
+```
 
 ## Events
 <table>

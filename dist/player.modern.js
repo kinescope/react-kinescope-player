@@ -1,5 +1,139 @@
 import React, { Component, createRef } from 'react';
 
+/* global Map:readonly, Set:readonly, ArrayBuffer:readonly */
+var hasElementType = typeof Element !== 'undefined';
+var hasMap = typeof Map === 'function';
+var hasSet = typeof Set === 'function';
+var hasArrayBuffer = typeof ArrayBuffer === 'function' && !!ArrayBuffer.isView;
+
+// Note: We **don't** need `envHasBigInt64Array` in fde es6/index.js
+
+function equal(a, b) {
+  // START: fast-deep-equal es6/index.js 3.1.1
+  if (a === b) return true;
+
+  if (a && b && typeof a == 'object' && typeof b == 'object') {
+    if (a.constructor !== b.constructor) return false;
+
+    var length, i, keys;
+    if (Array.isArray(a)) {
+      length = a.length;
+      if (length != b.length) return false;
+      for (i = length; i-- !== 0;)
+        if (!equal(a[i], b[i])) return false;
+      return true;
+    }
+
+    // START: Modifications:
+    // 1. Extra `has<Type> &&` helpers in initial condition allow es6 code
+    //    to co-exist with es5.
+    // 2. Replace `for of` with es5 compliant iteration using `for`.
+    //    Basically, take:
+    //
+    //    ```js
+    //    for (i of a.entries())
+    //      if (!b.has(i[0])) return false;
+    //    ```
+    //
+    //    ... and convert to:
+    //
+    //    ```js
+    //    it = a.entries();
+    //    while (!(i = it.next()).done)
+    //      if (!b.has(i.value[0])) return false;
+    //    ```
+    //
+    //    **Note**: `i` access switches to `i.value`.
+    var it;
+    if (hasMap && (a instanceof Map) && (b instanceof Map)) {
+      if (a.size !== b.size) return false;
+      it = a.entries();
+      while (!(i = it.next()).done)
+        if (!b.has(i.value[0])) return false;
+      it = a.entries();
+      while (!(i = it.next()).done)
+        if (!equal(i.value[1], b.get(i.value[0]))) return false;
+      return true;
+    }
+
+    if (hasSet && (a instanceof Set) && (b instanceof Set)) {
+      if (a.size !== b.size) return false;
+      it = a.entries();
+      while (!(i = it.next()).done)
+        if (!b.has(i.value[0])) return false;
+      return true;
+    }
+    // END: Modifications
+
+    if (hasArrayBuffer && ArrayBuffer.isView(a) && ArrayBuffer.isView(b)) {
+      length = a.length;
+      if (length != b.length) return false;
+      for (i = length; i-- !== 0;)
+        if (a[i] !== b[i]) return false;
+      return true;
+    }
+
+    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
+    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
+    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
+
+    keys = Object.keys(a);
+    length = keys.length;
+    if (length !== Object.keys(b).length) return false;
+
+    for (i = length; i-- !== 0;)
+      if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+    // END: fast-deep-equal
+
+    // START: react-fast-compare
+    // custom handling for DOM elements
+    if (hasElementType && a instanceof Element) return false;
+
+    // custom handling for React/Preact
+    for (i = length; i-- !== 0;) {
+      if ((keys[i] === '_owner' || keys[i] === '__v' || keys[i] === '__o') && a.$$typeof) {
+        // React-specific: avoid traversing React elements' _owner
+        // Preact-specific: avoid traversing Preact elements' __v and __o
+        //    __v = $_original / $_vnode
+        //    __o = $_owner
+        // These properties contain circular references and are not needed when
+        // comparing the actual elements (and not their owners)
+        // .$$typeof and ._store on just reasonable markers of elements
+
+        continue;
+      }
+
+      // all other properties should be traversed as usual
+      if (!equal(a[keys[i]], b[keys[i]])) return false;
+    }
+    // END: react-fast-compare
+
+    // START: fast-deep-equal
+    return true;
+  }
+
+  return a !== a && b !== b;
+}
+// end fast-deep-equal
+
+var reactFastCompare = function isEqual(a, b) {
+  try {
+    return equal(a, b);
+  } catch (error) {
+    if (((error.message || '').match(/stack|recursion/i))) {
+      // warn on circular references, don't crash
+      // browsers give this different errors name and messages:
+      // chrome/safari: "RangeError", "Maximum call stack size exceeded"
+      // firefox: "InternalError", too much recursion"
+      // edge: "Error", "Out of stack space"
+      console.warn('react-fast-compare cannot handle circular refs');
+      return false;
+    }
+    // some other error. we should definitely know about these
+    throw error;
+  }
+};
+
 const VIDEO_HOST = 'https://kinescope.io/embed/';
 const PLAYER_LATEST = 'https://player.kinescope.io/latest/iframe.player.js';
 
@@ -81,6 +215,57 @@ class Player extends Component {
       await _this.create();
     };
 
+    this.shouldPlayerUpdate = async function (prevProps) {
+      const {
+        videoId,
+        width,
+        height,
+        autoPause,
+        autoPlay,
+        loop,
+        muted,
+        playsInline,
+        language
+      } = _this.props;
+
+      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language) {
+        await _this.destroy();
+        await _this.create();
+      }
+    };
+
+    this.shouldPlaylistUpdate = async function (prevProps) {
+      const {
+        title,
+        subtitle,
+        poster,
+        chapters,
+        vtt
+      } = _this.props;
+
+      if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt)) {
+        await _this.updatePlaylistOptions();
+      }
+    };
+
+    this.updatePlaylistOptions = async function () {
+      const {
+        title,
+        subtitle,
+        poster,
+        chapters,
+        vtt
+      } = _this.props;
+      let options = {
+        title: title,
+        poster: poster,
+        subtitle: subtitle,
+        chapters: chapters,
+        vtt: vtt
+      };
+      await _this.setPlaylistItemOptions(options);
+    };
+
     this.create = async function () {
       if (!_this.playerLoad) {
         return;
@@ -103,6 +288,8 @@ class Player extends Component {
 
         (_this$player = _this.player) == null ? void 0 : _this$player.on(event[0], event[1]);
       });
+
+      await _this.updatePlaylistOptions();
     };
 
     this.destroy = () => {
@@ -163,6 +350,14 @@ class Player extends Component {
         }
       };
       return window.Kinescope.IframePlayer.create(playerId, options);
+    };
+
+    this.setPlaylistItemOptions = options => {
+      if (this.player) {
+        return this.player.setPlaylistItemOptions(options);
+      }
+
+      throw THROW_PLAYER_NOT_READY;
     };
 
     this.isPaused = () => {
@@ -495,22 +690,8 @@ class Player extends Component {
   }
 
   async componentDidUpdate(prevProps) {
-    const {
-      videoId,
-      width,
-      height,
-      autoPause,
-      autoPlay,
-      loop,
-      muted,
-      playsInline,
-      language
-    } = this.props;
-
-    if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language) {
-      await this.destroy();
-      await this.create();
-    }
+    await this.shouldPlayerUpdate(prevProps);
+    await this.shouldPlaylistUpdate(prevProps);
   }
 
   componentWillUnmount() {

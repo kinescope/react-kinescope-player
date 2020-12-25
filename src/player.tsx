@@ -1,5 +1,11 @@
 import React, {Component, createRef} from 'react';
-import {KinescopePlayerEvent, KinescopePlayer, VideoQuality} from './kinescope';
+import isEqual from 'react-fast-compare';
+import {
+	KinescopePlayerEvent,
+	KinescopePlayer,
+	VideoQuality,
+	PlaylistItemOptions,
+} from './kinescope';
 import Loader from './loader';
 import {VIDEO_HOST} from './constant';
 
@@ -7,6 +13,17 @@ const THROW_PLAYER_NOT_READY = 'Player not ready';
 
 type CallbackTypes = (any) => void;
 type EventListTypes = [KinescopePlayerEvent, CallbackTypes][];
+
+type VttTypes = {
+	label: string;
+	src: string;
+	srcLang: string;
+};
+
+type ChapterTypes = {
+	position: number;
+	title: string;
+};
 
 type onReadyTypes = {
 	currentTime: number;
@@ -60,6 +77,9 @@ type PlayerProps = {
 	onJSLoad?: () => void;
 	onJSLoadError?: () => void;
 
+	title?: string;
+	subtitle?: string;
+	poster?: string;
 	width?: number | string;
 	height?: number | string;
 	autoPlay?: boolean | 'viewable';
@@ -68,6 +88,8 @@ type PlayerProps = {
 	playsInline?: boolean;
 	muted?: boolean;
 	language?: 'ru' | 'en';
+	chapters?: ChapterTypes[];
+	vtt?: VttTypes[];
 
 	onReady?: (data: onReadyTypes) => void;
 	onQualityChanged?: (data: onQualityChangedTypes) => void;
@@ -119,6 +141,22 @@ class Player extends Component<PlayerProps> {
 	}
 
 	async componentDidUpdate(prevProps: Readonly<PlayerProps>) {
+		await this.shouldPlayerUpdate(prevProps);
+		await this.shouldPlaylistUpdate(prevProps);
+	}
+
+	componentWillUnmount() {
+		this.destroy();
+	}
+
+	private handleJSLoad = async () => {
+		this.playerLoad = true;
+		const {onJSLoad} = this.props;
+		onJSLoad && onJSLoad();
+		await this.create();
+	};
+
+	private shouldPlayerUpdate = async prevProps => {
 		const {
 			videoId,
 			width,
@@ -145,17 +183,32 @@ class Player extends Component<PlayerProps> {
 			await this.destroy();
 			await this.create();
 		}
-	}
+	};
 
-	componentWillUnmount() {
-		this.destroy();
-	}
+	private shouldPlaylistUpdate = async prevProps => {
+		const {title, subtitle, poster, chapters, vtt} = this.props;
 
-	private handleJSLoad = async () => {
-		this.playerLoad = true;
-		const {onJSLoad} = this.props;
-		onJSLoad && onJSLoad();
-		await this.create();
+		if (
+			title !== prevProps.title ||
+			subtitle !== prevProps.subtitle ||
+			poster !== prevProps.poster ||
+			!isEqual(chapters, prevProps.chapters) ||
+			!isEqual(vtt, prevProps.vtt)
+		) {
+			await this.updatePlaylistOptions();
+		}
+	};
+
+	private updatePlaylistOptions = async () => {
+		const {title, subtitle, poster, chapters, vtt} = this.props;
+		let options: PlaylistItemOptions = {
+			title: title,
+			poster: poster,
+			subtitle: subtitle,
+			chapters: chapters,
+			vtt: vtt,
+		};
+		await this.setPlaylistItemOptions(options);
 	};
 
 	private create = async () => {
@@ -177,6 +230,7 @@ class Player extends Component<PlayerProps> {
 		this.getEventList().forEach(event => {
 			this.player?.on(event[0], event[1]);
 		});
+		await this.updatePlaylistOptions();
 	};
 
 	private destroy = () => {
@@ -239,6 +293,13 @@ class Player extends Component<PlayerProps> {
 		};
 
 		return window.Kinescope.IframePlayer.create(playerId, options);
+	};
+
+	private setPlaylistItemOptions = (options: PlaylistItemOptions): Promise<void> => {
+		if (this.player) {
+			return this.player.setPlaylistItemOptions(options);
+		}
+		throw THROW_PLAYER_NOT_READY;
 	};
 
 	public isPaused = (): Promise<boolean> => {
