@@ -35,7 +35,7 @@ jobs:
       - run: git config --global user.name "GitHub CD bot"
       - run: git config --global user.email "github-cd-bot@kinescope.io"
       # upgrade npm version in package.json to the tag used in the release.
-      - run: npm version ${{ github.event.release.tag_name }}
+      - run: npm version ${{ github.event.release.tag_name }} --allow-same-version
       - run: npm run build
       - run: npm publish --access public
         env:
