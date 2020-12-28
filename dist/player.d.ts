@@ -93,6 +93,7 @@ declare class Player extends Component<PlayerProps> {
         playsInline: boolean;
     };
     constructor(props: any);
+    componentDidMount(): void;
     componentDidUpdate(prevProps: Readonly<PlayerProps>): Promise<void>;
     componentWillUnmount(): void;
     private handleJSLoad;

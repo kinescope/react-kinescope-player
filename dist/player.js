@@ -303,14 +303,10 @@ var Player = /*#__PURE__*/function (_Component) {
 
     _this.create = function () {
       try {
-        if (!_this.playerLoad) {
-          return Promise.resolve();
-        }
-
         var parentsRef = _this.parentsRef.current;
 
-        if (!parentsRef) {
-          throw THROW_PLAYER_NOT_READY;
+        if (!_this.playerLoad || !parentsRef) {
+          return Promise.resolve();
         }
 
         var playerId = getNextPlayerId();
@@ -325,8 +321,6 @@ var Player = /*#__PURE__*/function (_Component) {
 
             (_this$player = _this.player) == null ? void 0 : _this$player.on(event[0], event[1]);
           });
-
-          return Promise.resolve(_this.updatePlaylistOptions()).then(function () {});
         });
       } catch (e) {
         return Promise.reject(e);
@@ -362,6 +356,11 @@ var Player = /*#__PURE__*/function (_Component) {
 
     _this.createPlayer = function (playerId) {
       var _this$props4 = _this.props,
+          title = _this$props4.title,
+          subtitle = _this$props4.subtitle,
+          poster = _this$props4.poster,
+          chapters = _this$props4.chapters,
+          vtt = _this$props4.vtt,
           width = _this$props4.width,
           height = _this$props4.height,
           autoPause = _this$props4.autoPause,
@@ -384,6 +383,13 @@ var Player = /*#__PURE__*/function (_Component) {
           muted: muted,
           playsInline: playsInline
         },
+        playlist: [{
+          title: title,
+          subtitle: subtitle,
+          poster: poster,
+          chapters: chapters,
+          vtt: vtt
+        }],
         ui: {
           language: language
         }
@@ -578,6 +584,9 @@ var Player = /*#__PURE__*/function (_Component) {
     _this.handleEventReady = function (_ref) {
       var data = _ref.data;
       var onReady = _this.props.onReady;
+
+      _this.updatePlaylistOptions();
+
       onReady && onReady(data);
     };
 
@@ -683,6 +692,12 @@ var Player = /*#__PURE__*/function (_Component) {
   }
 
   var _proto = Player.prototype;
+
+  _proto.componentDidMount = function componentDidMount() {
+    if (this.playerLoad) {
+      this.create();
+    }
+  };
 
   _proto.componentDidUpdate = function componentDidUpdate(prevProps) {
     try {

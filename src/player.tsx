@@ -140,6 +140,12 @@ class Player extends Component<PlayerProps> {
 		this.player = null;
 	}
 
+	componentDidMount() {
+		if (this.playerLoad) {
+			this.create();
+		}
+	}
+
 	async componentDidUpdate(prevProps: Readonly<PlayerProps>) {
 		await this.shouldPlayerUpdate(prevProps);
 		await this.shouldPlaylistUpdate(prevProps);
@@ -212,13 +218,9 @@ class Player extends Component<PlayerProps> {
 	};
 
 	private create = async () => {
-		if (!this.playerLoad) {
-			return;
-		}
-
 		const parentsRef = this.parentsRef.current;
-		if (!parentsRef) {
-			throw THROW_PLAYER_NOT_READY;
+		if (!this.playerLoad || !parentsRef) {
+			return;
 		}
 
 		const playerId = getNextPlayerId();
@@ -230,7 +232,6 @@ class Player extends Component<PlayerProps> {
 		this.getEventList().forEach(event => {
 			this.player?.on(event[0], event[1]);
 		});
-		await this.updatePlaylistOptions();
 	};
 
 	private destroy = () => {
@@ -274,7 +275,21 @@ class Player extends Component<PlayerProps> {
 	};
 
 	private createPlayer = playerId => {
-		const {width, height, autoPause, autoPlay, loop, muted, playsInline, language} = this.props;
+		const {
+			title,
+			subtitle,
+			poster,
+			chapters,
+			vtt,
+			width,
+			height,
+			autoPause,
+			autoPlay,
+			loop,
+			muted,
+			playsInline,
+			language,
+		} = this.props;
 
 		const options = {
 			url: this.getIFrameUrl(),
@@ -287,6 +302,15 @@ class Player extends Component<PlayerProps> {
 				muted: muted,
 				playsInline: playsInline,
 			},
+			playlist: [
+				{
+					title: title,
+					subtitle: subtitle,
+					poster: poster,
+					chapters: chapters,
+					vtt: vtt,
+				},
+			],
 			ui: {
 				language: language,
 			},
@@ -458,6 +482,7 @@ class Player extends Component<PlayerProps> {
 
 	private handleEventReady = ({data}) => {
 		const {onReady} = this.props;
+		this.updatePlaylistOptions();
 		onReady && onReady(data);
 	};
 

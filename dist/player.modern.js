@@ -267,14 +267,10 @@ class Player extends Component {
     };
 
     this.create = async function () {
-      if (!_this.playerLoad) {
-        return;
-      }
-
       const parentsRef = _this.parentsRef.current;
 
-      if (!parentsRef) {
-        throw THROW_PLAYER_NOT_READY;
+      if (!_this.playerLoad || !parentsRef) {
+        return;
       }
 
       const playerId = getNextPlayerId();
@@ -288,8 +284,6 @@ class Player extends Component {
 
         (_this$player = _this.player) == null ? void 0 : _this$player.on(event[0], event[1]);
       });
-
-      await _this.updatePlaylistOptions();
     };
 
     this.destroy = () => {
@@ -322,6 +316,11 @@ class Player extends Component {
 
     this.createPlayer = playerId => {
       const {
+        title,
+        subtitle,
+        poster,
+        chapters,
+        vtt,
         width,
         height,
         autoPause,
@@ -345,6 +344,13 @@ class Player extends Component {
           muted: muted,
           playsInline: playsInline
         },
+        playlist: [{
+          title: title,
+          subtitle: subtitle,
+          poster: poster,
+          chapters: chapters,
+          vtt: vtt
+        }],
         ui: {
           language: language
         }
@@ -542,6 +548,7 @@ class Player extends Component {
       const {
         onReady
       } = this.props;
+      this.updatePlaylistOptions();
       onReady && onReady(data);
     };
 
@@ -687,6 +694,12 @@ class Player extends Component {
     this.playerLoad = false;
     this.parentsRef = createRef();
     this.player = null;
+  }
+
+  componentDidMount() {
+    if (this.playerLoad) {
+      this.create();
+    }
   }
 
   async componentDidUpdate(prevProps) {

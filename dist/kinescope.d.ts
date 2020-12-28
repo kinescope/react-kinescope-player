@@ -68,6 +68,7 @@ interface KinescopeCreateOptions {
         width?: number | string;
         height?: number | string;
     };
+    playlist: PlaylistItemOptions[];
     behaviour?: {
         autoPlay?: boolean | 'viewable';
         autoPause?: boolean | 'reset';
