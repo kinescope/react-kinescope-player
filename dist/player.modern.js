@@ -321,6 +321,7 @@ class Player extends Component {
         poster,
         chapters,
         vtt,
+        externalId,
         width,
         height,
         autoPause,
@@ -353,6 +354,9 @@ class Player extends Component {
         }],
         ui: {
           language: language
+        },
+        settings: {
+          externalId: externalId
         }
       };
       return window.Kinescope.IframePlayer.create(playerId, options);

@@ -156,6 +156,12 @@ functions handleMuteClick(){
       <td>'en' | 'ru'</td>
       <td>auto</td>
       <td>No</td>
+  </tr>  
+  <tr>
+      <td>externalId</td>
+      <td>string | number</td>
+      <td>No</td>
+      <td>No</td>
   </tr>
 </table>
 

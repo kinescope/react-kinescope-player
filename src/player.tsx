@@ -90,6 +90,7 @@ type PlayerProps = {
 	language?: 'ru' | 'en';
 	chapters?: ChapterTypes[];
 	vtt?: VttTypes[];
+	externalId?: string | number;
 
 	onReady?: (data: onReadyTypes) => void;
 	onQualityChanged?: (data: onQualityChangedTypes) => void;
@@ -281,6 +282,7 @@ class Player extends Component<PlayerProps> {
 			poster,
 			chapters,
 			vtt,
+			externalId,
 			width,
 			height,
 			autoPause,
@@ -314,6 +316,9 @@ class Player extends Component<PlayerProps> {
 			ui: {
 				language: language,
 			},
+			settings: {
+				externalId: externalId,
+			}
 		};
 
 		return window.Kinescope.IframePlayer.create(playerId, options);

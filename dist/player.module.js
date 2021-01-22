@@ -357,6 +357,7 @@ var Player = /*#__PURE__*/function (_Component) {
           poster = _this$props4.poster,
           chapters = _this$props4.chapters,
           vtt = _this$props4.vtt,
+          externalId = _this$props4.externalId,
           width = _this$props4.width,
           height = _this$props4.height,
           autoPause = _this$props4.autoPause,
@@ -388,6 +389,9 @@ var Player = /*#__PURE__*/function (_Component) {
         }],
         ui: {
           language: language
+        },
+        settings: {
+          externalId: externalId
         }
       };
       return window.Kinescope.IframePlayer.create(playerId, options);

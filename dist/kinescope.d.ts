@@ -79,6 +79,9 @@ interface KinescopeCreateOptions {
     ui?: {
         language?: 'ru' | 'en';
     };
+    settings?: {
+        externalId?: string | number;
+    };
 }
 declare global {
     interface Window {

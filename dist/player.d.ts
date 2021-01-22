@@ -63,6 +63,7 @@ declare type PlayerProps = {
     language?: 'ru' | 'en';
     chapters?: ChapterTypes[];
     vtt?: VttTypes[];
+    externalId?: string | number;
     onReady?: (data: onReadyTypes) => void;
     onQualityChanged?: (data: onQualityChangedTypes) => void;
     onAutoQualityChanged?: (data: onQualityChangedTypes) => void;
