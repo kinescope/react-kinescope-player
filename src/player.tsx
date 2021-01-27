@@ -14,59 +14,59 @@ const THROW_PLAYER_NOT_READY = 'Player not ready';
 type CallbackTypes = (any) => void;
 type EventListTypes = [KinescopePlayerEvent, CallbackTypes][];
 
-type VttTypes = {
+export type VttTypes = {
 	label: string;
 	src: string;
 	srcLang: string;
 };
 
-type ChapterTypes = {
+export type ChapterTypes = {
 	position: number;
 	title: string;
 };
 
-type onReadyTypes = {
+export type EventReadyTypes = {
 	currentTime: number;
 	duration: number;
 	quality: number;
 };
 
-type onQualityChangedTypes = {
+export type EventQualityChangedTypes = {
 	quality: number;
 };
 
-type onDurationChangeTypes = {
+export type EventDurationChangeTypes = {
 	duration: number;
 };
 
-type onProgressTypes = {
+export type EventProgressTypes = {
 	bufferedTime: number;
 };
 
-type onTimeUpdateTypes = {
+export type EventTimeUpdateTypes = {
 	currentTime: number;
 };
 
-type onVolumeChangeTypes = {
+export type EventVolumeChangeTypes = {
 	muted: boolean;
 	volume: number;
 };
 
-type onPlaybackRateChangeTypes = {
+export type EventPlaybackRateChangeTypes = {
 	playbackRate: boolean;
 };
 
-type onSizeChangedTypes = {
+export type EventSizeChangedTypes = {
 	width: number;
 	height: number;
 };
 
-type onFullscreenChangeTypes = {
+export type EventFullscreenChangeTypes = {
 	isFullscreen: boolean;
 	video: boolean;
 };
 
-type onErrorTypes = {
+export type EventErrorTypes = {
 	error: unknown;
 };
 
@@ -92,23 +92,23 @@ type PlayerProps = {
 	vtt?: VttTypes[];
 	externalId?: string | number;
 
-	onReady?: (data: onReadyTypes) => void;
-	onQualityChanged?: (data: onQualityChangedTypes) => void;
-	onAutoQualityChanged?: (data: onQualityChangedTypes) => void;
-	onSizeChanged?: (data: onSizeChangedTypes) => void;
+	onReady?: (data: EventReadyTypes) => void;
+	onQualityChanged?: (data: EventQualityChangedTypes) => void;
+	onAutoQualityChanged?: (data: EventQualityChangedTypes) => void;
+	onSizeChanged?: (data: EventSizeChangedTypes) => void;
 	onPlay?: () => void;
 	onPlaying?: () => void;
 	onWaiting?: () => void;
 	onPause?: () => void;
 	onEnded?: () => void;
-	onTimeUpdate?: (data: onTimeUpdateTypes) => void;
-	onProgress?: (data: onProgressTypes) => void;
-	onDurationChange?: (data: onDurationChangeTypes) => void;
-	onVolumeChange?: (data: onVolumeChangeTypes) => void;
-	onPlaybackRateChange?: (data: onPlaybackRateChangeTypes) => void;
+	onTimeUpdate?: (data: EventTimeUpdateTypes) => void;
+	onProgress?: (data: EventProgressTypes) => void;
+	onDurationChange?: (data: EventDurationChangeTypes) => void;
+	onVolumeChange?: (data: EventVolumeChangeTypes) => void;
+	onPlaybackRateChange?: (data: EventPlaybackRateChangeTypes) => void;
 	onSeeking?: () => void;
-	onFullscreenChange?: (data: onFullscreenChangeTypes) => void;
-	onError?: (data: onErrorTypes) => void;
+	onFullscreenChange?: (data: EventFullscreenChangeTypes) => void;
+	onError?: (data: EventErrorTypes) => void;
 	onDestroy?: () => void;
 };
 
@@ -318,7 +318,7 @@ class Player extends Component<PlayerProps> {
 			},
 			settings: {
 				externalId: externalId,
-			}
+			},
 		};
 
 		return window.Kinescope.IframePlayer.create(playerId, options);

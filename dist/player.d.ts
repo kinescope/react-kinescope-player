@@ -1,47 +1,47 @@
 import { Component } from 'react';
 import { VideoQuality } from './kinescope';
-declare type VttTypes = {
+export declare type VttTypes = {
     label: string;
     src: string;
     srcLang: string;
 };
-declare type ChapterTypes = {
+export declare type ChapterTypes = {
     position: number;
     title: string;
 };
-declare type onReadyTypes = {
+export declare type EventReadyTypes = {
     currentTime: number;
     duration: number;
     quality: number;
 };
-declare type onQualityChangedTypes = {
+export declare type EventQualityChangedTypes = {
     quality: number;
 };
-declare type onDurationChangeTypes = {
+export declare type EventDurationChangeTypes = {
     duration: number;
 };
-declare type onProgressTypes = {
+export declare type EventProgressTypes = {
     bufferedTime: number;
 };
-declare type onTimeUpdateTypes = {
+export declare type EventTimeUpdateTypes = {
     currentTime: number;
 };
-declare type onVolumeChangeTypes = {
+export declare type EventVolumeChangeTypes = {
     muted: boolean;
     volume: number;
 };
-declare type onPlaybackRateChangeTypes = {
+export declare type EventPlaybackRateChangeTypes = {
     playbackRate: boolean;
 };
-declare type onSizeChangedTypes = {
+export declare type EventSizeChangedTypes = {
     width: number;
     height: number;
 };
-declare type onFullscreenChangeTypes = {
+export declare type EventFullscreenChangeTypes = {
     isFullscreen: boolean;
     video: boolean;
 };
-declare type onErrorTypes = {
+export declare type EventErrorTypes = {
     error: unknown;
 };
 declare type PlayerProps = {
@@ -64,23 +64,23 @@ declare type PlayerProps = {
     chapters?: ChapterTypes[];
     vtt?: VttTypes[];
     externalId?: string | number;
-    onReady?: (data: onReadyTypes) => void;
-    onQualityChanged?: (data: onQualityChangedTypes) => void;
-    onAutoQualityChanged?: (data: onQualityChangedTypes) => void;
-    onSizeChanged?: (data: onSizeChangedTypes) => void;
+    onReady?: (data: EventReadyTypes) => void;
+    onQualityChanged?: (data: EventQualityChangedTypes) => void;
+    onAutoQualityChanged?: (data: EventQualityChangedTypes) => void;
+    onSizeChanged?: (data: EventSizeChangedTypes) => void;
     onPlay?: () => void;
     onPlaying?: () => void;
     onWaiting?: () => void;
     onPause?: () => void;
     onEnded?: () => void;
-    onTimeUpdate?: (data: onTimeUpdateTypes) => void;
-    onProgress?: (data: onProgressTypes) => void;
-    onDurationChange?: (data: onDurationChangeTypes) => void;
-    onVolumeChange?: (data: onVolumeChangeTypes) => void;
-    onPlaybackRateChange?: (data: onPlaybackRateChangeTypes) => void;
+    onTimeUpdate?: (data: EventTimeUpdateTypes) => void;
+    onProgress?: (data: EventProgressTypes) => void;
+    onDurationChange?: (data: EventDurationChangeTypes) => void;
+    onVolumeChange?: (data: EventVolumeChangeTypes) => void;
+    onPlaybackRateChange?: (data: EventPlaybackRateChangeTypes) => void;
     onSeeking?: () => void;
-    onFullscreenChange?: (data: onFullscreenChangeTypes) => void;
-    onError?: (data: onErrorTypes) => void;
+    onFullscreenChange?: (data: EventFullscreenChangeTypes) => void;
+    onError?: (data: EventErrorTypes) => void;
     onDestroy?: () => void;
 };
 declare class Player extends Component<PlayerProps> {
