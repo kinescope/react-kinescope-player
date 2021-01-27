@@ -85,7 +85,7 @@ interface KinescopeCreateOptions {
 	};
 	settings?: {
 		externalId?: string | number;
-	}
+	};
 }
 
 declare global {
