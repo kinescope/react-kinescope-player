@@ -90,7 +90,7 @@ type PlayerProps = {
 	language?: 'ru' | 'en';
 	chapters?: ChapterTypes[];
 	vtt?: VttTypes[];
-	externalId?: string | number;
+	externalId?: string;
 
 	onReady?: (data: EventReadyTypes) => void;
 	onQualityChanged?: (data: EventQualityChangedTypes) => void;

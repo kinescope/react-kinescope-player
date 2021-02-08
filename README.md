@@ -159,7 +159,7 @@ functions handleMuteClick(){
   </tr>  
   <tr>
       <td>externalId</td>
-      <td>string | number</td>
+      <td>number</td>
       <td>No</td>
       <td>No</td>
   </tr>
