@@ -80,7 +80,7 @@ interface KinescopeCreateOptions {
         language?: 'ru' | 'en';
     };
     settings?: {
-        externalId?: string | number;
+        externalId?: string;
     };
 }
 declare global {
