@@ -2,6 +2,7 @@ export enum KinescopePlayerEvent {
 	Ready,
 	QualityChanged,
 	AutoQualityChanged,
+	SeekChapter,
 	SizeChanged,
 	Play,
 	Playing,
@@ -15,6 +16,8 @@ export enum KinescopePlayerEvent {
 	PlaybackRateChange,
 	Seeking,
 	FullscreenChange,
+	CallAction,
+	CallBookmark,
 	Error,
 	Destroy,
 }
@@ -31,6 +34,10 @@ export interface PlaylistItemOptions {
 	chapters?: {
 		position: number;
 		title: string;
+	}[];
+	bookmarks?: {
+		id: string;
+		time: number;
 	}[];
 }
 
@@ -86,6 +93,11 @@ interface KinescopeCreateOptions {
 	settings?: {
 		externalId?: string;
 	};
+	actions?: {
+		id: string;
+		title?: string;
+		type: 'note';
+	}[];
 }
 
 declare global {

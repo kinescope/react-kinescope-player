@@ -225,10 +225,11 @@ class Player extends Component {
         loop,
         muted,
         playsInline,
-        language
+        language,
+        actions
       } = _this.props;
 
-      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language) {
+      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || !reactFastCompare(actions, prevProps.actions)) {
         await _this.destroy();
         await _this.create();
       }
@@ -240,10 +241,11 @@ class Player extends Component {
         subtitle,
         poster,
         chapters,
-        vtt
+        vtt,
+        bookmarks
       } = _this.props;
 
-      if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt)) {
+      if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks)) {
         await _this.updatePlaylistOptions();
       }
     };
@@ -254,14 +256,16 @@ class Player extends Component {
         subtitle,
         poster,
         chapters,
-        vtt
+        vtt,
+        bookmarks
       } = _this.props;
       let options = {
         title: title,
         poster: poster,
         subtitle: subtitle,
         chapters: chapters,
-        vtt: vtt
+        vtt: vtt,
+        bookmarks: bookmarks
       };
       await _this.setPlaylistItemOptions(options);
     };
@@ -304,7 +308,7 @@ class Player extends Component {
         return [];
       }
 
-      return [[Events.Ready, this.handleEventReady], [Events.QualityChanged, this.handleQualityChanged], [Events.AutoQualityChanged, this.handleAutoQualityChanged], [Events.SizeChanged, this.handleSizeChanged], [Events.Play, this.handlePlay], [Events.Playing, this.handlePlaying], [Events.Waiting, this.handleWaiting], [Events.Pause, this.handlePause], [Events.Ended, this.handleEnded], [Events.TimeUpdate, this.handleTimeUpdate], [Events.Progress, this.handleProgress], [Events.DurationChange, this.handleDurationChange], [Events.VolumeChange, this.handleVolumeChange], [Events.PlaybackRateChange, this.handlePlaybackRateChange], [Events.Seeking, this.handleSeeking], [Events.FullscreenChange, this.handleFullscreenChange], [Events.Error, this.handleError], [Events.Destroy, this.handleDestroy]];
+      return [[Events.Ready, this.handleEventReady], [Events.QualityChanged, this.handleQualityChanged], [Events.AutoQualityChanged, this.handleAutoQualityChanged], [Events.SeekChapter, this.handleSeekChapter], [Events.SizeChanged, this.handleSizeChanged], [Events.Play, this.handlePlay], [Events.Playing, this.handlePlaying], [Events.Waiting, this.handleWaiting], [Events.Pause, this.handlePause], [Events.Ended, this.handleEnded], [Events.TimeUpdate, this.handleTimeUpdate], [Events.Progress, this.handleProgress], [Events.DurationChange, this.handleDurationChange], [Events.VolumeChange, this.handleVolumeChange], [Events.PlaybackRateChange, this.handlePlaybackRateChange], [Events.Seeking, this.handleSeeking], [Events.FullscreenChange, this.handleFullscreenChange], [Events.CallAction, this.handleCallAction], [Events.CallBookmark, this.handleCallBookmark], [Events.Error, this.handleError], [Events.Destroy, this.handleDestroy]];
     };
 
     this.getIFrameUrl = () => {
@@ -329,7 +333,9 @@ class Player extends Component {
         loop,
         muted,
         playsInline,
-        language
+        language,
+        bookmarks,
+        actions
       } = this.props;
       const options = {
         url: this.getIFrameUrl(),
@@ -345,12 +351,14 @@ class Player extends Component {
           muted: muted,
           playsInline: playsInline
         },
+        actions: actions,
         playlist: [{
           title: title,
           subtitle: subtitle,
           poster: poster,
           chapters: chapters,
-          vtt: vtt
+          vtt: vtt,
+          bookmarks: bookmarks
         }],
         ui: {
           language: language
@@ -574,6 +582,15 @@ class Player extends Component {
       onAutoQualityChanged && onAutoQualityChanged(data);
     };
 
+    this.handleSeekChapter = ({
+      data
+    }) => {
+      const {
+        onSeekChapter
+      } = this.props;
+      onSeekChapter && onSeekChapter(data);
+    };
+
     this.handleSizeChanged = ({
       data
     }) => {
@@ -677,6 +694,24 @@ class Player extends Component {
         onFullscreenChange
       } = this.props;
       onFullscreenChange && onFullscreenChange(data);
+    };
+
+    this.handleCallAction = ({
+      data
+    }) => {
+      const {
+        onCallAction
+      } = this.props;
+      onCallAction && onCallAction(data);
+    };
+
+    this.handleCallBookmark = ({
+      data
+    }) => {
+      const {
+        onCallBookmark
+      } = this.props;
+      onCallBookmark && onCallBookmark(data);
     };
 
     this.handleError = ({

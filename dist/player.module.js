@@ -239,10 +239,11 @@ var Player = /*#__PURE__*/function (_Component) {
             loop = _this$props.loop,
             muted = _this$props.muted,
             playsInline = _this$props.playsInline,
-            language = _this$props.language;
+            language = _this$props.language,
+            actions = _this$props.actions;
 
         var _temp2 = function () {
-          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language) {
+          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || !reactFastCompare(actions, prevProps.actions)) {
             return Promise.resolve(_this.destroy()).then(function () {
               return Promise.resolve(_this.create()).then(function () {});
             });
@@ -262,10 +263,11 @@ var Player = /*#__PURE__*/function (_Component) {
             subtitle = _this$props2.subtitle,
             poster = _this$props2.poster,
             chapters = _this$props2.chapters,
-            vtt = _this$props2.vtt;
+            vtt = _this$props2.vtt,
+            bookmarks = _this$props2.bookmarks;
 
         var _temp4 = function () {
-          if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt)) {
+          if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks)) {
             return Promise.resolve(_this.updatePlaylistOptions()).then(function () {});
           }
         }();
@@ -283,13 +285,15 @@ var Player = /*#__PURE__*/function (_Component) {
             subtitle = _this$props3.subtitle,
             poster = _this$props3.poster,
             chapters = _this$props3.chapters,
-            vtt = _this$props3.vtt;
+            vtt = _this$props3.vtt,
+            bookmarks = _this$props3.bookmarks;
         var options = {
           title: title,
           poster: poster,
           subtitle: subtitle,
           chapters: chapters,
-          vtt: vtt
+          vtt: vtt,
+          bookmarks: bookmarks
         };
         return Promise.resolve(_this.setPlaylistItemOptions(options)).then(function () {});
       } catch (e) {
@@ -342,7 +346,7 @@ var Player = /*#__PURE__*/function (_Component) {
         return [];
       }
 
-      return [[Events.Ready, _this.handleEventReady], [Events.QualityChanged, _this.handleQualityChanged], [Events.AutoQualityChanged, _this.handleAutoQualityChanged], [Events.SizeChanged, _this.handleSizeChanged], [Events.Play, _this.handlePlay], [Events.Playing, _this.handlePlaying], [Events.Waiting, _this.handleWaiting], [Events.Pause, _this.handlePause], [Events.Ended, _this.handleEnded], [Events.TimeUpdate, _this.handleTimeUpdate], [Events.Progress, _this.handleProgress], [Events.DurationChange, _this.handleDurationChange], [Events.VolumeChange, _this.handleVolumeChange], [Events.PlaybackRateChange, _this.handlePlaybackRateChange], [Events.Seeking, _this.handleSeeking], [Events.FullscreenChange, _this.handleFullscreenChange], [Events.Error, _this.handleError], [Events.Destroy, _this.handleDestroy]];
+      return [[Events.Ready, _this.handleEventReady], [Events.QualityChanged, _this.handleQualityChanged], [Events.AutoQualityChanged, _this.handleAutoQualityChanged], [Events.SeekChapter, _this.handleSeekChapter], [Events.SizeChanged, _this.handleSizeChanged], [Events.Play, _this.handlePlay], [Events.Playing, _this.handlePlaying], [Events.Waiting, _this.handleWaiting], [Events.Pause, _this.handlePause], [Events.Ended, _this.handleEnded], [Events.TimeUpdate, _this.handleTimeUpdate], [Events.Progress, _this.handleProgress], [Events.DurationChange, _this.handleDurationChange], [Events.VolumeChange, _this.handleVolumeChange], [Events.PlaybackRateChange, _this.handlePlaybackRateChange], [Events.Seeking, _this.handleSeeking], [Events.FullscreenChange, _this.handleFullscreenChange], [Events.CallAction, _this.handleCallAction], [Events.CallBookmark, _this.handleCallBookmark], [Events.Error, _this.handleError], [Events.Destroy, _this.handleDestroy]];
     };
 
     _this.getIFrameUrl = function () {
@@ -365,7 +369,9 @@ var Player = /*#__PURE__*/function (_Component) {
           loop = _this$props4.loop,
           muted = _this$props4.muted,
           playsInline = _this$props4.playsInline,
-          language = _this$props4.language;
+          language = _this$props4.language,
+          bookmarks = _this$props4.bookmarks,
+          actions = _this$props4.actions;
       var options = {
         url: _this.getIFrameUrl(),
         size: {
@@ -380,12 +386,14 @@ var Player = /*#__PURE__*/function (_Component) {
           muted: muted,
           playsInline: playsInline
         },
+        actions: actions,
         playlist: [{
           title: title,
           subtitle: subtitle,
           poster: poster,
           chapters: chapters,
-          vtt: vtt
+          vtt: vtt,
+          bookmarks: bookmarks
         }],
         ui: {
           language: language
@@ -602,8 +610,14 @@ var Player = /*#__PURE__*/function (_Component) {
       onAutoQualityChanged && onAutoQualityChanged(data);
     };
 
-    _this.handleSizeChanged = function (_ref4) {
+    _this.handleSeekChapter = function (_ref4) {
       var data = _ref4.data;
+      var onSeekChapter = _this.props.onSeekChapter;
+      onSeekChapter && onSeekChapter(data);
+    };
+
+    _this.handleSizeChanged = function (_ref5) {
+      var data = _ref5.data;
       var onSizeChanged = _this.props.onSizeChanged;
       onSizeChanged && onSizeChanged(data);
     };
@@ -633,32 +647,32 @@ var Player = /*#__PURE__*/function (_Component) {
       onEnded && onEnded();
     };
 
-    _this.handleTimeUpdate = function (_ref5) {
-      var data = _ref5.data;
+    _this.handleTimeUpdate = function (_ref6) {
+      var data = _ref6.data;
       var onTimeUpdate = _this.props.onTimeUpdate;
       onTimeUpdate && onTimeUpdate(data);
     };
 
-    _this.handleProgress = function (_ref6) {
-      var data = _ref6.data;
+    _this.handleProgress = function (_ref7) {
+      var data = _ref7.data;
       var onProgress = _this.props.onProgress;
       onProgress && onProgress(data);
     };
 
-    _this.handleDurationChange = function (_ref7) {
-      var data = _ref7.data;
+    _this.handleDurationChange = function (_ref8) {
+      var data = _ref8.data;
       var onDurationChange = _this.props.onDurationChange;
       onDurationChange && onDurationChange(data);
     };
 
-    _this.handleVolumeChange = function (_ref8) {
-      var data = _ref8.data;
+    _this.handleVolumeChange = function (_ref9) {
+      var data = _ref9.data;
       var onVolumeChange = _this.props.onVolumeChange;
       onVolumeChange && onVolumeChange(data);
     };
 
-    _this.handlePlaybackRateChange = function (_ref9) {
-      var data = _ref9.data;
+    _this.handlePlaybackRateChange = function (_ref10) {
+      var data = _ref10.data;
       var onPlaybackRateChange = _this.props.onPlaybackRateChange;
       onPlaybackRateChange && onPlaybackRateChange(data);
     };
@@ -668,14 +682,26 @@ var Player = /*#__PURE__*/function (_Component) {
       onSeeking && onSeeking();
     };
 
-    _this.handleFullscreenChange = function (_ref10) {
-      var data = _ref10.data;
+    _this.handleFullscreenChange = function (_ref11) {
+      var data = _ref11.data;
       var onFullscreenChange = _this.props.onFullscreenChange;
       onFullscreenChange && onFullscreenChange(data);
     };
 
-    _this.handleError = function (_ref11) {
-      var data = _ref11.data;
+    _this.handleCallAction = function (_ref12) {
+      var data = _ref12.data;
+      var onCallAction = _this.props.onCallAction;
+      onCallAction && onCallAction(data);
+    };
+
+    _this.handleCallBookmark = function (_ref13) {
+      var data = _ref13.data;
+      var onCallBookmark = _this.props.onCallBookmark;
+      onCallBookmark && onCallBookmark(data);
+    };
+
+    _this.handleError = function (_ref14) {
+      var data = _ref14.data;
       var onError = _this.props.onError;
       onError && onError(data);
     };

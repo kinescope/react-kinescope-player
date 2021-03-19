@@ -9,6 +9,15 @@ export declare type ChapterTypes = {
     position: number;
     title: string;
 };
+export declare type ActionsTypes = {
+    id: string;
+    title?: string;
+    type: 'note';
+};
+export declare type BookmarkTypes = {
+    id: string;
+    time: number;
+};
 export declare type EventReadyTypes = {
     currentTime: number;
     duration: number;
@@ -16,6 +25,9 @@ export declare type EventReadyTypes = {
 };
 export declare type EventQualityChangedTypes = {
     quality: number;
+};
+export declare type EventSeekChapterTypes = {
+    position: number;
 };
 export declare type EventDurationChangeTypes = {
     duration: number;
@@ -41,6 +53,15 @@ export declare type EventFullscreenChangeTypes = {
     isFullscreen: boolean;
     video: boolean;
 };
+export declare type EventCallActionTypes = {
+    id: string;
+    title?: string;
+    type: string;
+};
+export declare type EventCallBookmarkTypes = {
+    id: string;
+    time: number;
+};
 export declare type EventErrorTypes = {
     error: unknown;
 };
@@ -64,9 +85,12 @@ declare type PlayerProps = {
     chapters?: ChapterTypes[];
     vtt?: VttTypes[];
     externalId?: string;
+    actions?: ActionsTypes[];
+    bookmarks?: BookmarkTypes[];
     onReady?: (data: EventReadyTypes) => void;
     onQualityChanged?: (data: EventQualityChangedTypes) => void;
     onAutoQualityChanged?: (data: EventQualityChangedTypes) => void;
+    onSeekChapter?: (data: EventSeekChapterTypes) => void;
     onSizeChanged?: (data: EventSizeChangedTypes) => void;
     onPlay?: () => void;
     onPlaying?: () => void;
@@ -80,6 +104,8 @@ declare type PlayerProps = {
     onPlaybackRateChange?: (data: EventPlaybackRateChangeTypes) => void;
     onSeeking?: () => void;
     onFullscreenChange?: (data: EventFullscreenChangeTypes) => void;
+    onCallAction?: (data: EventCallActionTypes) => void;
+    onCallBookmark?: (data: EventCallBookmarkTypes) => void;
     onError?: (data: EventErrorTypes) => void;
     onDestroy?: () => void;
 };
@@ -132,6 +158,7 @@ declare class Player extends Component<PlayerProps> {
     private handleEventReady;
     private handleQualityChanged;
     private handleAutoQualityChanged;
+    private handleSeekChapter;
     private handleSizeChanged;
     private handlePlay;
     private handlePlaying;
@@ -145,6 +172,8 @@ declare class Player extends Component<PlayerProps> {
     private handlePlaybackRateChange;
     private handleSeeking;
     private handleFullscreenChange;
+    private handleCallAction;
+    private handleCallBookmark;
     private handleError;
     private handleDestroy;
     render(): JSX.Element;

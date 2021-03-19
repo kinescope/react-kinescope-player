@@ -25,6 +25,17 @@ export type ChapterTypes = {
 	title: string;
 };
 
+export type ActionsTypes = {
+	id: string;
+	title?: string;
+	type: 'note';
+};
+
+export type BookmarkTypes = {
+	id: string;
+	time: number;
+};
+
 export type EventReadyTypes = {
 	currentTime: number;
 	duration: number;
@@ -33,6 +44,10 @@ export type EventReadyTypes = {
 
 export type EventQualityChangedTypes = {
 	quality: number;
+};
+
+export type EventSeekChapterTypes = {
+	position: number;
 };
 
 export type EventDurationChangeTypes = {
@@ -66,6 +81,17 @@ export type EventFullscreenChangeTypes = {
 	video: boolean;
 };
 
+export type EventCallActionTypes = {
+	id: string;
+	title?: string;
+	type: string;
+};
+
+export type EventCallBookmarkTypes = {
+	id: string;
+	time: number;
+};
+
 export type EventErrorTypes = {
 	error: unknown;
 };
@@ -91,10 +117,13 @@ type PlayerProps = {
 	chapters?: ChapterTypes[];
 	vtt?: VttTypes[];
 	externalId?: string;
+	actions?: ActionsTypes[];
+	bookmarks?: BookmarkTypes[];
 
 	onReady?: (data: EventReadyTypes) => void;
 	onQualityChanged?: (data: EventQualityChangedTypes) => void;
 	onAutoQualityChanged?: (data: EventQualityChangedTypes) => void;
+	onSeekChapter?: (data: EventSeekChapterTypes) => void;
 	onSizeChanged?: (data: EventSizeChangedTypes) => void;
 	onPlay?: () => void;
 	onPlaying?: () => void;
@@ -108,6 +137,8 @@ type PlayerProps = {
 	onPlaybackRateChange?: (data: EventPlaybackRateChangeTypes) => void;
 	onSeeking?: () => void;
 	onFullscreenChange?: (data: EventFullscreenChangeTypes) => void;
+	onCallAction?: (data: EventCallActionTypes) => void;
+	onCallBookmark?: (data: EventCallBookmarkTypes) => void;
 	onError?: (data: EventErrorTypes) => void;
 	onDestroy?: () => void;
 };
@@ -174,6 +205,7 @@ class Player extends Component<PlayerProps> {
 			muted,
 			playsInline,
 			language,
+			actions,
 		} = this.props;
 
 		if (
@@ -185,7 +217,8 @@ class Player extends Component<PlayerProps> {
 			loop !== prevProps.loop ||
 			muted !== prevProps.muted ||
 			playsInline !== prevProps.playsInline ||
-			language !== prevProps.language
+			language !== prevProps.language ||
+			!isEqual(actions, prevProps.actions)
 		) {
 			await this.destroy();
 			await this.create();
@@ -193,27 +226,29 @@ class Player extends Component<PlayerProps> {
 	};
 
 	private shouldPlaylistUpdate = async prevProps => {
-		const {title, subtitle, poster, chapters, vtt} = this.props;
+		const {title, subtitle, poster, chapters, vtt, bookmarks} = this.props;
 
 		if (
 			title !== prevProps.title ||
 			subtitle !== prevProps.subtitle ||
 			poster !== prevProps.poster ||
 			!isEqual(chapters, prevProps.chapters) ||
-			!isEqual(vtt, prevProps.vtt)
+			!isEqual(vtt, prevProps.vtt) ||
+			!isEqual(bookmarks, prevProps.bookmarks)
 		) {
 			await this.updatePlaylistOptions();
 		}
 	};
 
 	private updatePlaylistOptions = async () => {
-		const {title, subtitle, poster, chapters, vtt} = this.props;
+		const {title, subtitle, poster, chapters, vtt, bookmarks} = this.props;
 		let options: PlaylistItemOptions = {
 			title: title,
 			poster: poster,
 			subtitle: subtitle,
 			chapters: chapters,
 			vtt: vtt,
+			bookmarks: bookmarks,
 		};
 		await this.setPlaylistItemOptions(options);
 	};
@@ -252,6 +287,7 @@ class Player extends Component<PlayerProps> {
 			[Events.Ready, this.handleEventReady],
 			[Events.QualityChanged, this.handleQualityChanged],
 			[Events.AutoQualityChanged, this.handleAutoQualityChanged],
+			[Events.SeekChapter, this.handleSeekChapter],
 			[Events.SizeChanged, this.handleSizeChanged],
 			[Events.Play, this.handlePlay],
 			[Events.Playing, this.handlePlaying],
@@ -265,6 +301,8 @@ class Player extends Component<PlayerProps> {
 			[Events.PlaybackRateChange, this.handlePlaybackRateChange],
 			[Events.Seeking, this.handleSeeking],
 			[Events.FullscreenChange, this.handleFullscreenChange],
+			[Events.CallAction, this.handleCallAction],
+			[Events.CallBookmark, this.handleCallBookmark],
 			[Events.Error, this.handleError],
 			[Events.Destroy, this.handleDestroy],
 		];
@@ -291,6 +329,8 @@ class Player extends Component<PlayerProps> {
 			muted,
 			playsInline,
 			language,
+			bookmarks,
+			actions,
 		} = this.props;
 
 		const options = {
@@ -304,6 +344,7 @@ class Player extends Component<PlayerProps> {
 				muted: muted,
 				playsInline: playsInline,
 			},
+			actions: actions,
 			playlist: [
 				{
 					title: title,
@@ -311,6 +352,7 @@ class Player extends Component<PlayerProps> {
 					poster: poster,
 					chapters: chapters,
 					vtt: vtt,
+					bookmarks: bookmarks,
 				},
 			],
 			ui: {
@@ -501,6 +543,11 @@ class Player extends Component<PlayerProps> {
 		onAutoQualityChanged && onAutoQualityChanged(data);
 	};
 
+	private handleSeekChapter = ({data}) => {
+		const {onSeekChapter} = this.props;
+		onSeekChapter && onSeekChapter(data);
+	};
+
 	private handleSizeChanged = ({data}) => {
 		const {onSizeChanged} = this.props;
 		onSizeChanged && onSizeChanged(data);
@@ -564,6 +611,16 @@ class Player extends Component<PlayerProps> {
 	private handleFullscreenChange = ({data}) => {
 		const {onFullscreenChange} = this.props;
 		onFullscreenChange && onFullscreenChange(data);
+	};
+
+	private handleCallAction = ({data}) => {
+		const {onCallAction} = this.props;
+		onCallAction && onCallAction(data);
+	};
+
+	private handleCallBookmark = ({data}) => {
+		const {onCallBookmark} = this.props;
+		onCallBookmark && onCallBookmark(data);
 	};
 
 	private handleError = ({data}) => {

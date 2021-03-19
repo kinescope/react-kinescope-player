@@ -2,21 +2,24 @@ export declare enum KinescopePlayerEvent {
     Ready = 0,
     QualityChanged = 1,
     AutoQualityChanged = 2,
-    SizeChanged = 3,
-    Play = 4,
-    Playing = 5,
-    Waiting = 6,
-    Pause = 7,
-    Ended = 8,
-    TimeUpdate = 9,
-    Progress = 10,
-    DurationChange = 11,
-    VolumeChange = 12,
-    PlaybackRateChange = 13,
-    Seeking = 14,
-    FullscreenChange = 15,
-    Error = 16,
-    Destroy = 17
+    SeekChapter = 3,
+    SizeChanged = 4,
+    Play = 5,
+    Playing = 6,
+    Waiting = 7,
+    Pause = 8,
+    Ended = 9,
+    TimeUpdate = 10,
+    Progress = 11,
+    DurationChange = 12,
+    VolumeChange = 13,
+    PlaybackRateChange = 14,
+    Seeking = 15,
+    FullscreenChange = 16,
+    CallAction = 17,
+    CallBookmark = 18,
+    Error = 19,
+    Destroy = 20
 }
 export interface PlaylistItemOptions {
     title?: string;
@@ -30,6 +33,10 @@ export interface PlaylistItemOptions {
     chapters?: {
         position: number;
         title: string;
+    }[];
+    bookmarks?: {
+        id: string;
+        time: number;
     }[];
 }
 export declare type VideoQuality = 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
@@ -82,6 +89,11 @@ interface KinescopeCreateOptions {
     settings?: {
         externalId?: string;
     };
+    actions?: {
+        id: string;
+        title?: string;
+        type: 'note';
+    }[];
 }
 declare global {
     interface Window {
