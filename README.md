@@ -99,7 +99,7 @@ functions handleMuteClick(){
   </tr> 
   <tr>
       <td>chapters</td>
-      <td><a href="#chapters">Chapter</a>[]</td>
+      <td><a href="#chapter">Chapter</a>[]</td>
       <td>No</td>
       <td>No</td>
   </tr> 
@@ -163,9 +163,21 @@ functions handleMuteClick(){
       <td>No</td>
       <td>No</td>
   </tr>
+  <tr>
+      <td>actions</td>
+      <td><a href="#action">Action</a>[]</td>
+      <td>No</td>
+      <td>No</td>
+  </tr>
+  <tr>
+      <td>bookmarks</td>
+      <td><a href="#bookmark">Bookmark</a>[]</td>
+      <td>No</td>
+      <td>No</td>
+  </tr>
 </table>
 
-##### Chapters
+##### Chapter
 ```ts
 type Chapter = {
 	position: number;
@@ -179,6 +191,23 @@ type Vtt = {
 	label: string;
 	src: string;
 	srcLang: string;
+};
+```
+
+##### Action
+```ts
+type Action = {
+	id: string;
+	title?: string;
+	type: 'note';
+};
+```
+
+##### Bookmark
+```ts
+type Bookmark = {
+	id: string;
+	time: number;
 };
 ```
 
@@ -214,6 +243,12 @@ type Vtt = {
       <td>onAutoQualityChanged</td>
       <td>
         	quality: number;
+      </td>
+  </tr>
+  <tr>
+      <td>onSeekChapter</td>
+      <td>
+        	position: number;
       </td>
   </tr>
   <tr>
@@ -275,6 +310,21 @@ type Vtt = {
       <td>
         isFullscreen: boolean;<br/>
         video: boolean;
+      </td>
+  </tr>
+  <tr>
+      <td>onCallAction</td>
+      <td>
+        id: string;<br/>
+        title?: string;<br/>
+        type: string;
+      </td>
+  </tr>
+  <tr>
+      <td>onCallBookmark</td>
+      <td>
+        id: string;<br/>
+        time: number;
       </td>
   </tr>
   <tr>
