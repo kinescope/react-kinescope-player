@@ -208,6 +208,7 @@ type Action = {
 type Bookmark = {
 	id: string;
 	time: number;
+	title?: string;
 };
 ```
 
@@ -324,7 +325,8 @@ type Bookmark = {
       <td>onCallBookmark</td>
       <td>
         id: string;<br/>
-        time: number;
+        time: number;<br/>
+        title?: string;
       </td>
   </tr>
   <tr>

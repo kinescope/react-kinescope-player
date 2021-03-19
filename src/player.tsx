@@ -34,6 +34,7 @@ export type ActionsTypes = {
 export type BookmarkTypes = {
 	id: string;
 	time: number;
+	title?: string;
 };
 
 export type EventReadyTypes = {

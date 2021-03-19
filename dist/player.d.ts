@@ -17,6 +17,7 @@ export declare type ActionsTypes = {
 export declare type BookmarkTypes = {
     id: string;
     time: number;
+    title?: string;
 };
 export declare type EventReadyTypes = {
     currentTime: number;

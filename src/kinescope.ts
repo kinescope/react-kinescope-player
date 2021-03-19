@@ -38,6 +38,7 @@ export interface PlaylistItemOptions {
 	bookmarks?: {
 		id: string;
 		time: number;
+		title?: string;
 	}[];
 }
 
