@@ -14,9 +14,28 @@ class Loader extends Component<LoaderProps> {
 		this.jsLoading();
 	}
 
+	loadJsNotLoad = () => {
+		const el = document.getElementById(NODE_JS_ID);
+		if (el) {
+			el.addEventListener('load', this.loadJs);
+		}
+	};
+
+	loadJs = () => {
+		const el = document.getElementById(NODE_JS_ID);
+		if (el) {
+			el.removeEventListener('load', this.handleJSLoad);
+		}
+		this.handleJSLoad();
+	};
+
 	jsLoading = () => {
 		if (this.testLoadJS()) {
-			this.handleJSLoad();
+			if (!!window?.Kinescope?.IframePlayer) {
+				this.handleJSLoad();
+			} else {
+				this.loadJsNotLoad();
+			}
 			return;
 		}
 		let el = document.createElement('script');

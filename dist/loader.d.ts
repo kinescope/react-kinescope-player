@@ -5,6 +5,8 @@ declare type LoaderProps = {
 };
 declare class Loader extends Component<LoaderProps> {
     constructor(props: any);
+    loadJsNotLoad: () => void;
+    loadJs: () => void;
     jsLoading: () => void;
     testLoadJS: () => boolean;
     handleJSLoad: () => void;

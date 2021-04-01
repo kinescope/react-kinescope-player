@@ -143,9 +143,34 @@ class Loader extends Component {
   constructor(props) {
     super(props);
 
+    this.loadJsNotLoad = () => {
+      const el = document.getElementById(NODE_JS_ID);
+
+      if (el) {
+        el.addEventListener('load', this.loadJs);
+      }
+    };
+
+    this.loadJs = () => {
+      const el = document.getElementById(NODE_JS_ID);
+
+      if (el) {
+        el.removeEventListener('load', this.handleJSLoad);
+      }
+
+      this.handleJSLoad();
+    };
+
     this.jsLoading = () => {
       if (this.testLoadJS()) {
-        this.handleJSLoad();
+        var _window, _window$Kinescope;
+
+        if (!!((_window = window) != null && (_window$Kinescope = _window.Kinescope) != null && _window$Kinescope.IframePlayer)) {
+          this.handleJSLoad();
+        } else {
+          this.loadJsNotLoad();
+        }
+
         return;
       }
 

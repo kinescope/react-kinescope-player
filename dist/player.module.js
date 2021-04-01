@@ -153,9 +153,33 @@ var Loader = /*#__PURE__*/function (_Component) {
 
     _this = _Component.call(this, props) || this;
 
+    _this.loadJsNotLoad = function () {
+      var el = document.getElementById(NODE_JS_ID);
+
+      if (el) {
+        el.addEventListener('load', _this.loadJs);
+      }
+    };
+
+    _this.loadJs = function () {
+      var el = document.getElementById(NODE_JS_ID);
+
+      if (el) {
+        el.removeEventListener('load', _this.handleJSLoad);
+      }
+
+      _this.handleJSLoad();
+    };
+
     _this.jsLoading = function () {
       if (_this.testLoadJS()) {
-        _this.handleJSLoad();
+        var _window, _window$Kinescope;
+
+        if (!!((_window = window) != null && (_window$Kinescope = _window.Kinescope) != null && _window$Kinescope.IframePlayer)) {
+          _this.handleJSLoad();
+        } else {
+          _this.loadJsNotLoad();
+        }
 
         return;
       }
