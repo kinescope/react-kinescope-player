@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.9](https://github.com/kinescope/react-kinescope-player/compare/v0.2.8...v0.2.9) (2021-04-12)
+
+### Bug Fixes
+
+* remove throw THROW_PLAYER_NOT_READY ([6012538](https://github.com/kinescope/react-kinescope-player/commit/601253885a65bc28a38197876f90af837a9cb62b))
+
 ### [0.2.8](https://github.com/kinescope/react-kinescope-player/compare/v0.2.7...v0.2.8) (2021-04-01)
 
 ### Bug Fixes
