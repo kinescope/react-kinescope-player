@@ -229,7 +229,6 @@
     return Loader;
   }(React.Component);
 
-  var THROW_PLAYER_NOT_READY = 'Player not ready';
   var index = 1;
 
   function getNextIndex() {
@@ -437,187 +436,191 @@
       };
 
       _this.setPlaylistItemOptions = function (options) {
-        if (_this.player) {
-          return _this.player.setPlaylistItemOptions(options);
-        }
+        try {
+          if (!_this.player) {
+            return Promise.resolve();
+          }
 
-        throw THROW_PLAYER_NOT_READY;
+          return Promise.resolve(_this.player.setPlaylistItemOptions(options)).then(function () {});
+        } catch (e) {
+          return Promise.reject(e);
+        }
       };
 
       _this.isPaused = function () {
-        if (_this.player) {
-          return _this.player.isPaused();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.isPaused();
       };
 
       _this.isEnded = function () {
-        if (_this.player) {
-          return _this.player.isEnded();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.isEnded();
       };
 
       _this.play = function () {
-        if (_this.player) {
-          return _this.player.play();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.play();
       };
 
       _this.pause = function () {
-        if (_this.player) {
-          return _this.player.pause();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.pause();
       };
 
       _this.stop = function () {
-        if (_this.player) {
-          return _this.player.stop();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.stop();
       };
 
       _this.getCurrentTime = function () {
-        if (_this.player) {
-          return _this.player.getCurrentTime();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.getCurrentTime();
       };
 
       _this.getDuration = function () {
-        if (_this.player) {
-          return _this.player.getDuration();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.getDuration();
       };
 
       _this.seekTo = function (time) {
-        if (_this.player) {
-          return _this.player.seekTo(time);
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.seekTo(time);
       };
 
       _this.isMuted = function () {
-        if (_this.player) {
-          return _this.player.isMuted();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.isMuted();
       };
 
       _this.mute = function () {
-        if (_this.player) {
-          return _this.player.mute();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.mute();
       };
 
       _this.unmute = function () {
-        if (_this.player) {
-          return _this.player.unmute();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.unmute();
       };
 
       _this.getVolume = function () {
-        if (_this.player) {
-          return _this.player.getVolume();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.getVolume();
       };
 
       _this.setVolume = function (value) {
-        if (_this.player) {
-          return _this.player.setVolume(value);
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.setVolume(value);
       };
 
       _this.getPlaybackRate = function () {
-        if (_this.player) {
-          return _this.player.getPlaybackRate();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.getPlaybackRate();
       };
 
       _this.setPlaybackRate = function (value) {
-        if (_this.player) {
-          return _this.player.setPlaybackRate(value);
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.setPlaybackRate(value);
       };
 
       _this.getVideoQualityList = function () {
-        if (_this.player) {
-          return _this.player.getVideoQualityList();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.getVideoQualityList();
       };
 
       _this.getCurrentVideoQuality = function () {
-        if (_this.player) {
-          return _this.player.getCurrentVideoQuality();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.getCurrentVideoQuality();
       };
 
       _this.setVideoQuality = function (quality) {
-        if (_this.player) {
-          return _this.player.setVideoQuality(quality);
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.setVideoQuality(quality);
       };
 
       _this.enableTextTrack = function (lang) {
-        if (_this.player) {
-          return _this.player.enableTextTrack(lang);
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.enableTextTrack(lang);
       };
 
       _this.disableTextTrack = function () {
-        if (_this.player) {
-          return _this.player.disableTextTrack();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.disableTextTrack();
       };
 
       _this.isFullscreen = function () {
-        if (_this.player) {
-          return _this.player.isFullscreen();
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.isFullscreen();
       };
 
       _this.setFullscreen = function (fullscreen) {
-        if (_this.player) {
-          return _this.player.setFullscreen(fullscreen);
+        if (!_this.player) {
+          return Promise.reject(null);
         }
 
-        throw THROW_PLAYER_NOT_READY;
+        return _this.player.setFullscreen(fullscreen);
       };
 
       _this.handleEventReady = function (_ref) {

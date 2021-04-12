@@ -213,7 +213,6 @@ class Loader extends Component {
 
 }
 
-const THROW_PLAYER_NOT_READY = 'Player not ready';
 let index = 1;
 
 function getNextIndex() {
@@ -395,188 +394,188 @@ class Player extends Component {
       return window.Kinescope.IframePlayer.create(playerId, options);
     };
 
-    this.setPlaylistItemOptions = options => {
-      if (this.player) {
-        return this.player.setPlaylistItemOptions(options);
+    this.setPlaylistItemOptions = async function (options) {
+      if (!_this.player) {
+        return Promise.resolve();
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      await _this.player.setPlaylistItemOptions(options);
     };
 
     this.isPaused = () => {
-      if (this.player) {
-        return this.player.isPaused();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.isPaused();
     };
 
     this.isEnded = () => {
-      if (this.player) {
-        return this.player.isEnded();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.isEnded();
     };
 
     this.play = () => {
-      if (this.player) {
-        return this.player.play();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.play();
     };
 
     this.pause = () => {
-      if (this.player) {
-        return this.player.pause();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.pause();
     };
 
     this.stop = () => {
-      if (this.player) {
-        return this.player.stop();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.stop();
     };
 
     this.getCurrentTime = () => {
-      if (this.player) {
-        return this.player.getCurrentTime();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.getCurrentTime();
     };
 
     this.getDuration = () => {
-      if (this.player) {
-        return this.player.getDuration();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.getDuration();
     };
 
     this.seekTo = time => {
-      if (this.player) {
-        return this.player.seekTo(time);
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.seekTo(time);
     };
 
     this.isMuted = () => {
-      if (this.player) {
-        return this.player.isMuted();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.isMuted();
     };
 
     this.mute = () => {
-      if (this.player) {
-        return this.player.mute();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.mute();
     };
 
     this.unmute = () => {
-      if (this.player) {
-        return this.player.unmute();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.unmute();
     };
 
     this.getVolume = () => {
-      if (this.player) {
-        return this.player.getVolume();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.getVolume();
     };
 
     this.setVolume = value => {
-      if (this.player) {
-        return this.player.setVolume(value);
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.setVolume(value);
     };
 
     this.getPlaybackRate = () => {
-      if (this.player) {
-        return this.player.getPlaybackRate();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.getPlaybackRate();
     };
 
     this.setPlaybackRate = value => {
-      if (this.player) {
-        return this.player.setPlaybackRate(value);
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.setPlaybackRate(value);
     };
 
     this.getVideoQualityList = () => {
-      if (this.player) {
-        return this.player.getVideoQualityList();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.getVideoQualityList();
     };
 
     this.getCurrentVideoQuality = () => {
-      if (this.player) {
-        return this.player.getCurrentVideoQuality();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.getCurrentVideoQuality();
     };
 
     this.setVideoQuality = quality => {
-      if (this.player) {
-        return this.player.setVideoQuality(quality);
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.setVideoQuality(quality);
     };
 
     this.enableTextTrack = lang => {
-      if (this.player) {
-        return this.player.enableTextTrack(lang);
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.enableTextTrack(lang);
     };
 
     this.disableTextTrack = () => {
-      if (this.player) {
-        return this.player.disableTextTrack();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.disableTextTrack();
     };
 
     this.isFullscreen = () => {
-      if (this.player) {
-        return this.player.isFullscreen();
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.isFullscreen();
     };
 
     this.setFullscreen = fullscreen => {
-      if (this.player) {
-        return this.player.setFullscreen(fullscreen);
+      if (!this.player) {
+        return Promise.reject(null);
       }
 
-      throw THROW_PLAYER_NOT_READY;
+      return this.player.setFullscreen(fullscreen);
     };
 
     this.handleEventReady = ({

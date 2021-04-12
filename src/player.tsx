@@ -9,8 +9,6 @@ import {
 import Loader from './loader';
 import {VIDEO_HOST} from './constant';
 
-const THROW_PLAYER_NOT_READY = 'Player not ready';
-
 type CallbackTypes = (any) => void;
 type EventListTypes = [KinescopePlayerEvent, CallbackTypes][];
 
@@ -367,165 +365,165 @@ class Player extends Component<PlayerProps> {
 		return window.Kinescope.IframePlayer.create(playerId, options);
 	};
 
-	private setPlaylistItemOptions = (options: PlaylistItemOptions): Promise<void> => {
-		if (this.player) {
-			return this.player.setPlaylistItemOptions(options);
+	private setPlaylistItemOptions = async (options: PlaylistItemOptions): Promise<void> => {
+		if (!this.player) {
+			return Promise.resolve();
 		}
-		throw THROW_PLAYER_NOT_READY;
+		await this.player.setPlaylistItemOptions(options);
 	};
 
 	public isPaused = (): Promise<boolean> => {
-		if (this.player) {
-			return this.player.isPaused();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.isPaused();
 	};
 
 	public isEnded = (): Promise<boolean> => {
-		if (this.player) {
-			return this.player.isEnded();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.isEnded();
 	};
 
 	public play = (): Promise<void> => {
-		if (this.player) {
-			return this.player.play();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.play();
 	};
 
 	public pause = (): Promise<boolean> => {
-		if (this.player) {
-			return this.player.pause();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.pause();
 	};
 
 	public stop = (): Promise<void> => {
-		if (this.player) {
-			return this.player.stop();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.stop();
 	};
 
 	public getCurrentTime = (): Promise<number> => {
-		if (this.player) {
-			return this.player.getCurrentTime();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.getCurrentTime();
 	};
 
 	public getDuration = (): Promise<number> => {
-		if (this.player) {
-			return this.player.getDuration();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.getDuration();
 	};
 
 	public seekTo = (time: number): Promise<void> => {
-		if (this.player) {
-			return this.player.seekTo(time);
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.seekTo(time);
 	};
 
 	public isMuted = (): Promise<boolean> => {
-		if (this.player) {
-			return this.player.isMuted();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.isMuted();
 	};
 
 	public mute = () => {
-		if (this.player) {
-			return this.player.mute();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.mute();
 	};
 
 	public unmute = () => {
-		if (this.player) {
-			return this.player.unmute();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.unmute();
 	};
 
 	public getVolume = (): Promise<number> => {
-		if (this.player) {
-			return this.player.getVolume();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.getVolume();
 	};
 
 	public setVolume = (value: number): Promise<void> => {
-		if (this.player) {
-			return this.player.setVolume(value);
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.setVolume(value);
 	};
 
 	public getPlaybackRate = (): Promise<number> => {
-		if (this.player) {
-			return this.player.getPlaybackRate();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.getPlaybackRate();
 	};
 
 	public setPlaybackRate = (value: number): Promise<void> => {
-		if (this.player) {
-			return this.player.setPlaybackRate(value);
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.setPlaybackRate(value);
 	};
 
 	public getVideoQualityList = (): Promise<VideoQuality[]> => {
-		if (this.player) {
-			return this.player.getVideoQualityList();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.getVideoQualityList();
 	};
 
 	public getCurrentVideoQuality = (): Promise<VideoQuality> => {
-		if (this.player) {
-			return this.player.getCurrentVideoQuality();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.getCurrentVideoQuality();
 	};
 
 	public setVideoQuality = (quality: VideoQuality): Promise<void> => {
-		if (this.player) {
-			return this.player.setVideoQuality(quality);
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.setVideoQuality(quality);
 	};
 
 	public enableTextTrack = (lang: string): Promise<void> => {
-		if (this.player) {
-			return this.player.enableTextTrack(lang);
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.enableTextTrack(lang);
 	};
 
 	public disableTextTrack = (): Promise<void> => {
-		if (this.player) {
-			return this.player.disableTextTrack();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.disableTextTrack();
 	};
 
 	public isFullscreen = (): Promise<boolean> => {
-		if (this.player) {
-			return this.player.isFullscreen();
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.isFullscreen();
 	};
 
 	public setFullscreen = (fullscreen: boolean): Promise<void> => {
-		if (this.player) {
-			return this.player.setFullscreen(fullscreen);
+		if (!this.player) {
+			return Promise.reject(null);
 		}
-		throw THROW_PLAYER_NOT_READY;
+		return this.player.setFullscreen(fullscreen);
 	};
 
 	private handleEventReady = ({data}) => {
