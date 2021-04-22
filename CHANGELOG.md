@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.10](https://github.com/kinescope/react-kinescope-player/compare/v0.2.9...v0.2.10) (2021-04-22)
+
+### Features
+
+* New props: watermarkText and watermarkMode ([46166e4](https://github.com/kinescope/react-kinescope-player/commit/46166e4a618749fa0e8d48dcdaf8184daddbcf5e))
+
 ### [0.2.9](https://github.com/kinescope/react-kinescope-player/compare/v0.2.8...v0.2.9) (2021-04-12)
 
 ### Bug Fixes
