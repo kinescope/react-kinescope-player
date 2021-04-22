@@ -175,6 +175,18 @@ functions handleMuteClick(){
       <td>No</td>
       <td>No</td>
   </tr>
+  <tr>
+      <td>watermarkText</td>
+      <td>string</td>
+      <td>No</td>
+      <td>No</td>
+  </tr>
+  <tr>
+      <td>watermarkMode</td>
+      <td>'stripes' | 'random'</td>
+      <td>stripes</td>
+      <td>No</td>
+  </tr> 
 </table>
 
 ##### Chapter
