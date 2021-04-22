@@ -250,10 +250,12 @@ class Player extends Component {
         muted,
         playsInline,
         language,
-        actions
+        actions,
+        watermarkText,
+        watermarkMode
       } = _this.props;
 
-      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || !reactFastCompare(actions, prevProps.actions)) {
+      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode || !reactFastCompare(actions, prevProps.actions)) {
         await _this.destroy();
         await _this.create();
       }
@@ -359,16 +361,17 @@ class Player extends Component {
         playsInline,
         language,
         bookmarks,
-        actions
+        actions,
+        watermarkText,
+        watermarkMode
       } = this.props;
-      const options = {
+      let options = {
         url: this.getIFrameUrl(),
         size: {
           width: width,
           height: height
         },
         behaviour: {
-          crossOrigin: 'use-credentials',
           autoPause: autoPause,
           autoPlay: autoPlay,
           loop: loop,
@@ -391,6 +394,14 @@ class Player extends Component {
           externalId: externalId
         }
       };
+
+      if (watermarkText) {
+        options.ui['watermark'] = {
+          text: watermarkText,
+          mode: watermarkMode
+        };
+      }
+
       return window.Kinescope.IframePlayer.create(playerId, options);
     };
 

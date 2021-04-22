@@ -1,6 +1,7 @@
 import React, {Component, createRef} from 'react';
 import isEqual from 'react-fast-compare';
 import {
+	WatermarkModeTypes,
 	KinescopePlayerEvent,
 	KinescopePlayer,
 	VideoQuality,
@@ -118,6 +119,8 @@ type PlayerProps = {
 	externalId?: string;
 	actions?: ActionsTypes[];
 	bookmarks?: BookmarkTypes[];
+	watermarkText?: string;
+	watermarkMode?: WatermarkModeTypes;
 
 	onReady?: (data: EventReadyTypes) => void;
 	onQualityChanged?: (data: EventQualityChangedTypes) => void;
@@ -205,6 +208,8 @@ class Player extends Component<PlayerProps> {
 			playsInline,
 			language,
 			actions,
+			watermarkText,
+			watermarkMode,
 		} = this.props;
 
 		if (
@@ -217,6 +222,8 @@ class Player extends Component<PlayerProps> {
 			muted !== prevProps.muted ||
 			playsInline !== prevProps.playsInline ||
 			language !== prevProps.language ||
+			watermarkText !== prevProps.watermarkText ||
+			watermarkMode !== prevProps.watermarkMode ||
 			!isEqual(actions, prevProps.actions)
 		) {
 			await this.destroy();
@@ -330,13 +337,14 @@ class Player extends Component<PlayerProps> {
 			language,
 			bookmarks,
 			actions,
+			watermarkText,
+			watermarkMode,
 		} = this.props;
 
-		const options = {
+		let options = {
 			url: this.getIFrameUrl(),
 			size: {width: width, height: height},
 			behaviour: {
-				crossOrigin: 'use-credentials',
 				autoPause: autoPause,
 				autoPlay: autoPlay,
 				loop: loop,
@@ -361,6 +369,13 @@ class Player extends Component<PlayerProps> {
 				externalId: externalId,
 			},
 		};
+
+		if(watermarkText) {
+			options.ui['watermark'] = {
+				text: watermarkText,
+				mode: watermarkMode,
+			}
+		}
 
 		return window.Kinescope.IframePlayer.create(playerId, options);
 	};

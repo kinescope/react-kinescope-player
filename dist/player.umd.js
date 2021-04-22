@@ -270,10 +270,12 @@
               muted = _this$props.muted,
               playsInline = _this$props.playsInline,
               language = _this$props.language,
-              actions = _this$props.actions;
+              actions = _this$props.actions,
+              watermarkText = _this$props.watermarkText,
+              watermarkMode = _this$props.watermarkMode;
 
           var _temp2 = function () {
-            if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || !reactFastCompare(actions, prevProps.actions)) {
+            if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode || !reactFastCompare(actions, prevProps.actions)) {
               return Promise.resolve(_this.destroy()).then(function () {
                 return Promise.resolve(_this.create()).then(function () {});
               });
@@ -401,7 +403,9 @@
             playsInline = _this$props4.playsInline,
             language = _this$props4.language,
             bookmarks = _this$props4.bookmarks,
-            actions = _this$props4.actions;
+            actions = _this$props4.actions,
+            watermarkText = _this$props4.watermarkText,
+            watermarkMode = _this$props4.watermarkMode;
         var options = {
           url: _this.getIFrameUrl(),
           size: {
@@ -409,7 +413,6 @@
             height: height
           },
           behaviour: {
-            crossOrigin: 'use-credentials',
             autoPause: autoPause,
             autoPlay: autoPlay,
             loop: loop,
@@ -432,6 +435,14 @@
             externalId: externalId
           }
         };
+
+        if (watermarkText) {
+          options.ui['watermark'] = {
+            text: watermarkText,
+            mode: watermarkMode
+          };
+        }
+
         return window.Kinescope.IframePlayer.create(playerId, options);
       };
 

@@ -41,6 +41,7 @@ export interface PlaylistItemOptions {
     }[];
 }
 export declare type VideoQuality = 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
+export declare type WatermarkModeTypes = 'stripes' | 'random';
 export interface KinescopePlayer {
     on: (event: KinescopePlayerEvent, callback: any) => void;
     off: (event: KinescopePlayerEvent, callback: any) => void;
@@ -86,6 +87,10 @@ interface KinescopeCreateOptions {
     };
     ui?: {
         language?: 'ru' | 'en';
+        watermark?: {
+            text: string;
+            mode?: WatermarkModeTypes;
+        };
     };
     settings?: {
         externalId?: string;
