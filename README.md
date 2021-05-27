@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://kinescope.io/)
+
 <h1 align="center">React Kinescope Player</h1>
 
 ## Installation
