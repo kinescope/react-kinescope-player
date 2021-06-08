@@ -5,6 +5,7 @@ import {
 	KinescopePlayerEvent,
 	KinescopePlayer,
 	VideoQuality,
+	VideoQualityLevels,
 	PlaylistItemOptions,
 	ActionCallToAction,
 	ActionToolBar,
@@ -37,11 +38,12 @@ export type BookmarkTypes = {
 export type EventReadyTypes = {
 	currentTime: number;
 	duration: number;
-	quality: number;
+	quality: VideoQuality;
+	qualityLevels: VideoQualityLevels;
 };
 
 export type EventQualityChangedTypes = {
-	quality: number;
+	quality: VideoQuality;
 };
 
 export type EventSeekChapterTypes = {

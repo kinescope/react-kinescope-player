@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { WatermarkModeTypes, VideoQuality, ActionCallToAction, ActionToolBar } from './kinescope';
+import { WatermarkModeTypes, VideoQuality, VideoQualityLevels, ActionCallToAction, ActionToolBar } from './kinescope';
 export declare type VttTypes = {
     label: string;
     src: string;
@@ -18,10 +18,11 @@ export declare type BookmarkTypes = {
 export declare type EventReadyTypes = {
     currentTime: number;
     duration: number;
-    quality: number;
+    quality: VideoQuality;
+    qualityLevels: VideoQualityLevels;
 };
 export declare type EventQualityChangedTypes = {
-    quality: number;
+    quality: VideoQuality;
 };
 export declare type EventSeekChapterTypes = {
     position: number;

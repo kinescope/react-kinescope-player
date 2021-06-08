@@ -41,7 +41,13 @@ export interface PlaylistItemOptions {
         title?: string;
     }[];
 }
-export declare type VideoQuality = 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
+export declare type VideoQuality = 'auto' | 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
+export declare type VideoQualityLevels = {
+    [quality in VideoQuality]: {
+        level: number;
+        url?: string;
+    };
+};
 export declare type WatermarkModeTypes = 'stripes' | 'random';
 export declare type ActionToolBar = {
     id: string;
