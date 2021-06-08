@@ -210,10 +210,27 @@ type Vtt = {
 
 ##### Action
 ```ts
-type Action = {
+type Action = (ActionToolBar | ActionCallToAction);
+
+type ActionToolBar = {
 	id: string;
+	type: 'tool';
 	title?: string;
-	type: 'note';
+	icon: 'note';
+};
+
+type ActionCallToAction = {
+	id: string;
+	type: 'cta';
+	title: string;
+	description?: string;
+	skipable?: boolean;
+	buttonStyle?: CSSProperties;
+	trigger: {
+		percentages: number[];
+		timePoints: number[];
+		pause: boolean;
+	};
 };
 ```
 
@@ -329,11 +346,7 @@ type Bookmark = {
   </tr>
   <tr>
       <td>onCallAction</td>
-      <td>
-        id: string;<br/>
-        title?: string;<br/>
-        type: string;
-      </td>
+      <td><a href="#action">Action</a></td>
   </tr>
   <tr>
       <td>onCallBookmark</td>
@@ -457,6 +470,11 @@ type Bookmark = {
   </tr>
   <tr>
       <td>disableTextTrack</td>
+      <td>No</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>closeCTA</td>
       <td>No</td>
       <td>Promise&lt;void&gt;</td>
   </tr>
