@@ -346,7 +346,11 @@ type Bookmark = {
   </tr>
   <tr>
       <td>onCallAction</td>
-      <td><a href="#action">Action</a></td>
+      <td>
+        id: string;
+        title?: string;
+        type: string;
+      </td>
   </tr>
   <tr>
       <td>onCallBookmark</td>
