@@ -262,19 +262,20 @@ type Bookmark = {
       <td>
         currentTime: number;<br/>
         duration: number;<br/>
-        quality: number;
+        quality: VideoQuality;<br/>
+        qualityLevels: VideoQualityLevels;
       </td>
   </tr>
   <tr>
       <td>onQualityChanged</td>
       <td>
-        	quality: number;
+        	quality: VideoQuality;
       </td>
   </tr>
   <tr>
       <td>onAutoQualityChanged</td>
       <td>
-        	quality: number;
+        	quality: VideoQuality;
       </td>
   </tr>
   <tr>
