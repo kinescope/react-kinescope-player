@@ -6,6 +6,8 @@ import {
 	KinescopePlayer,
 	VideoQuality,
 	PlaylistItemOptions,
+	ActionCallToAction,
+	ActionToolBar,
 } from './kinescope';
 import Loader from './loader';
 import {VIDEO_HOST} from './constant';
@@ -24,11 +26,7 @@ export type ChapterTypes = {
 	title: string;
 };
 
-export type ActionsTypes = {
-	id: string;
-	title?: string;
-	type: 'note';
-};
+export type ActionsTypes = ActionToolBar | ActionCallToAction;
 
 export type BookmarkTypes = {
 	id: string;
@@ -370,11 +368,11 @@ class Player extends Component<PlayerProps> {
 			},
 		};
 
-		if(watermarkText) {
+		if (watermarkText) {
 			options.ui['watermark'] = {
 				text: watermarkText,
 				mode: watermarkMode,
-			}
+			};
 		}
 
 		return window.Kinescope.IframePlayer.create(playerId, options);
@@ -525,6 +523,13 @@ class Player extends Component<PlayerProps> {
 			return Promise.reject(null);
 		}
 		return this.player.disableTextTrack();
+	};
+
+	public closeCTA = (): Promise<void> => {
+		if (!this.player) {
+			return Promise.reject(null);
+		}
+		return this.player.closeCTA();
 	};
 
 	public isFullscreen = (): Promise<boolean> => {

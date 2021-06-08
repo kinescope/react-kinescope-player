@@ -615,6 +615,14 @@ var Player = /*#__PURE__*/function (_Component) {
       return _this.player.disableTextTrack();
     };
 
+    _this.closeCTA = function () {
+      if (!_this.player) {
+        return Promise.reject(null);
+      }
+
+      return _this.player.closeCTA();
+    };
+
     _this.isFullscreen = function () {
       if (!_this.player) {
         return Promise.reject(null);

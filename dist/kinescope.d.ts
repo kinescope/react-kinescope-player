@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 export declare enum KinescopePlayerEvent {
     Ready = 0,
     QualityChanged = 1,
@@ -42,8 +43,28 @@ export interface PlaylistItemOptions {
 }
 export declare type VideoQuality = 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
 export declare type WatermarkModeTypes = 'stripes' | 'random';
+export declare type ActionToolBar = {
+    id: string;
+    type: 'tool';
+    title?: string;
+    icon: 'note';
+};
+export declare type ActionCallToAction = {
+    id: string;
+    type: 'cta';
+    title: string;
+    description?: string;
+    skipable?: boolean;
+    buttonStyle?: CSSProperties;
+    trigger: {
+        percentages: number[];
+        timePoints: number[];
+        pause: boolean;
+    };
+};
 export interface KinescopePlayer {
     on: (event: KinescopePlayerEvent, callback: any) => void;
+    once: (event: KinescopePlayerEvent, callback: any) => void;
     off: (event: KinescopePlayerEvent, callback: any) => void;
     Events: typeof KinescopePlayerEvent;
     isPaused(): Promise<boolean>;
@@ -66,6 +87,7 @@ export interface KinescopePlayer {
     setVideoQuality(quality: VideoQuality): Promise<void>;
     enableTextTrack(lang: string): Promise<void>;
     disableTextTrack(): Promise<void>;
+    closeCTA(): Promise<void>;
     isFullscreen(): Promise<boolean>;
     setFullscreen(fullscreen: boolean): Promise<void>;
     setPlaylistItemOptions(options: PlaylistItemOptions): Promise<void>;
@@ -95,11 +117,7 @@ interface KinescopeCreateOptions {
     settings?: {
         externalId?: string;
     };
-    actions?: {
-        id: string;
-        title?: string;
-        type: 'note';
-    }[];
+    actions?: (ActionToolBar | ActionCallToAction)[];
 }
 declare global {
     interface Window {

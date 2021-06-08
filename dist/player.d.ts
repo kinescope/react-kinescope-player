@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { WatermarkModeTypes, VideoQuality } from './kinescope';
+import { WatermarkModeTypes, VideoQuality, ActionCallToAction, ActionToolBar } from './kinescope';
 export declare type VttTypes = {
     label: string;
     src: string;
@@ -9,11 +9,7 @@ export declare type ChapterTypes = {
     position: number;
     title: string;
 };
-export declare type ActionsTypes = {
-    id: string;
-    title?: string;
-    type: 'note';
-};
+export declare type ActionsTypes = ActionToolBar | ActionCallToAction;
 export declare type BookmarkTypes = {
     id: string;
     time: number;
@@ -156,6 +152,7 @@ declare class Player extends Component<PlayerProps> {
     setVideoQuality: (quality: VideoQuality) => Promise<void>;
     enableTextTrack: (lang: string) => Promise<void>;
     disableTextTrack: () => Promise<void>;
+    closeCTA: () => Promise<void>;
     isFullscreen: () => Promise<boolean>;
     setFullscreen: (fullscreen: boolean) => Promise<void>;
     private handleEventReady;

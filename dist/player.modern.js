@@ -573,6 +573,14 @@ class Player extends Component {
       return this.player.disableTextTrack();
     };
 
+    this.closeCTA = () => {
+      if (!this.player) {
+        return Promise.reject(null);
+      }
+
+      return this.player.closeCTA();
+    };
+
     this.isFullscreen = () => {
       if (!this.player) {
         return Promise.reject(null);
