@@ -303,17 +303,22 @@ class Player extends Component {
         return;
       }
 
+      parentsRef.textContent = '';
       const playerId = getNextPlayerId();
       const playerDiv = document.createElement('div');
       playerDiv.setAttribute('id', playerId);
       parentsRef.appendChild(playerDiv);
-      _this.player = await _this.createPlayer(playerId);
+      const player = await _this.createPlayer(playerId);
 
       _this.getEventList().forEach(event => {
-        var _this$player;
-
-        (_this$player = _this.player) == null ? void 0 : _this$player.on(event[0], event[1]);
+        player == null ? void 0 : player.on(event[0], event[1]);
       });
+
+      if (_this.player) {
+        _this.destroy();
+      }
+
+      _this.player = player;
     };
 
     this.destroy = () => {
@@ -326,9 +331,9 @@ class Player extends Component {
     };
 
     this.getEventList = () => {
-      var _this$player2;
+      var _this$player;
 
-      const Events = (_this$player2 = this.player) == null ? void 0 : _this$player2.Events;
+      const Events = (_this$player = this.player) == null ? void 0 : _this$player.Events;
 
       if (!Events) {
         return [];

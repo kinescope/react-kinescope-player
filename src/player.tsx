@@ -265,15 +265,22 @@ class Player extends Component<PlayerProps> {
 			return;
 		}
 
+		parentsRef.textContent = '';
 		const playerId = getNextPlayerId();
 		const playerDiv = document.createElement('div');
 		playerDiv.setAttribute('id', playerId);
 		parentsRef.appendChild(playerDiv);
 
-		this.player = await this.createPlayer(playerId);
+		const player = await this.createPlayer(playerId);
 		this.getEventList().forEach(event => {
-			this.player?.on(event[0], event[1]);
+			player?.on(event[0], event[1]);
 		});
+
+		if(this.player) {
+			this.destroy();
+		}
+
+		this.player = player;
 	};
 
 	private destroy = () => {
