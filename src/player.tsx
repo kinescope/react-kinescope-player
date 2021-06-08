@@ -271,16 +271,10 @@ class Player extends Component<PlayerProps> {
 		playerDiv.setAttribute('id', playerId);
 		parentsRef.appendChild(playerDiv);
 
-		const player = await this.createPlayer(playerId);
+		this.player = await this.createPlayer(playerId);
 		this.getEventList().forEach(event => {
-			player?.on(event[0], event[1]);
+			this.player?.on(event[0], event[1]);
 		});
-
-		if(this.player) {
-			this.destroy();
-		}
-
-		this.player = player;
 	};
 
 	private destroy = () => {

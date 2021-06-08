@@ -346,16 +346,14 @@
           var playerDiv = document.createElement('div');
           playerDiv.setAttribute('id', playerId);
           parentsRef.appendChild(playerDiv);
-          return Promise.resolve(_this.createPlayer(playerId)).then(function (player) {
+          return Promise.resolve(_this.createPlayer(playerId)).then(function (_this$createPlayer) {
+            _this.player = _this$createPlayer;
+
             _this.getEventList().forEach(function (event) {
-              player == null ? void 0 : player.on(event[0], event[1]);
+              var _this$player;
+
+              (_this$player = _this.player) == null ? void 0 : _this$player.on(event[0], event[1]);
             });
-
-            if (_this.player) {
-              _this.destroy();
-            }
-
-            _this.player = player;
           });
         } catch (e) {
           return Promise.reject(e);
@@ -373,9 +371,9 @@
       };
 
       _this.getEventList = function () {
-        var _this$player;
+        var _this$player2;
 
-        var Events = (_this$player = _this.player) == null ? void 0 : _this$player.Events;
+        var Events = (_this$player2 = _this.player) == null ? void 0 : _this$player2.Events;
 
         if (!Events) {
           return [];
