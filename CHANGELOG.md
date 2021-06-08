@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.11](https://github.com/kinescope/react-kinescope-player/compare/v0.2.10...v0.2.11) (2021-06-08)
+
+### Features
+
+* New method: closeCTA ([c933bb0](https://github.com/kinescope/react-kinescope-player/commit/c933bb074fcec6da56738a302c0b1ee0874718d2))
+
 ### [0.2.10](https://github.com/kinescope/react-kinescope-player/compare/v0.2.9...v0.2.10) (2021-04-22)
 
 ### Features
