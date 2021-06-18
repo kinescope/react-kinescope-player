@@ -42,6 +42,7 @@ export interface PlaylistItemOptions {
 		time: number;
 		title?: string;
 	}[];
+	actions?: (ActionToolBar | ActionCallToAction)[];
 }
 
 export type VideoQuality =
@@ -84,7 +85,7 @@ export type ActionCallToAction = {
 	trigger: {
 		percentages: number[];
 		timePoints: number[];
-		pause: boolean;
+		pause?: boolean;
 	};
 };
 
@@ -144,6 +145,7 @@ interface KinescopeCreateOptions {
 	settings?: {
 		externalId?: string;
 	};
+	/** @deprecated */
 	actions?: (ActionToolBar | ActionCallToAction)[];
 }
 
@@ -152,6 +154,7 @@ declare global {
 		Kinescope: {
 			IframePlayer: {
 				create: (id: string, options: KinescopeCreateOptions) => Promise<KinescopePlayer>;
+				version: string;
 			};
 		};
 	}

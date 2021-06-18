@@ -40,6 +40,7 @@ export interface PlaylistItemOptions {
         time: number;
         title?: string;
     }[];
+    actions?: (ActionToolBar | ActionCallToAction)[];
 }
 export declare type VideoQuality = 'auto' | 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
 export declare type VideoQualityLevels = {
@@ -65,7 +66,7 @@ export declare type ActionCallToAction = {
     trigger: {
         percentages: number[];
         timePoints: number[];
-        pause: boolean;
+        pause?: boolean;
     };
 };
 export interface KinescopePlayer {
@@ -123,6 +124,7 @@ interface KinescopeCreateOptions {
     settings?: {
         externalId?: string;
     };
+    /** @deprecated */
     actions?: (ActionToolBar | ActionCallToAction)[];
 }
 declare global {
@@ -130,6 +132,7 @@ declare global {
         Kinescope: {
             IframePlayer: {
                 create: (id: string, options: KinescopeCreateOptions) => Promise<KinescopePlayer>;
+                version: string;
             };
         };
     }

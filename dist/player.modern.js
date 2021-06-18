@@ -223,6 +223,20 @@ function getNextPlayerId() {
   return `__kinescope_player_${getNextIndex()}`;
 }
 
+function getPlayerVersion() {
+  var _window$Kinescope, _window$Kinescope$Ifr;
+
+  const version = (_window$Kinescope = window.Kinescope) == null ? void 0 : (_window$Kinescope$Ifr = _window$Kinescope.IframePlayer) == null ? void 0 : _window$Kinescope$Ifr.version;
+
+  if (!version) {
+    return null;
+  }
+
+  return version.split('.').map(function (value) {
+    return parseInt(value);
+  });
+}
+
 class Player extends Component {
   constructor(props) {
     var _this;
@@ -238,6 +252,25 @@ class Player extends Component {
       onJSLoad && onJSLoad();
       await _this.create();
     };
+    /** @deprecated remove 2.17 */
+
+
+    this.shouldPlayerUpdateOld_2_16_0 = prevProps => {
+      const {
+        actions
+      } = this.props;
+      const version = getPlayerVersion();
+
+      if (!version) {
+        return true;
+      }
+
+      if (version[0] >= 2 && version[1] >= 26) {
+        return false;
+      }
+
+      return !reactFastCompare(actions, prevProps.actions);
+    };
 
     this.shouldPlayerUpdate = async function (prevProps) {
       const {
@@ -250,12 +283,11 @@ class Player extends Component {
         muted,
         playsInline,
         language,
-        actions,
         watermarkText,
         watermarkMode
       } = _this.props;
 
-      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode || !reactFastCompare(actions, prevProps.actions)) {
+      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode || _this.shouldPlayerUpdateOld_2_16_0(prevProps)) {
         await _this.destroy();
         await _this.create();
       }
@@ -268,10 +300,11 @@ class Player extends Component {
         poster,
         chapters,
         vtt,
-        bookmarks
+        bookmarks,
+        actions
       } = _this.props;
 
-      if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks)) {
+      if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks) || !reactFastCompare(actions, prevProps.actions)) {
         await _this.updatePlaylistOptions();
       }
     };
@@ -283,7 +316,8 @@ class Player extends Component {
         poster,
         chapters,
         vtt,
-        bookmarks
+        bookmarks,
+        actions
       } = _this.props;
       let options = {
         title: title,
@@ -291,7 +325,8 @@ class Player extends Component {
         subtitle: subtitle,
         chapters: chapters,
         vtt: vtt,
-        bookmarks: bookmarks
+        bookmarks: bookmarks,
+        actions: actions
       };
       await _this.setPlaylistItemOptions(options);
     };
@@ -379,6 +414,8 @@ class Player extends Component {
           muted: muted,
           playsInline: playsInline
         },
+
+        /** @deprecated remove 2.17 */
         actions: actions,
         playlist: [{
           title: title,
@@ -386,7 +423,8 @@ class Player extends Component {
           poster: poster,
           chapters: chapters,
           vtt: vtt,
-          bookmarks: bookmarks
+          bookmarks: bookmarks,
+          actions: actions
         }],
         ui: {
           language: language

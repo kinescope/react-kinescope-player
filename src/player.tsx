@@ -155,6 +155,16 @@ function getNextPlayerId() {
 	return `__kinescope_player_${getNextIndex()}`;
 }
 
+function getPlayerVersion(): number[] | null {
+	const version = window.Kinescope?.IframePlayer?.version;
+	if (!version) {
+		return null;
+	}
+	return version.split('.').map(function (value) {
+		return parseInt(value);
+	});
+}
+
 class Player extends Component<PlayerProps> {
 	private playerLoad: boolean;
 	private readonly parentsRef: React.RefObject<HTMLDivElement>;
@@ -196,6 +206,19 @@ class Player extends Component<PlayerProps> {
 		await this.create();
 	};
 
+	/** @deprecated remove 2.17 */
+	private shouldPlayerUpdateOld_2_16_0 = prevProps => {
+		const {actions} = this.props;
+		const version = getPlayerVersion();
+		if (!version) {
+			return true;
+		}
+		if (version[0] >= 2 && version[1] >= 26) {
+			return false;
+		}
+		return !isEqual(actions, prevProps.actions);
+	};
+
 	private shouldPlayerUpdate = async prevProps => {
 		const {
 			videoId,
@@ -207,7 +230,6 @@ class Player extends Component<PlayerProps> {
 			muted,
 			playsInline,
 			language,
-			actions,
 			watermarkText,
 			watermarkMode,
 		} = this.props;
@@ -224,7 +246,7 @@ class Player extends Component<PlayerProps> {
 			language !== prevProps.language ||
 			watermarkText !== prevProps.watermarkText ||
 			watermarkMode !== prevProps.watermarkMode ||
-			!isEqual(actions, prevProps.actions)
+			this.shouldPlayerUpdateOld_2_16_0(prevProps)
 		) {
 			await this.destroy();
 			await this.create();
@@ -232,7 +254,7 @@ class Player extends Component<PlayerProps> {
 	};
 
 	private shouldPlaylistUpdate = async prevProps => {
-		const {title, subtitle, poster, chapters, vtt, bookmarks} = this.props;
+		const {title, subtitle, poster, chapters, vtt, bookmarks, actions} = this.props;
 
 		if (
 			title !== prevProps.title ||
@@ -240,14 +262,15 @@ class Player extends Component<PlayerProps> {
 			poster !== prevProps.poster ||
 			!isEqual(chapters, prevProps.chapters) ||
 			!isEqual(vtt, prevProps.vtt) ||
-			!isEqual(bookmarks, prevProps.bookmarks)
+			!isEqual(bookmarks, prevProps.bookmarks) ||
+			!isEqual(actions, prevProps.actions)
 		) {
 			await this.updatePlaylistOptions();
 		}
 	};
 
 	private updatePlaylistOptions = async () => {
-		const {title, subtitle, poster, chapters, vtt, bookmarks} = this.props;
+		const {title, subtitle, poster, chapters, vtt, bookmarks, actions} = this.props;
 		let options: PlaylistItemOptions = {
 			title: title,
 			poster: poster,
@@ -255,6 +278,7 @@ class Player extends Component<PlayerProps> {
 			chapters: chapters,
 			vtt: vtt,
 			bookmarks: bookmarks,
+			actions: actions,
 		};
 		await this.setPlaylistItemOptions(options);
 	};
@@ -352,6 +376,7 @@ class Player extends Component<PlayerProps> {
 				muted: muted,
 				playsInline: playsInline,
 			},
+			/** @deprecated remove 2.17 */
 			actions: actions,
 			playlist: [
 				{
@@ -361,6 +386,7 @@ class Player extends Component<PlayerProps> {
 					chapters: chapters,
 					vtt: vtt,
 					bookmarks: bookmarks,
+					actions: actions,
 				},
 			],
 			ui: {

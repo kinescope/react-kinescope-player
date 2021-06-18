@@ -236,6 +236,20 @@ function getNextPlayerId() {
   return "__kinescope_player_" + getNextIndex();
 }
 
+function getPlayerVersion() {
+  var _window$Kinescope, _window$Kinescope$Ifr;
+
+  var version = (_window$Kinescope = window.Kinescope) == null ? void 0 : (_window$Kinescope$Ifr = _window$Kinescope.IframePlayer) == null ? void 0 : _window$Kinescope$Ifr.version;
+
+  if (!version) {
+    return null;
+  }
+
+  return version.split('.').map(function (value) {
+    return parseInt(value);
+  });
+}
+
 var Player = /*#__PURE__*/function (_Component) {
   _inheritsLoose(Player, _Component);
 
@@ -254,6 +268,23 @@ var Player = /*#__PURE__*/function (_Component) {
         return Promise.reject(e);
       }
     };
+    /** @deprecated remove 2.17 */
+
+
+    _this.shouldPlayerUpdateOld_2_16_0 = function (prevProps) {
+      var actions = _this.props.actions;
+      var version = getPlayerVersion();
+
+      if (!version) {
+        return true;
+      }
+
+      if (version[0] >= 2 && version[1] >= 26) {
+        return false;
+      }
+
+      return !reactFastCompare(actions, prevProps.actions);
+    };
 
     _this.shouldPlayerUpdate = function (prevProps) {
       try {
@@ -267,12 +298,11 @@ var Player = /*#__PURE__*/function (_Component) {
             muted = _this$props.muted,
             playsInline = _this$props.playsInline,
             language = _this$props.language,
-            actions = _this$props.actions,
             watermarkText = _this$props.watermarkText,
             watermarkMode = _this$props.watermarkMode;
 
         var _temp2 = function () {
-          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode || !reactFastCompare(actions, prevProps.actions)) {
+          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode || _this.shouldPlayerUpdateOld_2_16_0(prevProps)) {
             return Promise.resolve(_this.destroy()).then(function () {
               return Promise.resolve(_this.create()).then(function () {});
             });
@@ -293,10 +323,11 @@ var Player = /*#__PURE__*/function (_Component) {
             poster = _this$props2.poster,
             chapters = _this$props2.chapters,
             vtt = _this$props2.vtt,
-            bookmarks = _this$props2.bookmarks;
+            bookmarks = _this$props2.bookmarks,
+            actions = _this$props2.actions;
 
         var _temp4 = function () {
-          if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks)) {
+          if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks) || !reactFastCompare(actions, prevProps.actions)) {
             return Promise.resolve(_this.updatePlaylistOptions()).then(function () {});
           }
         }();
@@ -315,14 +346,16 @@ var Player = /*#__PURE__*/function (_Component) {
             poster = _this$props3.poster,
             chapters = _this$props3.chapters,
             vtt = _this$props3.vtt,
-            bookmarks = _this$props3.bookmarks;
+            bookmarks = _this$props3.bookmarks,
+            actions = _this$props3.actions;
         var options = {
           title: title,
           poster: poster,
           subtitle: subtitle,
           chapters: chapters,
           vtt: vtt,
-          bookmarks: bookmarks
+          bookmarks: bookmarks,
+          actions: actions
         };
         return Promise.resolve(_this.setPlaylistItemOptions(options)).then(function () {});
       } catch (e) {
@@ -417,6 +450,8 @@ var Player = /*#__PURE__*/function (_Component) {
           muted: muted,
           playsInline: playsInline
         },
+
+        /** @deprecated remove 2.17 */
         actions: actions,
         playlist: [{
           title: title,
@@ -424,7 +459,8 @@ var Player = /*#__PURE__*/function (_Component) {
           poster: poster,
           chapters: chapters,
           vtt: vtt,
-          bookmarks: bookmarks
+          bookmarks: bookmarks,
+          actions: actions
         }],
         ui: {
           language: language
