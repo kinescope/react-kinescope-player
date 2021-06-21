@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.14](https://github.com/kinescope/react-kinescope-player/compare/v0.2.13...v0.2.14) (2021-06-21)
+
+### Features
+
+* spike player api >= 2.17 ([8e2740c](https://github.com/kinescope/react-kinescope-player/commit/8e2740c13f276fe61897ee9d9410ad5bba888dd6)) ([38386b1](https://github.com/kinescope/react-kinescope-player/commit/38386b104cabdd2b464be7cb1475312cef13db4a))
+
 ### [0.2.13](https://github.com/kinescope/react-kinescope-player/compare/v0.2.12...v0.2.13) (2021-06-08)
 
 ### [0.2.12](https://github.com/kinescope/react-kinescope-player/compare/v0.2.11...v0.2.12) (2021-06-08)
