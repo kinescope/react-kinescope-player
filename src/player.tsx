@@ -207,13 +207,13 @@ class Player extends Component<PlayerProps> {
 	};
 
 	/** @deprecated remove 2.17 */
-	private shouldPlayerUpdateOld_2_16_0 = prevProps => {
+	private shouldPlayerUpdateOld_2_17_0 = prevProps => {
 		const {actions} = this.props;
 		const version = getPlayerVersion();
 		if (!version) {
 			return true;
 		}
-		if (version[0] >= 2 && version[1] >= 26) {
+		if (version[0] >= 2 && version[1] >= 27) {
 			return false;
 		}
 		return !isEqual(actions, prevProps.actions);
@@ -246,7 +246,7 @@ class Player extends Component<PlayerProps> {
 			language !== prevProps.language ||
 			watermarkText !== prevProps.watermarkText ||
 			watermarkMode !== prevProps.watermarkMode ||
-			this.shouldPlayerUpdateOld_2_16_0(prevProps)
+			this.shouldPlayerUpdateOld_2_17_0(prevProps)
 		) {
 			await this.destroy();
 			await this.create();

@@ -85,7 +85,7 @@ export type ActionCallToAction = {
 	trigger: {
 		percentages: number[];
 		timePoints: number[];
-		pause?: boolean;
+		pause: boolean;
 	};
 };
 

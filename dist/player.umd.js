@@ -274,7 +274,7 @@
       /** @deprecated remove 2.17 */
 
 
-      _this.shouldPlayerUpdateOld_2_16_0 = function (prevProps) {
+      _this.shouldPlayerUpdateOld_2_17_0 = function (prevProps) {
         var actions = _this.props.actions;
         var version = getPlayerVersion();
 
@@ -282,7 +282,7 @@
           return true;
         }
 
-        if (version[0] >= 2 && version[1] >= 26) {
+        if (version[0] >= 2 && version[1] >= 27) {
           return false;
         }
 
@@ -305,7 +305,7 @@
               watermarkMode = _this$props.watermarkMode;
 
           var _temp2 = function () {
-            if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode || _this.shouldPlayerUpdateOld_2_16_0(prevProps)) {
+            if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode || _this.shouldPlayerUpdateOld_2_17_0(prevProps)) {
               return Promise.resolve(_this.destroy()).then(function () {
                 return Promise.resolve(_this.create()).then(function () {});
               });
