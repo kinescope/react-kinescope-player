@@ -223,20 +223,6 @@ function getNextPlayerId() {
   return `__kinescope_player_${getNextIndex()}`;
 }
 
-function getPlayerVersion() {
-  var _window$Kinescope, _window$Kinescope$Ifr;
-
-  const version = (_window$Kinescope = window.Kinescope) == null ? void 0 : (_window$Kinescope$Ifr = _window$Kinescope.IframePlayer) == null ? void 0 : _window$Kinescope$Ifr.version;
-
-  if (!version) {
-    return null;
-  }
-
-  return version.split('.').map(function (value) {
-    return parseInt(value);
-  });
-}
-
 class Player extends Component {
   constructor(props) {
     var _this;
@@ -251,25 +237,6 @@ class Player extends Component {
       } = _this.props;
       onJSLoad && onJSLoad();
       await _this.create();
-    };
-    /** @deprecated remove 2.17 */
-
-
-    this.shouldPlayerUpdateOld_2_17_0 = prevProps => {
-      const {
-        actions
-      } = this.props;
-      const version = getPlayerVersion();
-
-      if (!version) {
-        return true;
-      }
-
-      if (version[0] >= 2 && version[1] >= 27) {
-        return false;
-      }
-
-      return !reactFastCompare(actions, prevProps.actions);
     };
 
     this.shouldPlayerUpdate = async function (prevProps) {
@@ -287,7 +254,7 @@ class Player extends Component {
         watermarkMode
       } = _this.props;
 
-      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode || _this.shouldPlayerUpdateOld_2_17_0(prevProps)) {
+      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
         await _this.destroy();
         await _this.create();
       }
@@ -352,13 +319,13 @@ class Player extends Component {
       });
     };
 
-    this.destroy = () => {
-      if (!this.player) {
+    this.destroy = async function () {
+      if (!_this.player) {
         return;
       }
 
-      this.player.destroy();
-      this.player = null;
+      await _this.player.destroy();
+      _this.player = null;
     };
 
     this.getEventList = () => {
@@ -414,9 +381,6 @@ class Player extends Component {
           muted: muted,
           playsInline: playsInline
         },
-
-        /** @deprecated remove 2.17 */
-        actions: actions,
         playlist: [{
           title: title,
           subtitle: subtitle,

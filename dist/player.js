@@ -236,20 +236,6 @@ function getNextPlayerId() {
   return "__kinescope_player_" + getNextIndex();
 }
 
-function getPlayerVersion() {
-  var _window$Kinescope, _window$Kinescope$Ifr;
-
-  var version = (_window$Kinescope = window.Kinescope) == null ? void 0 : (_window$Kinescope$Ifr = _window$Kinescope.IframePlayer) == null ? void 0 : _window$Kinescope$Ifr.version;
-
-  if (!version) {
-    return null;
-  }
-
-  return version.split('.').map(function (value) {
-    return parseInt(value);
-  });
-}
-
 var Player = /*#__PURE__*/function (_Component) {
   _inheritsLoose(Player, _Component);
 
@@ -268,23 +254,6 @@ var Player = /*#__PURE__*/function (_Component) {
         return Promise.reject(e);
       }
     };
-    /** @deprecated remove 2.17 */
-
-
-    _this.shouldPlayerUpdateOld_2_17_0 = function (prevProps) {
-      var actions = _this.props.actions;
-      var version = getPlayerVersion();
-
-      if (!version) {
-        return true;
-      }
-
-      if (version[0] >= 2 && version[1] >= 27) {
-        return false;
-      }
-
-      return !reactFastCompare(actions, prevProps.actions);
-    };
 
     _this.shouldPlayerUpdate = function (prevProps) {
       try {
@@ -302,7 +271,7 @@ var Player = /*#__PURE__*/function (_Component) {
             watermarkMode = _this$props.watermarkMode;
 
         var _temp2 = function () {
-          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode || _this.shouldPlayerUpdateOld_2_17_0(prevProps)) {
+          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
             return Promise.resolve(_this.destroy()).then(function () {
               return Promise.resolve(_this.create()).then(function () {});
             });
@@ -391,13 +360,17 @@ var Player = /*#__PURE__*/function (_Component) {
     };
 
     _this.destroy = function () {
-      if (!_this.player) {
-        return;
+      try {
+        if (!_this.player) {
+          return Promise.resolve();
+        }
+
+        return Promise.resolve(_this.player.destroy()).then(function () {
+          _this.player = null;
+        });
+      } catch (e) {
+        return Promise.reject(e);
       }
-
-      _this.player.destroy();
-
-      _this.player = null;
     };
 
     _this.getEventList = function () {
@@ -450,9 +423,6 @@ var Player = /*#__PURE__*/function (_Component) {
           muted: muted,
           playsInline: playsInline
         },
-
-        /** @deprecated remove 2.17 */
-        actions: actions,
         playlist: [{
           title: title,
           subtitle: subtitle,

@@ -155,16 +155,6 @@ function getNextPlayerId() {
 	return `__kinescope_player_${getNextIndex()}`;
 }
 
-function getPlayerVersion(): number[] | null {
-	const version = window.Kinescope?.IframePlayer?.version;
-	if (!version) {
-		return null;
-	}
-	return version.split('.').map(function (value) {
-		return parseInt(value);
-	});
-}
-
 class Player extends Component<PlayerProps> {
 	private playerLoad: boolean;
 	private readonly parentsRef: React.RefObject<HTMLDivElement>;
@@ -206,19 +196,6 @@ class Player extends Component<PlayerProps> {
 		await this.create();
 	};
 
-	/** @deprecated remove 2.17 */
-	private shouldPlayerUpdateOld_2_17_0 = prevProps => {
-		const {actions} = this.props;
-		const version = getPlayerVersion();
-		if (!version) {
-			return true;
-		}
-		if (version[0] >= 2 && version[1] >= 27) {
-			return false;
-		}
-		return !isEqual(actions, prevProps.actions);
-	};
-
 	private shouldPlayerUpdate = async prevProps => {
 		const {
 			videoId,
@@ -245,8 +222,7 @@ class Player extends Component<PlayerProps> {
 			playsInline !== prevProps.playsInline ||
 			language !== prevProps.language ||
 			watermarkText !== prevProps.watermarkText ||
-			watermarkMode !== prevProps.watermarkMode ||
-			this.shouldPlayerUpdateOld_2_17_0(prevProps)
+			watermarkMode !== prevProps.watermarkMode
 		) {
 			await this.destroy();
 			await this.create();
@@ -301,11 +277,11 @@ class Player extends Component<PlayerProps> {
 		});
 	};
 
-	private destroy = () => {
+	private destroy = async () => {
 		if (!this.player) {
 			return;
 		}
-		this.player.destroy();
+		await this.player.destroy();
 		this.player = null;
 	};
 
@@ -376,8 +352,6 @@ class Player extends Component<PlayerProps> {
 				muted: muted,
 				playsInline: playsInline,
 			},
-			/** @deprecated remove 2.17 */
-			actions: actions,
 			playlist: [
 				{
 					title: title,

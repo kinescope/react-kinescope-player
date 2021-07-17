@@ -118,7 +118,7 @@ export interface KinescopePlayer {
 	isFullscreen(): Promise<boolean>;
 	setFullscreen(fullscreen: boolean): Promise<void>;
 	setPlaylistItemOptions(options: PlaylistItemOptions): Promise<void>;
-	destroy(): void;
+	destroy(): Promise<void>;
 }
 
 interface KinescopeCreateOptions {
@@ -145,8 +145,6 @@ interface KinescopeCreateOptions {
 	settings?: {
 		externalId?: string;
 	};
-	/** @deprecated */
-	actions?: (ActionToolBar | ActionCallToAction)[];
 }
 
 declare global {

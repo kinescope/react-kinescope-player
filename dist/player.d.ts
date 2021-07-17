@@ -124,8 +124,6 @@ declare class Player extends Component<PlayerProps> {
     componentDidUpdate(prevProps: Readonly<PlayerProps>): Promise<void>;
     componentWillUnmount(): void;
     private handleJSLoad;
-    /** @deprecated remove 2.17 */
-    private shouldPlayerUpdateOld_2_17_0;
     private shouldPlayerUpdate;
     private shouldPlaylistUpdate;
     private updatePlaylistOptions;
