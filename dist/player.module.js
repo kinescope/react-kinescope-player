@@ -165,7 +165,7 @@ var Loader = /*#__PURE__*/function (_Component) {
       var el = document.getElementById(NODE_JS_ID);
 
       if (el) {
-        el.removeEventListener('load', _this.handleJSLoad);
+        el.removeEventListener('load', _this.loadJs);
       }
 
       _this.handleJSLoad();

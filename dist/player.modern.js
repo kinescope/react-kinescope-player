@@ -155,7 +155,7 @@ class Loader extends Component {
       const el = document.getElementById(NODE_JS_ID);
 
       if (el) {
-        el.removeEventListener('load', this.handleJSLoad);
+        el.removeEventListener('load', this.loadJs);
       }
 
       this.handleJSLoad();
