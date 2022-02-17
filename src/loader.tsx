@@ -1,11 +1,12 @@
 import {Component} from 'react';
 import {PLAYER_LATEST} from './constant';
+import {loadScript} from './tools/script';
 
 const NODE_JS_ID = '__kinescope_player_react_js';
 
 type LoaderProps = {
 	onJSLoad: () => void;
-	onJSLoadError?: () => void;
+	onJSLoadError?: (e: ErrorEvent) => void;
 };
 
 class Loader extends Component<LoaderProps> {
@@ -24,27 +25,29 @@ class Loader extends Component<LoaderProps> {
 	loadJs = () => {
 		const el = document.getElementById(NODE_JS_ID);
 		if (el) {
-			el.removeEventListener('load', this.handleJSLoad);
+			el.removeEventListener('load', this.loadJs);
 		}
 		this.handleJSLoad();
 	};
 
 	jsLoading = () => {
-		if (this.testLoadJS()) {
-			if (!!window?.Kinescope?.IframePlayer) {
-				this.handleJSLoad();
-			} else {
-				this.loadJsNotLoad();
-			}
+		if (!!window?.Kinescope?.IframePlayer) {
+			this.handleJSLoad();
 			return;
 		}
-		let el = document.createElement('script');
-		el.id = NODE_JS_ID;
-		el.async = false;
-		document.body.appendChild(el);
-		el.onload = this.handleJSLoad;
-		el.onerror = this.handleJSLoadError;
-		el.src = PLAYER_LATEST;
+
+		if (this.testLoadJS()) {
+			this.loadJsNotLoad();
+			return;
+		}
+
+		loadScript(PLAYER_LATEST, NODE_JS_ID)
+			.then(success => {
+				success && this.handleJSLoad();
+			})
+			.catch(e => {
+				this.handleJSLoadError(e);
+			});
 	};
 
 	testLoadJS = () => {
@@ -56,10 +59,10 @@ class Loader extends Component<LoaderProps> {
 		onJSLoad && onJSLoad();
 	};
 
-	handleJSLoadError() {
+	handleJSLoadError = (e: ErrorEvent) => {
 		const {onJSLoadError} = this.props;
-		onJSLoadError && onJSLoadError();
-	}
+		onJSLoadError && onJSLoadError(e);
+	};
 
 	render() {
 		const {children} = this.props;

@@ -147,6 +147,21 @@ var reactFastCompare = function isEqual(a, b) {
 var VIDEO_HOST = 'https://kinescope.io/embed/';
 var PLAYER_LATEST = 'https://player.kinescope.io/latest/iframe.player.js';
 
+function loadScript(src, id) {
+  return new Promise(function (resolve, reject) {
+    var script = document.createElement('script');
+    script.id = id;
+    script.src = src;
+    script.addEventListener('load', function () {
+      resolve(true);
+    });
+    script.addEventListener('error', function (e) {
+      reject(e);
+    });
+    document.body.appendChild(script);
+  });
+}
+
 var NODE_JS_ID = '__kinescope_player_react_js';
 
 var Loader = /*#__PURE__*/function (_Component) {
@@ -169,32 +184,32 @@ var Loader = /*#__PURE__*/function (_Component) {
       var el = document.getElementById(NODE_JS_ID);
 
       if (el) {
-        el.removeEventListener('load', _this.handleJSLoad);
+        el.removeEventListener('load', _this.loadJs);
       }
 
       _this.handleJSLoad();
     };
 
     _this.jsLoading = function () {
-      if (_this.testLoadJS()) {
-        var _window, _window$Kinescope;
+      var _window, _window$Kinescope;
 
-        if (!!((_window = window) != null && (_window$Kinescope = _window.Kinescope) != null && _window$Kinescope.IframePlayer)) {
-          _this.handleJSLoad();
-        } else {
-          _this.loadJsNotLoad();
-        }
+      if (!!((_window = window) != null && (_window$Kinescope = _window.Kinescope) != null && _window$Kinescope.IframePlayer)) {
+        _this.handleJSLoad();
 
         return;
       }
 
-      var el = document.createElement('script');
-      el.id = NODE_JS_ID;
-      el.async = false;
-      document.body.appendChild(el);
-      el.onload = _this.handleJSLoad;
-      el.onerror = _this.handleJSLoadError;
-      el.src = PLAYER_LATEST;
+      if (_this.testLoadJS()) {
+        _this.loadJsNotLoad();
+
+        return;
+      }
+
+      loadScript(PLAYER_LATEST, NODE_JS_ID).then(function (success) {
+        success && _this.handleJSLoad();
+      })["catch"](function (e) {
+        _this.handleJSLoadError(e);
+      });
     };
 
     _this.testLoadJS = function () {
@@ -206,17 +221,17 @@ var Loader = /*#__PURE__*/function (_Component) {
       onJSLoad && onJSLoad();
     };
 
+    _this.handleJSLoadError = function (e) {
+      var onJSLoadError = _this.props.onJSLoadError;
+      onJSLoadError && onJSLoadError(e);
+    };
+
     _this.jsLoading();
 
     return _this;
   }
 
   var _proto = Loader.prototype;
-
-  _proto.handleJSLoadError = function handleJSLoadError() {
-    var onJSLoadError = this.props.onJSLoadError;
-    onJSLoadError && onJSLoadError();
-  };
 
   _proto.render = function render() {
     var children = this.props.children;
@@ -246,6 +261,10 @@ var Player = /*#__PURE__*/function (_Component) {
 
     _this.handleJSLoad = function () {
       try {
+        if (_this.playerLoad) {
+          return Promise.resolve();
+        }
+
         _this.playerLoad = true;
         var onJSLoad = _this.props.onJSLoad;
         onJSLoad && onJSLoad();
@@ -270,11 +289,13 @@ var Player = /*#__PURE__*/function (_Component) {
             watermarkText = _this$props.watermarkText,
             watermarkMode = _this$props.watermarkMode;
 
+        if (muted !== prevProps.muted) {
+          muted ? _this.mute() : _this.unmute();
+        }
+
         var _temp2 = function () {
-          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
-            return Promise.resolve(_this.destroy()).then(function () {
-              return Promise.resolve(_this.create()).then(function () {});
-            });
+          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
+            return Promise.resolve(_this.create()).then(function () {});
           }
         }();
 
@@ -334,24 +355,38 @@ var Player = /*#__PURE__*/function (_Component) {
 
     _this.create = function () {
       try {
-        var parentsRef = _this.parentsRef.current;
+        return Promise.resolve(_this.destroy()).then(function () {
+          var parentsRef = _this.parentsRef.current;
 
-        if (!_this.playerLoad || !parentsRef) {
-          return Promise.resolve();
-        }
+          if (!_this.playerLoad || !parentsRef) {
+            return;
+          }
+          /* create playerId */
 
-        parentsRef.textContent = '';
-        var playerId = getNextPlayerId();
-        var playerDiv = document.createElement('div');
-        playerDiv.setAttribute('id', playerId);
-        parentsRef.appendChild(playerDiv);
-        return Promise.resolve(_this.createPlayer(playerId)).then(function (_this$createPlayer) {
-          _this.player = _this$createPlayer;
 
-          _this.getEventList().forEach(function (event) {
-            var _this$player;
+          parentsRef.textContent = '';
+          var playerId = getNextPlayerId();
+          var playerDiv = document.createElement('div');
+          playerDiv.setAttribute('id', playerId);
+          parentsRef.appendChild(playerDiv);
+          /* fast re create player fix */
 
-            (_this$player = _this.player) == null ? void 0 : _this$player.on(event[0], event[1]);
+          return Promise.resolve(new Promise(function (resolve) {
+            setTimeout(resolve, 0);
+          })).then(function () {
+            if (!document.getElementById(playerId)) {
+              return;
+            }
+
+            return Promise.resolve(_this.createPlayer(playerId)).then(function (_this$createPlayer) {
+              _this.player = _this$createPlayer;
+
+              _this.getEventList().forEach(function (event) {
+                var _this$player;
+
+                (_this$player = _this.player) == null ? void 0 : _this$player.on(event[0], event[1]);
+              });
+            });
           });
         });
       } catch (e) {
@@ -775,12 +810,6 @@ var Player = /*#__PURE__*/function (_Component) {
   }
 
   var _proto = Player.prototype;
-
-  _proto.componentDidMount = function componentDidMount() {
-    if (this.playerLoad) {
-      this.create();
-    }
-  };
 
   _proto.componentDidUpdate = function componentDidUpdate(prevProps) {
     try {

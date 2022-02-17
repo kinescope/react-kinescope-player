@@ -96,7 +96,7 @@ export type EventErrorTypes = {
 	error: unknown;
 };
 
-type PlayerProps = {
+export type PlayerPropsTypes = {
 	videoId: string;
 	className?: string;
 	style?: any;
@@ -155,7 +155,7 @@ function getNextPlayerId() {
 	return `__kinescope_player_${getNextIndex()}`;
 }
 
-class Player extends Component<PlayerProps> {
+class Player extends Component<PlayerPropsTypes> {
 	private playerLoad: boolean;
 	private readonly parentsRef: React.RefObject<HTMLDivElement>;
 	private player: KinescopePlayer | null;
@@ -174,13 +174,7 @@ class Player extends Component<PlayerProps> {
 		this.player = null;
 	}
 
-	componentDidMount() {
-		if (this.playerLoad) {
-			this.create();
-		}
-	}
-
-	async componentDidUpdate(prevProps: Readonly<PlayerProps>) {
+	async componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>) {
 		await this.shouldPlayerUpdate(prevProps);
 		await this.shouldPlaylistUpdate(prevProps);
 	}
@@ -190,6 +184,9 @@ class Player extends Component<PlayerProps> {
 	}
 
 	private handleJSLoad = async () => {
+		if (this.playerLoad) {
+			return;
+		}
 		this.playerLoad = true;
 		const {onJSLoad} = this.props;
 		onJSLoad && onJSLoad();
@@ -211,6 +208,10 @@ class Player extends Component<PlayerProps> {
 			watermarkMode,
 		} = this.props;
 
+		if (muted !== prevProps.muted) {
+			muted ? this.mute() : this.unmute();
+		}
+
 		if (
 			videoId !== prevProps.videoId ||
 			width !== prevProps.width ||
@@ -218,13 +219,11 @@ class Player extends Component<PlayerProps> {
 			autoPause !== prevProps.autoPause ||
 			autoPlay !== prevProps.autoPlay ||
 			loop !== prevProps.loop ||
-			muted !== prevProps.muted ||
 			playsInline !== prevProps.playsInline ||
 			language !== prevProps.language ||
 			watermarkText !== prevProps.watermarkText ||
 			watermarkMode !== prevProps.watermarkMode
 		) {
-			await this.destroy();
 			await this.create();
 		}
 	};
@@ -260,16 +259,27 @@ class Player extends Component<PlayerProps> {
 	};
 
 	private create = async () => {
+		await this.destroy();
+
 		const parentsRef = this.parentsRef.current;
 		if (!this.playerLoad || !parentsRef) {
 			return;
 		}
 
+		/* create playerId */
 		parentsRef.textContent = '';
 		const playerId = getNextPlayerId();
 		const playerDiv = document.createElement('div');
 		playerDiv.setAttribute('id', playerId);
 		parentsRef.appendChild(playerDiv);
+
+		/* fast re create player fix */
+		await new Promise(resolve => {
+			setTimeout(resolve, 0);
+		});
+		if (!document.getElementById(playerId)) {
+			return;
+		}
 
 		this.player = await this.createPlayer(playerId);
 		this.getEventList().forEach(event => {

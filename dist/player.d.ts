@@ -63,7 +63,7 @@ export declare type EventCallBookmarkTypes = {
 export declare type EventErrorTypes = {
     error: unknown;
 };
-declare type PlayerProps = {
+export declare type PlayerPropsTypes = {
     videoId: string;
     className?: string;
     style?: any;
@@ -109,7 +109,7 @@ declare type PlayerProps = {
     onError?: (data: EventErrorTypes) => void;
     onDestroy?: () => void;
 };
-declare class Player extends Component<PlayerProps> {
+declare class Player extends Component<PlayerPropsTypes> {
     private playerLoad;
     private readonly parentsRef;
     private player;
@@ -120,8 +120,7 @@ declare class Player extends Component<PlayerProps> {
         playsInline: boolean;
     };
     constructor(props: any);
-    componentDidMount(): void;
-    componentDidUpdate(prevProps: Readonly<PlayerProps>): Promise<void>;
+    componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>): Promise<void>;
     componentWillUnmount(): void;
     private handleJSLoad;
     private shouldPlayerUpdate;

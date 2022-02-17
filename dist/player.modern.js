@@ -137,6 +137,21 @@ var reactFastCompare = function isEqual(a, b) {
 const VIDEO_HOST = 'https://kinescope.io/embed/';
 const PLAYER_LATEST = 'https://player.kinescope.io/latest/iframe.player.js';
 
+function loadScript(src, id) {
+  return new Promise(function (resolve, reject) {
+    let script = document.createElement('script');
+    script.id = id;
+    script.src = src;
+    script.addEventListener('load', function () {
+      resolve(true);
+    });
+    script.addEventListener('error', function (e) {
+      reject(e);
+    });
+    document.body.appendChild(script);
+  });
+}
+
 const NODE_JS_ID = '__kinescope_player_react_js';
 
 class Loader extends Component {
@@ -155,32 +170,30 @@ class Loader extends Component {
       const el = document.getElementById(NODE_JS_ID);
 
       if (el) {
-        el.removeEventListener('load', this.handleJSLoad);
+        el.removeEventListener('load', this.loadJs);
       }
 
       this.handleJSLoad();
     };
 
     this.jsLoading = () => {
-      if (this.testLoadJS()) {
-        var _window, _window$Kinescope;
+      var _window, _window$Kinescope;
 
-        if (!!((_window = window) != null && (_window$Kinescope = _window.Kinescope) != null && _window$Kinescope.IframePlayer)) {
-          this.handleJSLoad();
-        } else {
-          this.loadJsNotLoad();
-        }
-
+      if (!!((_window = window) != null && (_window$Kinescope = _window.Kinescope) != null && _window$Kinescope.IframePlayer)) {
+        this.handleJSLoad();
         return;
       }
 
-      let el = document.createElement('script');
-      el.id = NODE_JS_ID;
-      el.async = false;
-      document.body.appendChild(el);
-      el.onload = this.handleJSLoad;
-      el.onerror = this.handleJSLoadError;
-      el.src = PLAYER_LATEST;
+      if (this.testLoadJS()) {
+        this.loadJsNotLoad();
+        return;
+      }
+
+      loadScript(PLAYER_LATEST, NODE_JS_ID).then(success => {
+        success && this.handleJSLoad();
+      }).catch(e => {
+        this.handleJSLoadError(e);
+      });
     };
 
     this.testLoadJS = () => {
@@ -194,14 +207,14 @@ class Loader extends Component {
       onJSLoad && onJSLoad();
     };
 
-    this.jsLoading();
-  }
+    this.handleJSLoadError = e => {
+      const {
+        onJSLoadError
+      } = this.props;
+      onJSLoadError && onJSLoadError(e);
+    };
 
-  handleJSLoadError() {
-    const {
-      onJSLoadError
-    } = this.props;
-    onJSLoadError && onJSLoadError();
+    this.jsLoading();
   }
 
   render() {
@@ -231,6 +244,10 @@ class Player extends Component {
     _this = this;
 
     this.handleJSLoad = async function () {
+      if (_this.playerLoad) {
+        return;
+      }
+
       _this.playerLoad = true;
       const {
         onJSLoad
@@ -254,8 +271,11 @@ class Player extends Component {
         watermarkMode
       } = _this.props;
 
-      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || muted !== prevProps.muted || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
-        await _this.destroy();
+      if (muted !== prevProps.muted) {
+        muted ? _this.mute() : _this.unmute();
+      }
+
+      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
         await _this.create();
       }
     };
@@ -299,17 +319,30 @@ class Player extends Component {
     };
 
     this.create = async function () {
+      await _this.destroy();
       const parentsRef = _this.parentsRef.current;
 
       if (!_this.playerLoad || !parentsRef) {
         return;
       }
+      /* create playerId */
+
 
       parentsRef.textContent = '';
       const playerId = getNextPlayerId();
       const playerDiv = document.createElement('div');
       playerDiv.setAttribute('id', playerId);
       parentsRef.appendChild(playerDiv);
+      /* fast re create player fix */
+
+      await new Promise(resolve => {
+        setTimeout(resolve, 0);
+      });
+
+      if (!document.getElementById(playerId)) {
+        return;
+      }
+
       _this.player = await _this.createPlayer(playerId);
 
       _this.getEventList().forEach(event => {
@@ -779,12 +812,6 @@ class Player extends Component {
     this.playerLoad = false;
     this.parentsRef = createRef();
     this.player = null;
-  }
-
-  componentDidMount() {
-    if (this.playerLoad) {
-      this.create();
-    }
   }
 
   async componentDidUpdate(prevProps) {
