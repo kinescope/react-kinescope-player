@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.16](https://github.com/kinescope/react-kinescope-player/compare/v0.2.15...v0.2.16) (2022-02-18)
+
+### Bug Fixes
+
+* fast re create player fix ([99f023f](https://github.com/kinescope/react-kinescope-player/commit/99f023f49865ad2dc046e8b33feb5863677487ad))
+* packages ([6ebc172](https://github.com/kinescope/react-kinescope-player/commit/6ebc172d76c19be439287e4fdffaafe1fac7a314))
+
 ### [0.2.15](https://github.com/kinescope/react-kinescope-player/compare/v0.2.14...v0.2.15) (2021-07-17)
 
 ### Bug Fixes
