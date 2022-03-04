@@ -160,6 +160,24 @@ functions handleMuteClick(){
       <td>No</td>
   </tr>  
   <tr>
+      <td>controls</td>
+      <td>boolean</td>
+      <td>true</td>
+      <td>No</td>
+  </tr> 
+  <tr>
+      <td>mainPlayButton</td>
+      <td>boolean</td>
+      <td>true</td>
+      <td>No</td>
+  </tr> 
+  <tr>
+      <td>playbackRateButton</td>
+      <td>boolean</td>
+      <td>false</td>
+      <td>No</td>
+  </tr> 
+  <tr>
       <td>externalId</td>
       <td>string</td>
       <td>No</td>
