@@ -286,6 +286,9 @@ var Player = /*#__PURE__*/function (_Component) {
             muted = _this$props.muted,
             playsInline = _this$props.playsInline,
             language = _this$props.language,
+            controls = _this$props.controls,
+            mainPlayButton = _this$props.mainPlayButton,
+            playbackRateButton = _this$props.playbackRateButton,
             watermarkText = _this$props.watermarkText,
             watermarkMode = _this$props.watermarkMode;
 
@@ -294,7 +297,7 @@ var Player = /*#__PURE__*/function (_Component) {
         }
 
         var _temp2 = function () {
-          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
+          if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
             return Promise.resolve(_this.create()).then(function () {});
           }
         }();
@@ -441,6 +444,9 @@ var Player = /*#__PURE__*/function (_Component) {
           muted = _this$props4.muted,
           playsInline = _this$props4.playsInline,
           language = _this$props4.language,
+          controls = _this$props4.controls,
+          mainPlayButton = _this$props4.mainPlayButton,
+          playbackRateButton = _this$props4.playbackRateButton,
           bookmarks = _this$props4.bookmarks,
           actions = _this$props4.actions,
           watermarkText = _this$props4.watermarkText,
@@ -468,7 +474,10 @@ var Player = /*#__PURE__*/function (_Component) {
           actions: actions
         }],
         ui: {
-          language: language
+          language: language,
+          controls: controls,
+          mainPlayButton: mainPlayButton,
+          playbackRateButton: playbackRateButton
         },
         settings: {
           externalId: externalId

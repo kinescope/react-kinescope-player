@@ -114,6 +114,9 @@ export type PlayerPropsTypes = {
 	playsInline?: boolean;
 	muted?: boolean;
 	language?: 'ru' | 'en';
+	controls?: boolean;
+	mainPlayButton?: boolean;
+	playbackRateButton?: boolean;
 	chapters?: ChapterTypes[];
 	vtt?: VttTypes[];
 	externalId?: string;
@@ -204,6 +207,9 @@ class Player extends Component<PlayerPropsTypes> {
 			muted,
 			playsInline,
 			language,
+			controls,
+			mainPlayButton,
+			playbackRateButton,
 			watermarkText,
 			watermarkMode,
 		} = this.props;
@@ -221,6 +227,9 @@ class Player extends Component<PlayerPropsTypes> {
 			loop !== prevProps.loop ||
 			playsInline !== prevProps.playsInline ||
 			language !== prevProps.language ||
+			controls !== prevProps.controls ||
+			mainPlayButton !== prevProps.mainPlayButton ||
+			playbackRateButton !== prevProps.playbackRateButton ||
 			watermarkText !== prevProps.watermarkText ||
 			watermarkMode !== prevProps.watermarkMode
 		) {
@@ -346,6 +355,9 @@ class Player extends Component<PlayerPropsTypes> {
 			muted,
 			playsInline,
 			language,
+			controls,
+			mainPlayButton,
+			playbackRateButton,
 			bookmarks,
 			actions,
 			watermarkText,
@@ -375,6 +387,9 @@ class Player extends Component<PlayerPropsTypes> {
 			],
 			ui: {
 				language: language,
+				controls: controls,
+				mainPlayButton: mainPlayButton,
+				playbackRateButton: playbackRateButton,
 			},
 			settings: {
 				externalId: externalId,

@@ -80,6 +80,9 @@ export declare type PlayerPropsTypes = {
     playsInline?: boolean;
     muted?: boolean;
     language?: 'ru' | 'en';
+    controls?: boolean;
+    mainPlayButton?: boolean;
+    playbackRateButton?: boolean;
     chapters?: ChapterTypes[];
     vtt?: VttTypes[];
     externalId?: string;

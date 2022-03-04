@@ -267,6 +267,9 @@ class Player extends Component {
         muted,
         playsInline,
         language,
+        controls,
+        mainPlayButton,
+        playbackRateButton,
         watermarkText,
         watermarkMode
       } = _this.props;
@@ -275,7 +278,7 @@ class Player extends Component {
         muted ? _this.mute() : _this.unmute();
       }
 
-      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
+      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
         await _this.create();
       }
     };
@@ -396,6 +399,9 @@ class Player extends Component {
         muted,
         playsInline,
         language,
+        controls,
+        mainPlayButton,
+        playbackRateButton,
         bookmarks,
         actions,
         watermarkText,
@@ -424,7 +430,10 @@ class Player extends Component {
           actions: actions
         }],
         ui: {
-          language: language
+          language: language,
+          controls: controls,
+          mainPlayButton: mainPlayButton,
+          playbackRateButton: playbackRateButton
         },
         settings: {
           externalId: externalId

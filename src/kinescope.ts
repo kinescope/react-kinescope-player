@@ -137,6 +137,9 @@ interface KinescopeCreateOptions {
 	};
 	ui?: {
 		language?: 'ru' | 'en';
+		controls?: boolean;
+		mainPlayButton?: boolean;
+		playbackRateButton?: boolean;
 		watermark?: {
 			text: string;
 			mode?: WatermarkModeTypes;
