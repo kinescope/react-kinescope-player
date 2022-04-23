@@ -34,7 +34,6 @@ export default Player;
 
 ### Events
 ```jsx
-// events
 functions onTimeUpdate({currentTime}){
     ...
 }
