@@ -18,8 +18,8 @@ yarn add @kinescope/react-kinescope-player
 
 ## Getting Started
 
+### Basic usage
 ```jsx
-// basic usage
 import React from 'react'
 import KinescopePlayer from '@kinescope/react-kinescope-player';
 
@@ -32,6 +32,7 @@ function Player() {
 export default Player;
 ```
 
+### Events
 ```jsx
 // events
 functions onTimeUpdate({currentTime}){
@@ -41,9 +42,8 @@ functions onTimeUpdate({currentTime}){
 <KinescopePlayer videoId="00000000" onTimeUpdate={onTimeUpdate} />
 ```
 
+### Methods
 ```jsx
-// methods
-
 let playerRef = React.createRef();
 
 <KinescopePlayer ref={playerRef} videoId="00000000" />
@@ -53,6 +53,20 @@ functions handleMuteClick(){
 }
 
 <button onClick={handleMuteClick}>Mute</button>
+```
+
+### Next.js
+```jsx
+import dynamic from 'next/dynamic'
+const KinescopePlayer = dynamic(import('@kinescope/react-kinescope-player'), { ssr: false });
+
+function Player() {
+	return (
+		<KinescopePlayer videoId="00000000" />
+	)
+}
+
+export default Player;
 ```
 
 ## Props
