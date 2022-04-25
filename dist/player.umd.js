@@ -261,6 +261,9 @@
       var _this;
 
       _this = _Component.call(this, props) || this;
+      _this.playerLoad = void 0;
+      _this.parentsRef = void 0;
+      _this.player = void 0;
 
       _this.handleJSLoad = function () {
         try {

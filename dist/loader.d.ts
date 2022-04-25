@@ -1,5 +1,6 @@
-import { Component } from 'react';
+import { Component, ReactNode } from 'react';
 declare type LoaderProps = {
+    children: ReactNode;
     onJSLoad: () => void;
     onJSLoadError?: (e: ErrorEvent) => void;
 };
@@ -11,6 +12,6 @@ declare class Loader extends Component<LoaderProps> {
     testLoadJS: () => boolean;
     handleJSLoad: () => void;
     handleJSLoadError: (e: ErrorEvent) => void;
-    render(): import("react").ReactNode;
+    render(): ReactNode;
 }
 export default Loader;

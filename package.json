@@ -36,19 +36,19 @@
 	"typings": "dist/player.d.ts",
 	"source": "src/player.tsx",
 	"peerDependencies": {
-		"react": "^16.0.0 || ^17.0.0",
-		"react-dom": "^16.0.0 || ^17.0.0"
+		"react": "^16.0.0 || ^17.0.0 || ^18.0.0",
+		"react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0"
 	},
 	"devDependencies": {
-		"@types/react": "^17.0.3",
-		"@types/react-dom": "^17.0.2",
-		"microbundle": "^0.13.0",
-		"prettier": "^2.2.1",
-		"react": "^17.0.1",
-		"react-dom": "^17.0.1",
+		"@types/react": "^18.0.6",
+		"@types/react-dom": "^18.0.2",
+		"microbundle": "^0.14.2",
+		"prettier": "^2.6.2",
+		"react": "^18.0.0",
+		"react-dom": "^18.0.0",
 		"react-fast-compare": "^3.2.0",
-		"standard-version": "^9.1.1",
-		"typescript": "^4.2.4"
+		"standard-version": "^9.3.2",
+		"typescript": "^4.6.3"
 	},
 	"standard-version": {
 		"skip": {

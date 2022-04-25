@@ -1,10 +1,11 @@
-import {Component} from 'react';
+import {Component, ReactNode} from 'react';
 import {PLAYER_LATEST} from './constant';
 import {loadScript} from './tools/script';
 
 const NODE_JS_ID = '__kinescope_player_react_js';
 
 type LoaderProps = {
+	children: ReactNode;
 	onJSLoad: () => void;
 	onJSLoadError?: (e: ErrorEvent) => void;
 };

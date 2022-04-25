@@ -242,6 +242,9 @@ class Player extends Component {
 
     super(props);
     _this = this;
+    this.playerLoad = void 0;
+    this.parentsRef = void 0;
+    this.player = void 0;
 
     this.handleJSLoad = async function () {
       if (_this.playerLoad) {
