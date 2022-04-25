@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"jsx": "react",
+		"target": "es5",
+		"module": "esnext",
+		"moduleResolution": "Node",
+		"baseUrl": "./"
+	}
+}
