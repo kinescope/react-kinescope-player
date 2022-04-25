@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.18](https://github.com/kinescope/react-kinescope-player/compare/v0.2.17...v0.2.18) (2022-04-25)
+
+### Features
+* Add react 18 ([3ff3841](https://github.com/kinescope/react-kinescope-player/commit/3ff3841fb7c23bea26869fdef742b3cf1323e6f8))
+
 ### [0.2.17](https://github.com/kinescope/react-kinescope-player/compare/v0.2.16...v0.2.17) (2022-03-04)
 
 ### Features
