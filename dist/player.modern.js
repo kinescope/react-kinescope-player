@@ -294,10 +294,11 @@ class Player extends Component {
         chapters,
         vtt,
         bookmarks,
-        actions
+        actions,
+        drmAuthToken
       } = _this.props;
 
-      if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks) || !reactFastCompare(actions, prevProps.actions)) {
+      if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || drmAuthToken !== prevProps.drmAuthToken || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks) || !reactFastCompare(actions, prevProps.actions)) {
         await _this.updatePlaylistOptions();
       }
     };
@@ -310,7 +311,8 @@ class Player extends Component {
         chapters,
         vtt,
         bookmarks,
-        actions
+        actions,
+        drmAuthToken
       } = _this.props;
       let options = {
         title: title,
@@ -319,7 +321,12 @@ class Player extends Component {
         chapters: chapters,
         vtt: vtt,
         bookmarks: bookmarks,
-        actions: actions
+        actions: actions,
+        drm: {
+          auth: {
+            token: drmAuthToken
+          }
+        }
       };
       await _this.setPlaylistItemOptions(options);
     };
@@ -394,6 +401,7 @@ class Player extends Component {
         chapters,
         vtt,
         externalId,
+        drmAuthToken,
         width,
         height,
         autoPause,
@@ -430,7 +438,12 @@ class Player extends Component {
           chapters: chapters,
           vtt: vtt,
           bookmarks: bookmarks,
-          actions: actions
+          actions: actions,
+          drm: {
+            auth: {
+              token: drmAuthToken
+            }
+          }
         }],
         ui: {
           language: language,
@@ -443,7 +456,7 @@ class Player extends Component {
         }
       };
 
-      if (watermarkText) {
+      if (watermarkText && options.ui) {
         options.ui['watermark'] = {
           text: watermarkText,
           mode: watermarkMode

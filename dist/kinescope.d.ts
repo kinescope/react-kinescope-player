@@ -41,6 +41,11 @@ export interface PlaylistItemOptions {
         title?: string;
     }[];
     actions?: (ActionToolBar | ActionCallToAction)[];
+    drm?: {
+        auth?: {
+            token?: string;
+        };
+    };
 }
 export declare type VideoQuality = 'auto' | 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
 export declare type VideoQualityLevels = {
@@ -100,7 +105,7 @@ export interface KinescopePlayer {
     setPlaylistItemOptions(options: PlaylistItemOptions): Promise<void>;
     destroy(): Promise<void>;
 }
-interface KinescopeCreateOptions {
+export interface KinescopeCreateOptions {
     url: string;
     size?: {
         width?: number | string;
@@ -138,4 +143,3 @@ declare global {
         };
     }
 }
-export {};

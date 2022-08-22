@@ -323,10 +323,11 @@
               chapters = _this$props2.chapters,
               vtt = _this$props2.vtt,
               bookmarks = _this$props2.bookmarks,
-              actions = _this$props2.actions;
+              actions = _this$props2.actions,
+              drmAuthToken = _this$props2.drmAuthToken;
 
           var _temp4 = function () {
-            if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks) || !reactFastCompare(actions, prevProps.actions)) {
+            if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || drmAuthToken !== prevProps.drmAuthToken || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks) || !reactFastCompare(actions, prevProps.actions)) {
               return Promise.resolve(_this.updatePlaylistOptions()).then(function () {});
             }
           }();
@@ -346,7 +347,8 @@
               chapters = _this$props3.chapters,
               vtt = _this$props3.vtt,
               bookmarks = _this$props3.bookmarks,
-              actions = _this$props3.actions;
+              actions = _this$props3.actions,
+              drmAuthToken = _this$props3.drmAuthToken;
           var options = {
             title: title,
             poster: poster,
@@ -354,7 +356,12 @@
             chapters: chapters,
             vtt: vtt,
             bookmarks: bookmarks,
-            actions: actions
+            actions: actions,
+            drm: {
+              auth: {
+                token: drmAuthToken
+              }
+            }
           };
           return Promise.resolve(_this.setPlaylistItemOptions(options)).then(function () {});
         } catch (e) {
@@ -442,6 +449,7 @@
             chapters = _this$props4.chapters,
             vtt = _this$props4.vtt,
             externalId = _this$props4.externalId,
+            drmAuthToken = _this$props4.drmAuthToken,
             width = _this$props4.width,
             height = _this$props4.height,
             autoPause = _this$props4.autoPause,
@@ -477,7 +485,12 @@
             chapters: chapters,
             vtt: vtt,
             bookmarks: bookmarks,
-            actions: actions
+            actions: actions,
+            drm: {
+              auth: {
+                token: drmAuthToken
+              }
+            }
           }],
           ui: {
             language: language,
@@ -490,7 +503,7 @@
           }
         };
 
-        if (watermarkText) {
+        if (watermarkText && options.ui) {
           options.ui['watermark'] = {
             text: watermarkText,
             mode: watermarkMode

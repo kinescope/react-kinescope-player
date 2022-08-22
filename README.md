@@ -197,6 +197,12 @@ export default Player;
       <td>No</td>
   </tr>
   <tr>
+      <td>drmAuthToken</td>
+      <td>string</td>
+      <td>No</td>
+      <td>No</td>
+  </tr>
+  <tr>
       <td>actions</td>
       <td><a href="#action">Action</a>[]</td>
       <td>No</td>

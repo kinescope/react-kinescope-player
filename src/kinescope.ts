@@ -43,6 +43,11 @@ export interface PlaylistItemOptions {
 		title?: string;
 	}[];
 	actions?: (ActionToolBar | ActionCallToAction)[];
+	drm?: {
+		auth?: {
+			token?: string;
+		};
+	};
 }
 
 export type VideoQuality =
@@ -121,7 +126,7 @@ export interface KinescopePlayer {
 	destroy(): Promise<void>;
 }
 
-interface KinescopeCreateOptions {
+export interface KinescopeCreateOptions {
 	url: string;
 	size?: {
 		width?: number | string;

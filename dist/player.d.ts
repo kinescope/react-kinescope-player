@@ -86,6 +86,7 @@ export declare type PlayerPropsTypes = {
     chapters?: ChapterTypes[];
     vtt?: VttTypes[];
     externalId?: string;
+    drmAuthToken?: string;
     actions?: ActionsTypes[];
     bookmarks?: BookmarkTypes[];
     watermarkText?: string;

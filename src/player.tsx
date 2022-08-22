@@ -9,6 +9,7 @@ import {
 	PlaylistItemOptions,
 	ActionCallToAction,
 	ActionToolBar,
+	KinescopeCreateOptions,
 } from './kinescope';
 import Loader from './loader';
 import {VIDEO_HOST} from './constant';
@@ -120,6 +121,7 @@ export type PlayerPropsTypes = {
 	chapters?: ChapterTypes[];
 	vtt?: VttTypes[];
 	externalId?: string;
+	drmAuthToken?: string;
 	actions?: ActionsTypes[];
 	bookmarks?: BookmarkTypes[];
 	watermarkText?: string;
@@ -238,12 +240,13 @@ class Player extends Component<PlayerPropsTypes> {
 	};
 
 	private shouldPlaylistUpdate = async prevProps => {
-		const {title, subtitle, poster, chapters, vtt, bookmarks, actions} = this.props;
+		const {title, subtitle, poster, chapters, vtt, bookmarks, actions, drmAuthToken} = this.props;
 
 		if (
 			title !== prevProps.title ||
 			subtitle !== prevProps.subtitle ||
 			poster !== prevProps.poster ||
+			drmAuthToken !== prevProps.drmAuthToken ||
 			!isEqual(chapters, prevProps.chapters) ||
 			!isEqual(vtt, prevProps.vtt) ||
 			!isEqual(bookmarks, prevProps.bookmarks) ||
@@ -254,7 +257,7 @@ class Player extends Component<PlayerPropsTypes> {
 	};
 
 	private updatePlaylistOptions = async () => {
-		const {title, subtitle, poster, chapters, vtt, bookmarks, actions} = this.props;
+		const {title, subtitle, poster, chapters, vtt, bookmarks, actions, drmAuthToken} = this.props;
 		let options: PlaylistItemOptions = {
 			title: title,
 			poster: poster,
@@ -263,6 +266,11 @@ class Player extends Component<PlayerPropsTypes> {
 			vtt: vtt,
 			bookmarks: bookmarks,
 			actions: actions,
+			drm: {
+				auth: {
+					token: drmAuthToken,
+				},
+			},
 		};
 		await this.setPlaylistItemOptions(options);
 	};
@@ -347,6 +355,7 @@ class Player extends Component<PlayerPropsTypes> {
 			chapters,
 			vtt,
 			externalId,
+			drmAuthToken,
 			width,
 			height,
 			autoPause,
@@ -364,7 +373,7 @@ class Player extends Component<PlayerPropsTypes> {
 			watermarkMode,
 		} = this.props;
 
-		let options = {
+		let options: KinescopeCreateOptions = {
 			url: this.getIFrameUrl(),
 			size: {width: width, height: height},
 			behaviour: {
@@ -383,6 +392,11 @@ class Player extends Component<PlayerPropsTypes> {
 					vtt: vtt,
 					bookmarks: bookmarks,
 					actions: actions,
+					drm: {
+						auth: {
+							token: drmAuthToken,
+						},
+					},
 				},
 			],
 			ui: {
@@ -396,7 +410,7 @@ class Player extends Component<PlayerPropsTypes> {
 			},
 		};
 
-		if (watermarkText) {
+		if (watermarkText && options.ui) {
 			options.ui['watermark'] = {
 				text: watermarkText,
 				mode: watermarkMode,
