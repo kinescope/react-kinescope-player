@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/kinescope/react-kinescope-player/compare/v0.2.19...v0.3.0) (2022-09-12)
+
+### Features
+
+* update props watermark ([9aa2740](https://github.com/kinescope/react-kinescope-player/commit/9aa2740dac4fc1122ff8eda6539a4153cf75b2ba))
+
 ### [0.2.19](https://github.com/kinescope/react-kinescope-player/compare/v0.2.18...v0.2.19) (2022-08-22)
 
 ### Features
