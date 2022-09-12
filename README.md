@@ -215,17 +215,11 @@ export default Player;
       <td>No</td>
   </tr>
   <tr>
-      <td>watermarkText</td>
-      <td>string</td>
+      <td>watermark</td>
+      <td><a href="#watermark">Watermark</a></td>
       <td>No</td>
       <td>No</td>
   </tr>
-  <tr>
-      <td>watermarkMode</td>
-      <td>'stripes' | 'random'</td>
-      <td>stripes</td>
-      <td>No</td>
-  </tr> 
 </table>
 
 ##### Chapter
@@ -278,6 +272,18 @@ type Bookmark = {
 	time: number;
 	title?: string;
 };
+```
+
+##### Watermark
+```ts
+type Watermark =
+	| string
+	| {
+			text: string;
+			mode?: WatermarkModeTypes;
+			scale?: number;
+			displayTimeout?: number | {visible: number; hidden: number};
+	  };
 ```
 
 ## Events

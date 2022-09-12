@@ -55,6 +55,15 @@ export declare type VideoQualityLevels = {
     };
 };
 export declare type WatermarkModeTypes = 'stripes' | 'random';
+export declare type WatermarkTypes = string | {
+    text: string;
+    mode?: WatermarkModeTypes;
+    scale?: number;
+    displayTimeout?: number | {
+        visible: number;
+        hidden: number;
+    };
+};
 export declare type ActionToolBar = {
     id: string;
     type: 'tool';
@@ -124,10 +133,7 @@ export interface KinescopeCreateOptions {
         controls?: boolean;
         mainPlayButton?: boolean;
         playbackRateButton?: boolean;
-        watermark?: {
-            text: string;
-            mode?: WatermarkModeTypes;
-        };
+        watermark?: WatermarkTypes;
     };
     settings?: {
         externalId?: string;

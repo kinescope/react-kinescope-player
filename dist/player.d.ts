@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { WatermarkModeTypes, VideoQuality, VideoQualityLevels, ActionCallToAction, ActionToolBar } from './kinescope';
+import { VideoQuality, VideoQualityLevels, ActionCallToAction, ActionToolBar, WatermarkTypes } from './kinescope';
 export declare type VttTypes = {
     label: string;
     src: string;
@@ -89,8 +89,7 @@ export declare type PlayerPropsTypes = {
     drmAuthToken?: string;
     actions?: ActionsTypes[];
     bookmarks?: BookmarkTypes[];
-    watermarkText?: string;
-    watermarkMode?: WatermarkModeTypes;
+    watermark?: WatermarkTypes;
     onReady?: (data: EventReadyTypes) => void;
     onQualityChanged?: (data: EventQualityChangedTypes) => void;
     onAutoQualityChanged?: (data: EventQualityChangedTypes) => void;

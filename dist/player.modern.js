@@ -273,15 +273,14 @@ class Player extends Component {
         controls,
         mainPlayButton,
         playbackRateButton,
-        watermarkText,
-        watermarkMode
+        watermark
       } = _this.props;
 
       if (muted !== prevProps.muted) {
         muted ? _this.mute() : _this.unmute();
       }
 
-      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || watermarkText !== prevProps.watermarkText || watermarkMode !== prevProps.watermarkMode) {
+      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark)) {
         await _this.create();
       }
     };
@@ -415,8 +414,7 @@ class Player extends Component {
         playbackRateButton,
         bookmarks,
         actions,
-        watermarkText,
-        watermarkMode
+        watermark
       } = this.props;
       let options = {
         url: this.getIFrameUrl(),
@@ -449,20 +447,13 @@ class Player extends Component {
           language: language,
           controls: controls,
           mainPlayButton: mainPlayButton,
-          playbackRateButton: playbackRateButton
+          playbackRateButton: playbackRateButton,
+          watermark: watermark
         },
         settings: {
           externalId: externalId
         }
       };
-
-      if (watermarkText && options.ui) {
-        options.ui['watermark'] = {
-          text: watermarkText,
-          mode: watermarkMode
-        };
-      }
-
       return window.Kinescope.IframePlayer.create(playerId, options);
     };
 

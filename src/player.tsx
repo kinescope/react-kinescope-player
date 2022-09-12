@@ -1,7 +1,6 @@
 import React, {Component, createRef} from 'react';
 import isEqual from 'react-fast-compare';
 import {
-	WatermarkModeTypes,
 	KinescopePlayerEvent,
 	KinescopePlayer,
 	VideoQuality,
@@ -10,6 +9,7 @@ import {
 	ActionCallToAction,
 	ActionToolBar,
 	KinescopeCreateOptions,
+	WatermarkTypes,
 } from './kinescope';
 import Loader from './loader';
 import {VIDEO_HOST} from './constant';
@@ -124,8 +124,7 @@ export type PlayerPropsTypes = {
 	drmAuthToken?: string;
 	actions?: ActionsTypes[];
 	bookmarks?: BookmarkTypes[];
-	watermarkText?: string;
-	watermarkMode?: WatermarkModeTypes;
+	watermark?: WatermarkTypes;
 
 	onReady?: (data: EventReadyTypes) => void;
 	onQualityChanged?: (data: EventQualityChangedTypes) => void;
@@ -212,8 +211,7 @@ class Player extends Component<PlayerPropsTypes> {
 			controls,
 			mainPlayButton,
 			playbackRateButton,
-			watermarkText,
-			watermarkMode,
+			watermark,
 		} = this.props;
 
 		if (muted !== prevProps.muted) {
@@ -232,8 +230,7 @@ class Player extends Component<PlayerPropsTypes> {
 			controls !== prevProps.controls ||
 			mainPlayButton !== prevProps.mainPlayButton ||
 			playbackRateButton !== prevProps.playbackRateButton ||
-			watermarkText !== prevProps.watermarkText ||
-			watermarkMode !== prevProps.watermarkMode
+			!isEqual(watermark, prevProps.watermark)
 		) {
 			await this.create();
 		}
@@ -369,8 +366,7 @@ class Player extends Component<PlayerPropsTypes> {
 			playbackRateButton,
 			bookmarks,
 			actions,
-			watermarkText,
-			watermarkMode,
+			watermark,
 		} = this.props;
 
 		let options: KinescopeCreateOptions = {
@@ -404,18 +400,12 @@ class Player extends Component<PlayerPropsTypes> {
 				controls: controls,
 				mainPlayButton: mainPlayButton,
 				playbackRateButton: playbackRateButton,
+				watermark: watermark,
 			},
 			settings: {
 				externalId: externalId,
 			},
 		};
-
-		if (watermarkText && options.ui) {
-			options.ui['watermark'] = {
-				text: watermarkText,
-				mode: watermarkMode,
-			};
-		}
 
 		return window.Kinescope.IframePlayer.create(playerId, options);
 	};
