@@ -63,8 +63,14 @@ export declare type EventCallBookmarkTypes = {
 export declare type EventErrorTypes = {
     error: unknown;
 };
+export declare type QueryTypes = {
+    liveSeek?: number;
+    liveDuration?: number;
+    liveTimeOffset?: number;
+};
 export declare type PlayerPropsTypes = {
     videoId: string;
+    query?: QueryTypes;
     className?: string;
     style?: any;
     onJSLoad?: () => void;
@@ -132,6 +138,7 @@ declare class Player extends Component<PlayerPropsTypes> {
     private create;
     private destroy;
     private getEventList;
+    private getQuery;
     private getIFrameUrl;
     private createPlayer;
     private setPlaylistItemOptions;

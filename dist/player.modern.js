@@ -262,6 +262,7 @@ class Player extends Component {
     this.shouldPlayerUpdate = async function (prevProps) {
       const {
         videoId,
+        query,
         width,
         height,
         autoPause,
@@ -280,7 +281,7 @@ class Player extends Component {
         muted ? _this.mute() : _this.unmute();
       }
 
-      if (videoId !== prevProps.videoId || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark)) {
+      if (videoId !== prevProps.videoId || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark)) {
         await _this.create();
       }
     };
@@ -385,11 +386,28 @@ class Player extends Component {
       return [[Events.Ready, this.handleEventReady], [Events.QualityChanged, this.handleQualityChanged], [Events.AutoQualityChanged, this.handleAutoQualityChanged], [Events.SeekChapter, this.handleSeekChapter], [Events.SizeChanged, this.handleSizeChanged], [Events.Play, this.handlePlay], [Events.Playing, this.handlePlaying], [Events.Waiting, this.handleWaiting], [Events.Pause, this.handlePause], [Events.Ended, this.handleEnded], [Events.TimeUpdate, this.handleTimeUpdate], [Events.Progress, this.handleProgress], [Events.DurationChange, this.handleDurationChange], [Events.VolumeChange, this.handleVolumeChange], [Events.PlaybackRateChange, this.handlePlaybackRateChange], [Events.Seeking, this.handleSeeking], [Events.FullscreenChange, this.handleFullscreenChange], [Events.CallAction, this.handleCallAction], [Events.CallBookmark, this.handleCallBookmark], [Events.Error, this.handleError], [Events.Destroy, this.handleDestroy]];
     };
 
+    this.getQuery = () => {
+      const {
+        query
+      } = this.props;
+      const params = [];
+      (query == null ? void 0 : query.liveDuration) && params.push(['live_duration', query.liveDuration.toString()]);
+      (query == null ? void 0 : query.liveSeek) && params.push(['live_seek', query.liveSeek.toString()]);
+      (query == null ? void 0 : query.liveTimeOffset) && params.push(['live_time_offset', query.liveTimeOffset.toString()]);
+
+      if (!params.length) {
+        return '';
+      }
+
+      const search = new URLSearchParams(params).toString();
+      return !!search ? `?${search}` : '';
+    };
+
     this.getIFrameUrl = () => {
       const {
         videoId
       } = this.props;
-      return VIDEO_HOST + videoId;
+      return VIDEO_HOST + videoId + this.getQuery();
     };
 
     this.createPlayer = playerId => {

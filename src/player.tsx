@@ -97,8 +97,15 @@ export type EventErrorTypes = {
 	error: unknown;
 };
 
+export type QueryTypes = {
+	liveSeek?: number;
+	liveDuration?: number;
+	liveTimeOffset?: number;
+};
+
 export type PlayerPropsTypes = {
 	videoId: string;
+	query?: QueryTypes;
 	className?: string;
 	style?: any;
 	onJSLoad?: () => void;
@@ -200,6 +207,7 @@ class Player extends Component<PlayerPropsTypes> {
 	private shouldPlayerUpdate = async prevProps => {
 		const {
 			videoId,
+			query,
 			width,
 			height,
 			autoPause,
@@ -220,6 +228,7 @@ class Player extends Component<PlayerPropsTypes> {
 
 		if (
 			videoId !== prevProps.videoId ||
+			!isEqual(query, prevProps.query) ||
 			width !== prevProps.width ||
 			height !== prevProps.height ||
 			autoPause !== prevProps.autoPause ||
@@ -339,9 +348,25 @@ class Player extends Component<PlayerPropsTypes> {
 		];
 	};
 
+	private getQuery = () => {
+		const {query} = this.props;
+
+		const params: [string, string][] = [];
+		query?.liveDuration && params.push(['live_duration', query.liveDuration.toString()]);
+		query?.liveSeek && params.push(['live_seek', query.liveSeek.toString()]);
+		query?.liveTimeOffset && params.push(['live_time_offset', query.liveTimeOffset.toString()]);
+
+		if (!params.length) {
+			return '';
+		}
+
+		const search = new URLSearchParams(params).toString();
+		return !!search ? `?${search}` : '';
+	};
+
 	private getIFrameUrl = () => {
 		const {videoId} = this.props;
-		return VIDEO_HOST + videoId;
+		return VIDEO_HOST + videoId + this.getQuery();
 	};
 
 	private createPlayer = playerId => {
