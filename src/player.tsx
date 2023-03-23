@@ -248,36 +248,132 @@ class Player extends Component<PlayerPropsTypes> {
 	private shouldPlaylistUpdate = async prevProps => {
 		const {title, subtitle, poster, chapters, vtt, bookmarks, actions, drmAuthToken} = this.props;
 
-		if (
-			title !== prevProps.title ||
-			subtitle !== prevProps.subtitle ||
-			poster !== prevProps.poster ||
-			drmAuthToken !== prevProps.drmAuthToken ||
-			!isEqual(chapters, prevProps.chapters) ||
-			!isEqual(vtt, prevProps.vtt) ||
-			!isEqual(bookmarks, prevProps.bookmarks) ||
-			!isEqual(actions, prevProps.actions)
-		) {
-			await this.updatePlaylistOptions();
+		if (title !== prevProps.title) {
+			await this.updateTitleOptions();
+		}
+
+		if (poster !== prevProps.poster) {
+			await this.updatePosterOptions();
+		}
+
+		if (subtitle !== prevProps.subtitle) {
+			await this.updateSubtitleOptions();
+		}
+
+		if (drmAuthToken !== prevProps.drmAuthToken) {
+			await this.updateDrmAuthTokenOptions();
+		}
+
+		if (!isEqual(chapters, prevProps.chapters)) {
+			await this.updateChaptersOptions();
+		}
+
+		if (!isEqual(vtt, prevProps.vtt)) {
+			await this.updateVttOptions();
+		}
+
+		if (!isEqual(bookmarks, prevProps.bookmarks)) {
+			await this.updateBookmarksOptions();
+		}
+
+		if (!isEqual(actions, prevProps.actions)) {
+			await this.updateActionsOptions();
 		}
 	};
 
-	private updatePlaylistOptions = async () => {
-		const {title, subtitle, poster, chapters, vtt, bookmarks, actions, drmAuthToken} = this.props;
-		let options: PlaylistItemOptions = {
+	private updateTitleOptions = async () => {
+		const {title} = this.props;
+		await this.setPlaylistItemOptions({
 			title: title,
+		});
+	};
+
+	private updatePosterOptions = async () => {
+		const {poster} = this.props;
+		await this.setPlaylistItemOptions({
 			poster: poster,
+		});
+	};
+
+	private updateSubtitleOptions = async () => {
+		const {subtitle} = this.props;
+		await this.setPlaylistItemOptions({
 			subtitle: subtitle,
-			chapters: chapters,
-			vtt: vtt,
-			bookmarks: bookmarks,
-			actions: actions,
+		});
+	};
+
+	private updateDrmAuthTokenOptions = async () => {
+		const {drmAuthToken} = this.props;
+		await this.setPlaylistItemOptions({
 			drm: {
 				auth: {
 					token: drmAuthToken,
 				},
 			},
-		};
+		});
+	};
+
+	private updateChaptersOptions = async () => {
+		const {chapters} = this.props;
+		await this.setPlaylistItemOptions({
+			chapters: chapters,
+		});
+	};
+
+	private updateVttOptions = async () => {
+		const {vtt} = this.props;
+		await this.setPlaylistItemOptions({
+			vtt: vtt,
+		});
+	};
+
+	private updateBookmarksOptions = async () => {
+		const {bookmarks} = this.props;
+		await this.setPlaylistItemOptions({
+			bookmarks: bookmarks,
+		});
+	};
+
+	private updateActionsOptions = async () => {
+		const {actions} = this.props;
+		await this.setPlaylistItemOptions({
+			actions: actions,
+		});
+	};
+
+	private readyPlaylistOptions = async () => {
+		const {title, subtitle, poster, chapters, vtt, bookmarks, actions, drmAuthToken} = this.props;
+		let options: PlaylistItemOptions = {};
+
+		if (title !== undefined) {
+			options.title = title;
+		}
+		if (subtitle !== undefined) {
+			options.subtitle = subtitle;
+		}
+		if (poster !== undefined) {
+			options.poster = poster;
+		}
+		if (chapters !== undefined) {
+			options.chapters = chapters;
+		}
+		if (vtt !== undefined) {
+			options.vtt = vtt;
+		}
+		if (bookmarks !== undefined) {
+			options.bookmarks = bookmarks;
+		}
+		if (actions !== undefined) {
+			options.actions = actions;
+		}
+		if (drmAuthToken !== undefined) {
+			options.drm = {
+				auth: {
+					token: drmAuthToken,
+				},
+			};
+		}
+
 		await this.setPlaylistItemOptions(options);
 	};
 
@@ -605,7 +701,7 @@ class Player extends Component<PlayerPropsTypes> {
 
 	private handleEventReady = ({data}) => {
 		const {onReady} = this.props;
-		this.updatePlaylistOptions();
+		this.readyPlaylistOptions();
 		onReady && onReady(data);
 	};
 

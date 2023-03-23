@@ -134,7 +134,15 @@ declare class Player extends Component<PlayerPropsTypes> {
     private handleJSLoad;
     private shouldPlayerUpdate;
     private shouldPlaylistUpdate;
-    private updatePlaylistOptions;
+    private updateTitleOptions;
+    private updatePosterOptions;
+    private updateSubtitleOptions;
+    private updateDrmAuthTokenOptions;
+    private updateChaptersOptions;
+    private updateVttOptions;
+    private updateBookmarksOptions;
+    private updateActionsOptions;
+    private readyPlaylistOptions;
     private create;
     private destroy;
     private getEventList;

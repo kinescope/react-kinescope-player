@@ -309,6 +309,76 @@ var Player = /*#__PURE__*/function (_Component) {
 
     _this.shouldPlaylistUpdate = function (prevProps) {
       try {
+        var _temp17 = function _temp17() {
+          function _temp15() {
+            function _temp13() {
+              function _temp11() {
+                function _temp9() {
+                  function _temp7() {
+                    function _temp5() {
+                      var _temp3 = function () {
+                        if (!reactFastCompare(actions, prevProps.actions)) {
+                          return Promise.resolve(_this.updateActionsOptions()).then(function () {});
+                        }
+                      }();
+
+                      if (_temp3 && _temp3.then) return _temp3.then(function () {});
+                    }
+
+                    var _temp4 = function () {
+                      if (!reactFastCompare(bookmarks, prevProps.bookmarks)) {
+                        return Promise.resolve(_this.updateBookmarksOptions()).then(function () {});
+                      }
+                    }();
+
+                    return _temp4 && _temp4.then ? _temp4.then(_temp5) : _temp5(_temp4);
+                  }
+
+                  var _temp6 = function () {
+                    if (!reactFastCompare(vtt, prevProps.vtt)) {
+                      return Promise.resolve(_this.updateVttOptions()).then(function () {});
+                    }
+                  }();
+
+                  return _temp6 && _temp6.then ? _temp6.then(_temp7) : _temp7(_temp6);
+                }
+
+                var _temp8 = function () {
+                  if (!reactFastCompare(chapters, prevProps.chapters)) {
+                    return Promise.resolve(_this.updateChaptersOptions()).then(function () {});
+                  }
+                }();
+
+                return _temp8 && _temp8.then ? _temp8.then(_temp9) : _temp9(_temp8);
+              }
+
+              var _temp10 = function () {
+                if (drmAuthToken !== prevProps.drmAuthToken) {
+                  return Promise.resolve(_this.updateDrmAuthTokenOptions()).then(function () {});
+                }
+              }();
+
+              return _temp10 && _temp10.then ? _temp10.then(_temp11) : _temp11(_temp10);
+            }
+
+            var _temp12 = function () {
+              if (subtitle !== prevProps.subtitle) {
+                return Promise.resolve(_this.updateSubtitleOptions()).then(function () {});
+              }
+            }();
+
+            return _temp12 && _temp12.then ? _temp12.then(_temp13) : _temp13(_temp12);
+          }
+
+          var _temp14 = function () {
+            if (poster !== prevProps.poster) {
+              return Promise.resolve(_this.updatePosterOptions()).then(function () {});
+            }
+          }();
+
+          return _temp14 && _temp14.then ? _temp14.then(_temp15) : _temp15(_temp14);
+        };
+
         var _this$props2 = _this.props,
             title = _this$props2.title,
             subtitle = _this$props2.subtitle,
@@ -319,19 +389,111 @@ var Player = /*#__PURE__*/function (_Component) {
             actions = _this$props2.actions,
             drmAuthToken = _this$props2.drmAuthToken;
 
-        var _temp4 = function () {
-          if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || drmAuthToken !== prevProps.drmAuthToken || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks) || !reactFastCompare(actions, prevProps.actions)) {
-            return Promise.resolve(_this.updatePlaylistOptions()).then(function () {});
+        var _temp18 = function () {
+          if (title !== prevProps.title) {
+            return Promise.resolve(_this.updateTitleOptions()).then(function () {});
           }
         }();
 
-        return Promise.resolve(_temp4 && _temp4.then ? _temp4.then(function () {}) : void 0);
+        return Promise.resolve(_temp18 && _temp18.then ? _temp18.then(_temp17) : _temp17(_temp18));
       } catch (e) {
         return Promise.reject(e);
       }
     };
 
-    _this.updatePlaylistOptions = function () {
+    _this.updateTitleOptions = function () {
+      try {
+        var title = _this.props.title;
+        return Promise.resolve(_this.setPlaylistItemOptions({
+          title: title
+        })).then(function () {});
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.updatePosterOptions = function () {
+      try {
+        var poster = _this.props.poster;
+        return Promise.resolve(_this.setPlaylistItemOptions({
+          poster: poster
+        })).then(function () {});
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.updateSubtitleOptions = function () {
+      try {
+        var subtitle = _this.props.subtitle;
+        return Promise.resolve(_this.setPlaylistItemOptions({
+          subtitle: subtitle
+        })).then(function () {});
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.updateDrmAuthTokenOptions = function () {
+      try {
+        var drmAuthToken = _this.props.drmAuthToken;
+        return Promise.resolve(_this.setPlaylistItemOptions({
+          drm: {
+            auth: {
+              token: drmAuthToken
+            }
+          }
+        })).then(function () {});
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.updateChaptersOptions = function () {
+      try {
+        var chapters = _this.props.chapters;
+        return Promise.resolve(_this.setPlaylistItemOptions({
+          chapters: chapters
+        })).then(function () {});
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.updateVttOptions = function () {
+      try {
+        var vtt = _this.props.vtt;
+        return Promise.resolve(_this.setPlaylistItemOptions({
+          vtt: vtt
+        })).then(function () {});
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.updateBookmarksOptions = function () {
+      try {
+        var bookmarks = _this.props.bookmarks;
+        return Promise.resolve(_this.setPlaylistItemOptions({
+          bookmarks: bookmarks
+        })).then(function () {});
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.updateActionsOptions = function () {
+      try {
+        var actions = _this.props.actions;
+        return Promise.resolve(_this.setPlaylistItemOptions({
+          actions: actions
+        })).then(function () {});
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.readyPlaylistOptions = function () {
       try {
         var _this$props3 = _this.props,
             title = _this$props3.title,
@@ -342,20 +504,44 @@ var Player = /*#__PURE__*/function (_Component) {
             bookmarks = _this$props3.bookmarks,
             actions = _this$props3.actions,
             drmAuthToken = _this$props3.drmAuthToken;
-        var options = {
-          title: title,
-          poster: poster,
-          subtitle: subtitle,
-          chapters: chapters,
-          vtt: vtt,
-          bookmarks: bookmarks,
-          actions: actions,
-          drm: {
+        var options = {};
+
+        if (title !== undefined) {
+          options.title = title;
+        }
+
+        if (subtitle !== undefined) {
+          options.subtitle = subtitle;
+        }
+
+        if (poster !== undefined) {
+          options.poster = poster;
+        }
+
+        if (chapters !== undefined) {
+          options.chapters = chapters;
+        }
+
+        if (vtt !== undefined) {
+          options.vtt = vtt;
+        }
+
+        if (bookmarks !== undefined) {
+          options.bookmarks = bookmarks;
+        }
+
+        if (actions !== undefined) {
+          options.actions = actions;
+        }
+
+        if (drmAuthToken !== undefined) {
+          options.drm = {
             auth: {
               token: drmAuthToken
             }
-          }
-        };
+          };
+        }
+
         return Promise.resolve(_this.setPlaylistItemOptions(options)).then(function () {});
       } catch (e) {
         return Promise.reject(e);
@@ -713,7 +899,7 @@ var Player = /*#__PURE__*/function (_Component) {
       var data = _ref.data;
       var onReady = _this.props.onReady;
 
-      _this.updatePlaylistOptions();
+      _this.readyPlaylistOptions();
 
       onReady && onReady(data);
     };

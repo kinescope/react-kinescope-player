@@ -298,12 +298,116 @@ class Player extends Component {
         drmAuthToken
       } = _this.props;
 
-      if (title !== prevProps.title || subtitle !== prevProps.subtitle || poster !== prevProps.poster || drmAuthToken !== prevProps.drmAuthToken || !reactFastCompare(chapters, prevProps.chapters) || !reactFastCompare(vtt, prevProps.vtt) || !reactFastCompare(bookmarks, prevProps.bookmarks) || !reactFastCompare(actions, prevProps.actions)) {
-        await _this.updatePlaylistOptions();
+      if (title !== prevProps.title) {
+        await _this.updateTitleOptions();
+      }
+
+      if (poster !== prevProps.poster) {
+        await _this.updatePosterOptions();
+      }
+
+      if (subtitle !== prevProps.subtitle) {
+        await _this.updateSubtitleOptions();
+      }
+
+      if (drmAuthToken !== prevProps.drmAuthToken) {
+        await _this.updateDrmAuthTokenOptions();
+      }
+
+      if (!reactFastCompare(chapters, prevProps.chapters)) {
+        await _this.updateChaptersOptions();
+      }
+
+      if (!reactFastCompare(vtt, prevProps.vtt)) {
+        await _this.updateVttOptions();
+      }
+
+      if (!reactFastCompare(bookmarks, prevProps.bookmarks)) {
+        await _this.updateBookmarksOptions();
+      }
+
+      if (!reactFastCompare(actions, prevProps.actions)) {
+        await _this.updateActionsOptions();
       }
     };
 
-    this.updatePlaylistOptions = async function () {
+    this.updateTitleOptions = async function () {
+      const {
+        title
+      } = _this.props;
+      await _this.setPlaylistItemOptions({
+        title: title
+      });
+    };
+
+    this.updatePosterOptions = async function () {
+      const {
+        poster
+      } = _this.props;
+      await _this.setPlaylistItemOptions({
+        poster: poster
+      });
+    };
+
+    this.updateSubtitleOptions = async function () {
+      const {
+        subtitle
+      } = _this.props;
+      await _this.setPlaylistItemOptions({
+        subtitle: subtitle
+      });
+    };
+
+    this.updateDrmAuthTokenOptions = async function () {
+      const {
+        drmAuthToken
+      } = _this.props;
+      await _this.setPlaylistItemOptions({
+        drm: {
+          auth: {
+            token: drmAuthToken
+          }
+        }
+      });
+    };
+
+    this.updateChaptersOptions = async function () {
+      const {
+        chapters
+      } = _this.props;
+      await _this.setPlaylistItemOptions({
+        chapters: chapters
+      });
+    };
+
+    this.updateVttOptions = async function () {
+      const {
+        vtt
+      } = _this.props;
+      await _this.setPlaylistItemOptions({
+        vtt: vtt
+      });
+    };
+
+    this.updateBookmarksOptions = async function () {
+      const {
+        bookmarks
+      } = _this.props;
+      await _this.setPlaylistItemOptions({
+        bookmarks: bookmarks
+      });
+    };
+
+    this.updateActionsOptions = async function () {
+      const {
+        actions
+      } = _this.props;
+      await _this.setPlaylistItemOptions({
+        actions: actions
+      });
+    };
+
+    this.readyPlaylistOptions = async function () {
       const {
         title,
         subtitle,
@@ -314,20 +418,44 @@ class Player extends Component {
         actions,
         drmAuthToken
       } = _this.props;
-      let options = {
-        title: title,
-        poster: poster,
-        subtitle: subtitle,
-        chapters: chapters,
-        vtt: vtt,
-        bookmarks: bookmarks,
-        actions: actions,
-        drm: {
+      let options = {};
+
+      if (title !== undefined) {
+        options.title = title;
+      }
+
+      if (subtitle !== undefined) {
+        options.subtitle = subtitle;
+      }
+
+      if (poster !== undefined) {
+        options.poster = poster;
+      }
+
+      if (chapters !== undefined) {
+        options.chapters = chapters;
+      }
+
+      if (vtt !== undefined) {
+        options.vtt = vtt;
+      }
+
+      if (bookmarks !== undefined) {
+        options.bookmarks = bookmarks;
+      }
+
+      if (actions !== undefined) {
+        options.actions = actions;
+      }
+
+      if (drmAuthToken !== undefined) {
+        options.drm = {
           auth: {
             token: drmAuthToken
           }
-        }
-      };
+        };
+      }
+
       await _this.setPlaylistItemOptions(options);
     };
 
@@ -673,7 +801,7 @@ class Player extends Component {
       const {
         onReady
       } = this.props;
-      this.updatePlaylistOptions();
+      this.readyPlaylistOptions();
       onReady && onReady(data);
     };
 
