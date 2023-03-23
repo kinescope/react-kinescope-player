@@ -375,7 +375,7 @@ type Watermark =
   </tr>
   <tr>
       <td>onPlaybackRateChange</td>
-      <td>playbackRate: boolean;</td>
+      <td>playbackRate: number;</td>
   </tr>
   <tr>
       <td>onSeeking</td>
