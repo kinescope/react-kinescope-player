@@ -69,7 +69,7 @@ export type EventVolumeChangeTypes = {
 };
 
 export type EventPlaybackRateChangeTypes = {
-	playbackRate: boolean;
+	playbackRate: number;
 };
 
 export type EventSizeChangedTypes = {

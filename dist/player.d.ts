@@ -41,7 +41,7 @@ export declare type EventVolumeChangeTypes = {
     volume: number;
 };
 export declare type EventPlaybackRateChangeTypes = {
-    playbackRate: boolean;
+    playbackRate: number;
 };
 export declare type EventSizeChangedTypes = {
     width: number;
