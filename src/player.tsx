@@ -98,9 +98,8 @@ export type EventErrorTypes = {
 };
 
 export type QueryTypes = {
-	liveSeek?: number;
-	liveDuration?: number;
-	liveTimeOffset?: number;
+	seek?: number;
+	duration?: number;
 };
 
 export type PlayerPropsTypes = {
@@ -444,25 +443,25 @@ class Player extends Component<PlayerPropsTypes> {
 		];
 	};
 
-	private getQuery = () => {
+	private getQueryParams = () => {
 		const {query} = this.props;
-
 		const params: [string, string][] = [];
-		query?.liveDuration && params.push(['live_duration', query.liveDuration.toString()]);
-		query?.liveSeek && params.push(['live_seek', query.liveSeek.toString()]);
-		query?.liveTimeOffset && params.push(['live_time_offset', query.liveTimeOffset.toString()]);
+		query?.duration && params.push(['duration', query.duration.toString()]);
+		query?.seek && params.push(['seek', query.seek.toString()]);
+		return params;
+	};
 
-		if (!params.length) {
-			return '';
-		}
-
-		const search = new URLSearchParams(params).toString();
-		return !!search ? `?${search}` : '';
+	private makeURL = (url: string) => {
+		const _url = new URL(url);
+		this.getQueryParams().forEach(function (params) {
+			_url.searchParams.append(params[0], params[1]);
+		});
+		return _url.toString();
 	};
 
 	private getIFrameUrl = () => {
 		const {videoId} = this.props;
-		return VIDEO_HOST + videoId + this.getQuery();
+		return this.makeURL(VIDEO_HOST + videoId);
 	};
 
 	private createPlayer = playerId => {

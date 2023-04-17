@@ -622,24 +622,27 @@
         return [[Events.Ready, _this.handleEventReady], [Events.QualityChanged, _this.handleQualityChanged], [Events.AutoQualityChanged, _this.handleAutoQualityChanged], [Events.SeekChapter, _this.handleSeekChapter], [Events.SizeChanged, _this.handleSizeChanged], [Events.Play, _this.handlePlay], [Events.Playing, _this.handlePlaying], [Events.Waiting, _this.handleWaiting], [Events.Pause, _this.handlePause], [Events.Ended, _this.handleEnded], [Events.TimeUpdate, _this.handleTimeUpdate], [Events.Progress, _this.handleProgress], [Events.DurationChange, _this.handleDurationChange], [Events.VolumeChange, _this.handleVolumeChange], [Events.PlaybackRateChange, _this.handlePlaybackRateChange], [Events.Seeking, _this.handleSeeking], [Events.FullscreenChange, _this.handleFullscreenChange], [Events.CallAction, _this.handleCallAction], [Events.CallBookmark, _this.handleCallBookmark], [Events.Error, _this.handleError], [Events.Destroy, _this.handleDestroy]];
       };
 
-      _this.getQuery = function () {
+      _this.getQueryParams = function () {
         var query = _this.props.query;
         var params = [];
-        (query == null ? void 0 : query.liveDuration) && params.push(['live_duration', query.liveDuration.toString()]);
-        (query == null ? void 0 : query.liveSeek) && params.push(['live_seek', query.liveSeek.toString()]);
-        (query == null ? void 0 : query.liveTimeOffset) && params.push(['live_time_offset', query.liveTimeOffset.toString()]);
+        (query == null ? void 0 : query.duration) && params.push(['duration', query.duration.toString()]);
+        (query == null ? void 0 : query.seek) && params.push(['seek', query.seek.toString()]);
+        return params;
+      };
 
-        if (!params.length) {
-          return '';
-        }
+      _this.makeURL = function (url) {
+        var _url = new URL(url);
 
-        var search = new URLSearchParams(params).toString();
-        return !!search ? "?" + search : '';
+        _this.getQueryParams().forEach(function (params) {
+          _url.searchParams.append(params[0], params[1]);
+        });
+
+        return _url.toString();
       };
 
       _this.getIFrameUrl = function () {
         var videoId = _this.props.videoId;
-        return VIDEO_HOST + videoId + _this.getQuery();
+        return _this.makeURL(VIDEO_HOST + videoId);
       };
 
       _this.createPlayer = function (playerId) {

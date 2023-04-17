@@ -64,9 +64,8 @@ export declare type EventErrorTypes = {
     error: unknown;
 };
 export declare type QueryTypes = {
-    liveSeek?: number;
-    liveDuration?: number;
-    liveTimeOffset?: number;
+    seek?: number;
+    duration?: number;
 };
 export declare type PlayerPropsTypes = {
     videoId: string;
@@ -146,7 +145,8 @@ declare class Player extends Component<PlayerPropsTypes> {
     private create;
     private destroy;
     private getEventList;
-    private getQuery;
+    private getQueryParams;
+    private makeURL;
     private getIFrameUrl;
     private createPlayer;
     private setPlaylistItemOptions;

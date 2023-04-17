@@ -514,28 +514,30 @@ class Player extends Component {
       return [[Events.Ready, this.handleEventReady], [Events.QualityChanged, this.handleQualityChanged], [Events.AutoQualityChanged, this.handleAutoQualityChanged], [Events.SeekChapter, this.handleSeekChapter], [Events.SizeChanged, this.handleSizeChanged], [Events.Play, this.handlePlay], [Events.Playing, this.handlePlaying], [Events.Waiting, this.handleWaiting], [Events.Pause, this.handlePause], [Events.Ended, this.handleEnded], [Events.TimeUpdate, this.handleTimeUpdate], [Events.Progress, this.handleProgress], [Events.DurationChange, this.handleDurationChange], [Events.VolumeChange, this.handleVolumeChange], [Events.PlaybackRateChange, this.handlePlaybackRateChange], [Events.Seeking, this.handleSeeking], [Events.FullscreenChange, this.handleFullscreenChange], [Events.CallAction, this.handleCallAction], [Events.CallBookmark, this.handleCallBookmark], [Events.Error, this.handleError], [Events.Destroy, this.handleDestroy]];
     };
 
-    this.getQuery = () => {
+    this.getQueryParams = () => {
       const {
         query
       } = this.props;
       const params = [];
-      (query == null ? void 0 : query.liveDuration) && params.push(['live_duration', query.liveDuration.toString()]);
-      (query == null ? void 0 : query.liveSeek) && params.push(['live_seek', query.liveSeek.toString()]);
-      (query == null ? void 0 : query.liveTimeOffset) && params.push(['live_time_offset', query.liveTimeOffset.toString()]);
+      (query == null ? void 0 : query.duration) && params.push(['duration', query.duration.toString()]);
+      (query == null ? void 0 : query.seek) && params.push(['seek', query.seek.toString()]);
+      return params;
+    };
 
-      if (!params.length) {
-        return '';
-      }
+    this.makeURL = url => {
+      const _url = new URL(url);
 
-      const search = new URLSearchParams(params).toString();
-      return !!search ? `?${search}` : '';
+      this.getQueryParams().forEach(function (params) {
+        _url.searchParams.append(params[0], params[1]);
+      });
+      return _url.toString();
     };
 
     this.getIFrameUrl = () => {
       const {
         videoId
       } = this.props;
-      return VIDEO_HOST + videoId + this.getQuery();
+      return this.makeURL(VIDEO_HOST + videoId);
     };
 
     this.createPlayer = playerId => {
