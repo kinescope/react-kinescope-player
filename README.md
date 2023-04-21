@@ -219,6 +219,12 @@ export default Player;
       <td><a href="#watermark">Watermark</a></td>
       <td>No</td>
       <td>No</td>
+  </tr>  
+  <tr>
+      <td>localStorage</td>
+      <td>boolean</td>
+      <td>true</td>
+      <td>No</td>
   </tr>
 </table>
 
