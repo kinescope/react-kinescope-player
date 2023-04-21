@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.4](https://github.com/kinescope/react-kinescope-player/compare/v0.3.3...v0.3.4) (2023-04-21)
+
+### Features
+
+* localStorage ([69b1173](https://github.com/kinescope/react-kinescope-player/commit/69b117319df53b0add960007d63fd302574c5c2c))
+* doc localStorage ([d6484e1](https://github.com/kinescope/react-kinescope-player/commit/d6484e151c76dc11894cd6cb37ec8fe14e10f14c))
+
 ### [0.3.3](https://github.com/kinescope/react-kinescope-player/compare/v0.3.2...v0.3.3) (2023-03-23)
 
 ### Bug Fixes
