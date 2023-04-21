@@ -9,7 +9,7 @@ var hasArrayBuffer = typeof ArrayBuffer === 'function' && !!ArrayBuffer.isView;
 // Note: We **don't** need `envHasBigInt64Array` in fde es6/index.js
 
 function equal(a, b) {
-  // START: fast-deep-equal es6/index.js 3.1.1
+  // START: fast-deep-equal es6/index.js 3.1.3
   if (a === b) return true;
 
   if (a && b && typeof a == 'object' && typeof b == 'object') {
@@ -74,8 +74,13 @@ function equal(a, b) {
     }
 
     if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
-    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
-    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
+    // START: Modifications:
+    // Apply guards for `Object.create(null)` handling. See:
+    // - https://github.com/FormidableLabs/react-fast-compare/issues/64
+    // - https://github.com/epoberezkin/fast-deep-equal/issues/49
+    if (a.valueOf !== Object.prototype.valueOf && typeof a.valueOf === 'function' && typeof b.valueOf === 'function') return a.valueOf() === b.valueOf();
+    if (a.toString !== Object.prototype.toString && typeof a.toString === 'function' && typeof b.toString === 'function') return a.toString() === b.toString();
+    // END: Modifications
 
     keys = Object.keys(a);
     length = keys.length;
@@ -274,14 +279,15 @@ class Player extends Component {
         controls,
         mainPlayButton,
         playbackRateButton,
-        watermark
+        watermark,
+        localStorage
       } = _this.props;
 
       if (muted !== prevProps.muted) {
         muted ? _this.mute() : _this.unmute();
       }
 
-      if (videoId !== prevProps.videoId || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark)) {
+      if (videoId !== prevProps.videoId || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage)) {
         await _this.create();
       }
     };
@@ -562,7 +568,8 @@ class Player extends Component {
         playbackRateButton,
         bookmarks,
         actions,
-        watermark
+        watermark,
+        localStorage
       } = this.props;
       let options = {
         url: this.getIFrameUrl(),
@@ -575,7 +582,8 @@ class Player extends Component {
           autoPlay: autoPlay,
           loop: loop,
           muted: muted,
-          playsInline: playsInline
+          playsInline: playsInline,
+          localStorage: localStorage
         },
         playlist: [{
           title: title,
@@ -1009,6 +1017,7 @@ Player.defaultProps = {
   width: '100%',
   height: '100%',
   autoPause: true,
+  localStorage: true,
   playsInline: true
 };
 

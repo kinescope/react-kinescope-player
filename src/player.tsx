@@ -131,6 +131,7 @@ export type PlayerPropsTypes = {
 	actions?: ActionsTypes[];
 	bookmarks?: BookmarkTypes[];
 	watermark?: WatermarkTypes;
+	localStorage?: boolean;
 
 	onReady?: (data: EventReadyTypes) => void;
 	onQualityChanged?: (data: EventQualityChangedTypes) => void;
@@ -174,6 +175,7 @@ class Player extends Component<PlayerPropsTypes> {
 		width: '100%',
 		height: '100%',
 		autoPause: true,
+		localStorage: true,
 		playsInline: true,
 	};
 
@@ -219,6 +221,7 @@ class Player extends Component<PlayerPropsTypes> {
 			mainPlayButton,
 			playbackRateButton,
 			watermark,
+			localStorage,
 		} = this.props;
 
 		if (muted !== prevProps.muted) {
@@ -238,7 +241,8 @@ class Player extends Component<PlayerPropsTypes> {
 			controls !== prevProps.controls ||
 			mainPlayButton !== prevProps.mainPlayButton ||
 			playbackRateButton !== prevProps.playbackRateButton ||
-			!isEqual(watermark, prevProps.watermark)
+			!isEqual(watermark, prevProps.watermark) ||
+			!isEqual(localStorage, prevProps.localStorage)
 		) {
 			await this.create();
 		}
@@ -487,6 +491,7 @@ class Player extends Component<PlayerPropsTypes> {
 			bookmarks,
 			actions,
 			watermark,
+			localStorage,
 		} = this.props;
 
 		let options: KinescopeCreateOptions = {
@@ -498,6 +503,7 @@ class Player extends Component<PlayerPropsTypes> {
 				loop: loop,
 				muted: muted,
 				playsInline: playsInline,
+				localStorage: localStorage,
 			},
 			playlist: [
 				{

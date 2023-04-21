@@ -148,6 +148,7 @@ export interface KinescopeCreateOptions {
 		loop?: boolean;
 		playsInline?: boolean;
 		muted?: boolean;
+		localStorage?: boolean;
 	};
 	ui?: {
 		language?: 'ru' | 'en';

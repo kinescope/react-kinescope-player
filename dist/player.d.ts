@@ -95,6 +95,7 @@ export declare type PlayerPropsTypes = {
     actions?: ActionsTypes[];
     bookmarks?: BookmarkTypes[];
     watermark?: WatermarkTypes;
+    localStorage?: boolean;
     onReady?: (data: EventReadyTypes) => void;
     onQualityChanged?: (data: EventQualityChangedTypes) => void;
     onAutoQualityChanged?: (data: EventQualityChangedTypes) => void;
@@ -125,6 +126,7 @@ declare class Player extends Component<PlayerPropsTypes> {
         width: string;
         height: string;
         autoPause: boolean;
+        localStorage: boolean;
         playsInline: boolean;
     };
     constructor(props: any);
