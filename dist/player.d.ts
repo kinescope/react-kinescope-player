@@ -24,6 +24,11 @@ export declare type EventReadyTypes = {
 export declare type EventQualityChangedTypes = {
     quality: VideoQuality;
 };
+export declare type EventCurrentTrackChangedTypes = {
+    item: {
+        id?: string;
+    };
+};
 export declare type EventSeekChapterTypes = {
     position: number;
 };
@@ -68,7 +73,7 @@ export declare type QueryTypes = {
     duration?: number;
 };
 export declare type PlayerPropsTypes = {
-    videoId: string;
+    videoId: string | string[];
     query?: QueryTypes;
     className?: string;
     style?: any;
@@ -98,7 +103,7 @@ export declare type PlayerPropsTypes = {
     localStorage?: boolean;
     onReady?: (data: EventReadyTypes) => void;
     onQualityChanged?: (data: EventQualityChangedTypes) => void;
-    onAutoQualityChanged?: (data: EventQualityChangedTypes) => void;
+    onCurrentTrackChanged?: (data: EventCurrentTrackChangedTypes) => void;
     onSeekChapter?: (data: EventSeekChapterTypes) => void;
     onSizeChanged?: (data: EventSizeChangedTypes) => void;
     onPlay?: () => void;
@@ -111,7 +116,7 @@ export declare type PlayerPropsTypes = {
     onDurationChange?: (data: EventDurationChangeTypes) => void;
     onVolumeChange?: (data: EventVolumeChangeTypes) => void;
     onPlaybackRateChange?: (data: EventPlaybackRateChangeTypes) => void;
-    onSeeking?: () => void;
+    onSeeked?: () => void;
     onFullscreenChange?: (data: EventFullscreenChangeTypes) => void;
     onCallAction?: (data: EventCallActionTypes) => void;
     onCallBookmark?: (data: EventCallBookmarkTypes) => void;
@@ -168,16 +173,22 @@ declare class Player extends Component<PlayerPropsTypes> {
     getPlaybackRate: () => Promise<number>;
     setPlaybackRate: (value: number) => Promise<void>;
     getVideoQualityList: () => Promise<VideoQuality[]>;
-    getCurrentVideoQuality: () => Promise<VideoQuality>;
+    getVideoQuality: () => Promise<VideoQuality>;
     setVideoQuality: (quality: VideoQuality) => Promise<void>;
     enableTextTrack: (lang: string) => Promise<void>;
     disableTextTrack: () => Promise<void>;
     closeCTA: () => Promise<void>;
     isFullscreen: () => Promise<boolean>;
     setFullscreen: (fullscreen: boolean) => Promise<void>;
+    getPlaylistItem: () => Promise<{
+        id: string | undefined;
+    } | undefined>;
+    switchTo: (id: string) => Promise<void>;
+    next: () => Promise<void>;
+    previous: () => Promise<void>;
     private handleEventReady;
     private handleQualityChanged;
-    private handleAutoQualityChanged;
+    private handleCurrentTrackChanged;
     private handleSeekChapter;
     private handleSizeChanged;
     private handlePlay;
@@ -190,7 +201,7 @@ declare class Player extends Component<PlayerPropsTypes> {
     private handleDurationChange;
     private handleVolumeChange;
     private handlePlaybackRateChange;
-    private handleSeeking;
+    private handleSeeked;
     private handleFullscreenChange;
     private handleCallAction;
     private handleCallBookmark;

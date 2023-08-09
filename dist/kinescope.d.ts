@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 export declare enum KinescopePlayerEvent {
     Ready = 0,
     QualityChanged = 1,
-    AutoQualityChanged = 2,
+    CurrentTrackChanged = 2,
     SeekChapter = 3,
     SizeChanged = 4,
     Play = 5,
@@ -12,10 +12,10 @@ export declare enum KinescopePlayerEvent {
     Ended = 9,
     TimeUpdate = 10,
     Progress = 11,
-    DurationChange = 12,
-    VolumeChange = 13,
-    PlaybackRateChange = 14,
-    Seeking = 15,
+    Seeked = 12,
+    DurationChange = 13,
+    VolumeChange = 14,
+    PlaybackRateChange = 15,
     FullscreenChange = 16,
     CallAction = 17,
     CallBookmark = 18,
@@ -104,7 +104,7 @@ export interface KinescopePlayer {
     getPlaybackRate(): Promise<number>;
     setPlaybackRate(value: number): Promise<void>;
     getVideoQualityList(): Promise<VideoQuality[]>;
-    getCurrentVideoQuality(): Promise<VideoQuality>;
+    getVideoQuality(): Promise<VideoQuality>;
     setVideoQuality(quality: VideoQuality): Promise<void>;
     enableTextTrack(lang: string): Promise<void>;
     disableTextTrack(): Promise<void>;
@@ -112,6 +112,12 @@ export interface KinescopePlayer {
     isFullscreen(): Promise<boolean>;
     setFullscreen(fullscreen: boolean): Promise<void>;
     setPlaylistItemOptions(options: PlaylistItemOptions): Promise<void>;
+    getPlaylistItem(): Promise<{
+        id: string | undefined;
+    } | undefined>;
+    switchTo(id: string): Promise<void>;
+    next(): Promise<void>;
+    previous(): Promise<void>;
     destroy(): Promise<void>;
 }
 export interface KinescopeCreateOptions {

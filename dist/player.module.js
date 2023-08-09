@@ -145,6 +145,7 @@ var reactFastCompare = function isEqual(a, b) {
   }
 };
 
+var VIDEO_PLAYLIST_HOST = 'https://kinescope.io/embed/playlist?video_ids=';
 var VIDEO_HOST = 'https://kinescope.io/embed/';
 var PLAYER_LATEST = 'https://player.kinescope.io/latest/iframe.player.js';
 
@@ -302,7 +303,7 @@ var Player = /*#__PURE__*/function (_Component) {
         }
 
         var _temp2 = function () {
-          if (videoId !== prevProps.videoId || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage)) {
+          if (!reactFastCompare(videoId, prevProps.videoId) || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage)) {
             return Promise.resolve(_this.create()).then(function () {});
           }
         }();
@@ -618,7 +619,7 @@ var Player = /*#__PURE__*/function (_Component) {
         return [];
       }
 
-      return [[Events.Ready, _this.handleEventReady], [Events.QualityChanged, _this.handleQualityChanged], [Events.AutoQualityChanged, _this.handleAutoQualityChanged], [Events.SeekChapter, _this.handleSeekChapter], [Events.SizeChanged, _this.handleSizeChanged], [Events.Play, _this.handlePlay], [Events.Playing, _this.handlePlaying], [Events.Waiting, _this.handleWaiting], [Events.Pause, _this.handlePause], [Events.Ended, _this.handleEnded], [Events.TimeUpdate, _this.handleTimeUpdate], [Events.Progress, _this.handleProgress], [Events.DurationChange, _this.handleDurationChange], [Events.VolumeChange, _this.handleVolumeChange], [Events.PlaybackRateChange, _this.handlePlaybackRateChange], [Events.Seeking, _this.handleSeeking], [Events.FullscreenChange, _this.handleFullscreenChange], [Events.CallAction, _this.handleCallAction], [Events.CallBookmark, _this.handleCallBookmark], [Events.Error, _this.handleError], [Events.Destroy, _this.handleDestroy]];
+      return [[Events.Ready, _this.handleEventReady], [Events.QualityChanged, _this.handleQualityChanged], [Events.CurrentTrackChanged, _this.handleCurrentTrackChanged], [Events.SeekChapter, _this.handleSeekChapter], [Events.SizeChanged, _this.handleSizeChanged], [Events.Play, _this.handlePlay], [Events.Playing, _this.handlePlaying], [Events.Waiting, _this.handleWaiting], [Events.Pause, _this.handlePause], [Events.Ended, _this.handleEnded], [Events.TimeUpdate, _this.handleTimeUpdate], [Events.Progress, _this.handleProgress], [Events.DurationChange, _this.handleDurationChange], [Events.VolumeChange, _this.handleVolumeChange], [Events.PlaybackRateChange, _this.handlePlaybackRateChange], [Events.Seeked, _this.handleSeeked], [Events.FullscreenChange, _this.handleFullscreenChange], [Events.CallAction, _this.handleCallAction], [Events.CallBookmark, _this.handleCallBookmark], [Events.Error, _this.handleError], [Events.Destroy, _this.handleDestroy]];
     };
 
     _this.getQueryParams = function () {
@@ -641,6 +642,11 @@ var Player = /*#__PURE__*/function (_Component) {
 
     _this.getIFrameUrl = function () {
       var videoId = _this.props.videoId;
+
+      if (Array.isArray(videoId)) {
+        return _this.makeURL(VIDEO_PLAYLIST_HOST + videoId.join(','));
+      }
+
       return _this.makeURL(VIDEO_HOST + videoId);
     };
 
@@ -850,12 +856,12 @@ var Player = /*#__PURE__*/function (_Component) {
       return _this.player.getVideoQualityList();
     };
 
-    _this.getCurrentVideoQuality = function () {
+    _this.getVideoQuality = function () {
       if (!_this.player) {
         return Promise.reject(null);
       }
 
-      return _this.player.getCurrentVideoQuality();
+      return _this.player.getVideoQuality();
     };
 
     _this.setVideoQuality = function (quality) {
@@ -906,6 +912,38 @@ var Player = /*#__PURE__*/function (_Component) {
       return _this.player.setFullscreen(fullscreen);
     };
 
+    _this.getPlaylistItem = function () {
+      if (!_this.player) {
+        return Promise.reject(null);
+      }
+
+      return _this.player.getPlaylistItem();
+    };
+
+    _this.switchTo = function (id) {
+      if (!_this.player) {
+        return Promise.reject(null);
+      }
+
+      return _this.player.switchTo(id);
+    };
+
+    _this.next = function () {
+      if (!_this.player) {
+        return Promise.reject(null);
+      }
+
+      return _this.player.next();
+    };
+
+    _this.previous = function () {
+      if (!_this.player) {
+        return Promise.reject(null);
+      }
+
+      return _this.player.next();
+    };
+
     _this.handleEventReady = function (_ref) {
       var data = _ref.data;
       var onReady = _this.props.onReady;
@@ -921,10 +959,10 @@ var Player = /*#__PURE__*/function (_Component) {
       onQualityChanged && onQualityChanged(data);
     };
 
-    _this.handleAutoQualityChanged = function (_ref3) {
+    _this.handleCurrentTrackChanged = function (_ref3) {
       var data = _ref3.data;
-      var onAutoQualityChanged = _this.props.onAutoQualityChanged;
-      onAutoQualityChanged && onAutoQualityChanged(data);
+      var onCurrentTrackChanged = _this.props.onCurrentTrackChanged;
+      onCurrentTrackChanged && onCurrentTrackChanged(data);
     };
 
     _this.handleSeekChapter = function (_ref4) {
@@ -994,9 +1032,9 @@ var Player = /*#__PURE__*/function (_Component) {
       onPlaybackRateChange && onPlaybackRateChange(data);
     };
 
-    _this.handleSeeking = function () {
-      var onSeeking = _this.props.onSeeking;
-      onSeeking && onSeeking();
+    _this.handleSeeked = function () {
+      var onSeeked = _this.props.onSeeked;
+      onSeeked && onSeeked();
     };
 
     _this.handleFullscreenChange = function (_ref11) {

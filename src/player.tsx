@@ -12,7 +12,7 @@ import {
 	WatermarkTypes,
 } from './kinescope';
 import Loader from './loader';
-import {VIDEO_HOST} from './constant';
+import {VIDEO_HOST, VIDEO_PLAYLIST_HOST} from './constant';
 
 type CallbackTypes = (any) => void;
 type EventListTypes = [KinescopePlayerEvent, CallbackTypes][];
@@ -45,6 +45,10 @@ export type EventReadyTypes = {
 
 export type EventQualityChangedTypes = {
 	quality: VideoQuality;
+};
+
+export type EventCurrentTrackChangedTypes = {
+	item: {id?: string};
 };
 
 export type EventSeekChapterTypes = {
@@ -103,7 +107,7 @@ export type QueryTypes = {
 };
 
 export type PlayerPropsTypes = {
-	videoId: string;
+	videoId: string | string[];
 	query?: QueryTypes;
 	className?: string;
 	style?: any;
@@ -135,7 +139,7 @@ export type PlayerPropsTypes = {
 
 	onReady?: (data: EventReadyTypes) => void;
 	onQualityChanged?: (data: EventQualityChangedTypes) => void;
-	onAutoQualityChanged?: (data: EventQualityChangedTypes) => void;
+	onCurrentTrackChanged?: (data: EventCurrentTrackChangedTypes) => void;
 	onSeekChapter?: (data: EventSeekChapterTypes) => void;
 	onSizeChanged?: (data: EventSizeChangedTypes) => void;
 	onPlay?: () => void;
@@ -148,7 +152,7 @@ export type PlayerPropsTypes = {
 	onDurationChange?: (data: EventDurationChangeTypes) => void;
 	onVolumeChange?: (data: EventVolumeChangeTypes) => void;
 	onPlaybackRateChange?: (data: EventPlaybackRateChangeTypes) => void;
-	onSeeking?: () => void;
+	onSeeked?: () => void;
 	onFullscreenChange?: (data: EventFullscreenChangeTypes) => void;
 	onCallAction?: (data: EventCallActionTypes) => void;
 	onCallBookmark?: (data: EventCallBookmarkTypes) => void;
@@ -229,7 +233,7 @@ class Player extends Component<PlayerPropsTypes> {
 		}
 
 		if (
-			videoId !== prevProps.videoId ||
+			!isEqual(videoId, prevProps.videoId) ||
 			!isEqual(query, prevProps.query) ||
 			width !== prevProps.width ||
 			height !== prevProps.height ||
@@ -425,7 +429,7 @@ class Player extends Component<PlayerPropsTypes> {
 		return [
 			[Events.Ready, this.handleEventReady],
 			[Events.QualityChanged, this.handleQualityChanged],
-			[Events.AutoQualityChanged, this.handleAutoQualityChanged],
+			[Events.CurrentTrackChanged, this.handleCurrentTrackChanged],
 			[Events.SeekChapter, this.handleSeekChapter],
 			[Events.SizeChanged, this.handleSizeChanged],
 			[Events.Play, this.handlePlay],
@@ -438,7 +442,7 @@ class Player extends Component<PlayerPropsTypes> {
 			[Events.DurationChange, this.handleDurationChange],
 			[Events.VolumeChange, this.handleVolumeChange],
 			[Events.PlaybackRateChange, this.handlePlaybackRateChange],
-			[Events.Seeking, this.handleSeeking],
+			[Events.Seeked, this.handleSeeked],
 			[Events.FullscreenChange, this.handleFullscreenChange],
 			[Events.CallAction, this.handleCallAction],
 			[Events.CallBookmark, this.handleCallBookmark],
@@ -465,6 +469,9 @@ class Player extends Component<PlayerPropsTypes> {
 
 	private getIFrameUrl = () => {
 		const {videoId} = this.props;
+		if (Array.isArray(videoId)) {
+			return this.makeURL(VIDEO_PLAYLIST_HOST + videoId.join(','));
+		}
 		return this.makeURL(VIDEO_HOST + videoId);
 	};
 
@@ -655,11 +662,11 @@ class Player extends Component<PlayerPropsTypes> {
 		return this.player.getVideoQualityList();
 	};
 
-	public getCurrentVideoQuality = (): Promise<VideoQuality> => {
+	public getVideoQuality = (): Promise<VideoQuality> => {
 		if (!this.player) {
 			return Promise.reject(null);
 		}
-		return this.player.getCurrentVideoQuality();
+		return this.player.getVideoQuality();
 	};
 
 	public setVideoQuality = (quality: VideoQuality): Promise<void> => {
@@ -704,6 +711,34 @@ class Player extends Component<PlayerPropsTypes> {
 		return this.player.setFullscreen(fullscreen);
 	};
 
+	public getPlaylistItem = (): Promise<{id: string | undefined} | undefined> => {
+		if (!this.player) {
+			return Promise.reject(null);
+		}
+		return this.player.getPlaylistItem();
+	};
+
+	public switchTo = (id: string): Promise<void> => {
+		if (!this.player) {
+			return Promise.reject(null);
+		}
+		return this.player.switchTo(id);
+	};
+
+	public next = (): Promise<void> => {
+		if (!this.player) {
+			return Promise.reject(null);
+		}
+		return this.player.next();
+	};
+
+	public previous = (): Promise<void> => {
+		if (!this.player) {
+			return Promise.reject(null);
+		}
+		return this.player.next();
+	};
+
 	private handleEventReady = ({data}) => {
 		const {onReady} = this.props;
 		this.readyPlaylistOptions();
@@ -715,9 +750,9 @@ class Player extends Component<PlayerPropsTypes> {
 		onQualityChanged && onQualityChanged(data);
 	};
 
-	private handleAutoQualityChanged = ({data}) => {
-		const {onAutoQualityChanged} = this.props;
-		onAutoQualityChanged && onAutoQualityChanged(data);
+	private handleCurrentTrackChanged = ({data}) => {
+		const {onCurrentTrackChanged} = this.props;
+		onCurrentTrackChanged && onCurrentTrackChanged(data);
 	};
 
 	private handleSeekChapter = ({data}) => {
@@ -780,9 +815,9 @@ class Player extends Component<PlayerPropsTypes> {
 		onPlaybackRateChange && onPlaybackRateChange(data);
 	};
 
-	private handleSeeking = () => {
-		const {onSeeking} = this.props;
-		onSeeking && onSeeking();
+	private handleSeeked = () => {
+		const {onSeeked} = this.props;
+		onSeeked && onSeeked();
 	};
 
 	private handleFullscreenChange = ({data}) => {

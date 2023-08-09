@@ -139,6 +139,7 @@ var reactFastCompare = function isEqual(a, b) {
   }
 };
 
+const VIDEO_PLAYLIST_HOST = 'https://kinescope.io/embed/playlist?video_ids=';
 const VIDEO_HOST = 'https://kinescope.io/embed/';
 const PLAYER_LATEST = 'https://player.kinescope.io/latest/iframe.player.js';
 
@@ -287,7 +288,7 @@ class Player extends Component {
         muted ? _this.mute() : _this.unmute();
       }
 
-      if (videoId !== prevProps.videoId || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage)) {
+      if (!reactFastCompare(videoId, prevProps.videoId) || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage)) {
         await _this.create();
       }
     };
@@ -517,7 +518,7 @@ class Player extends Component {
         return [];
       }
 
-      return [[Events.Ready, this.handleEventReady], [Events.QualityChanged, this.handleQualityChanged], [Events.AutoQualityChanged, this.handleAutoQualityChanged], [Events.SeekChapter, this.handleSeekChapter], [Events.SizeChanged, this.handleSizeChanged], [Events.Play, this.handlePlay], [Events.Playing, this.handlePlaying], [Events.Waiting, this.handleWaiting], [Events.Pause, this.handlePause], [Events.Ended, this.handleEnded], [Events.TimeUpdate, this.handleTimeUpdate], [Events.Progress, this.handleProgress], [Events.DurationChange, this.handleDurationChange], [Events.VolumeChange, this.handleVolumeChange], [Events.PlaybackRateChange, this.handlePlaybackRateChange], [Events.Seeking, this.handleSeeking], [Events.FullscreenChange, this.handleFullscreenChange], [Events.CallAction, this.handleCallAction], [Events.CallBookmark, this.handleCallBookmark], [Events.Error, this.handleError], [Events.Destroy, this.handleDestroy]];
+      return [[Events.Ready, this.handleEventReady], [Events.QualityChanged, this.handleQualityChanged], [Events.CurrentTrackChanged, this.handleCurrentTrackChanged], [Events.SeekChapter, this.handleSeekChapter], [Events.SizeChanged, this.handleSizeChanged], [Events.Play, this.handlePlay], [Events.Playing, this.handlePlaying], [Events.Waiting, this.handleWaiting], [Events.Pause, this.handlePause], [Events.Ended, this.handleEnded], [Events.TimeUpdate, this.handleTimeUpdate], [Events.Progress, this.handleProgress], [Events.DurationChange, this.handleDurationChange], [Events.VolumeChange, this.handleVolumeChange], [Events.PlaybackRateChange, this.handlePlaybackRateChange], [Events.Seeked, this.handleSeeked], [Events.FullscreenChange, this.handleFullscreenChange], [Events.CallAction, this.handleCallAction], [Events.CallBookmark, this.handleCallBookmark], [Events.Error, this.handleError], [Events.Destroy, this.handleDestroy]];
     };
 
     this.getQueryParams = () => {
@@ -543,6 +544,11 @@ class Player extends Component {
       const {
         videoId
       } = this.props;
+
+      if (Array.isArray(videoId)) {
+        return this.makeURL(VIDEO_PLAYLIST_HOST + videoId.join(','));
+      }
+
       return this.makeURL(VIDEO_HOST + videoId);
     };
 
@@ -749,12 +755,12 @@ class Player extends Component {
       return this.player.getVideoQualityList();
     };
 
-    this.getCurrentVideoQuality = () => {
+    this.getVideoQuality = () => {
       if (!this.player) {
         return Promise.reject(null);
       }
 
-      return this.player.getCurrentVideoQuality();
+      return this.player.getVideoQuality();
     };
 
     this.setVideoQuality = quality => {
@@ -805,6 +811,38 @@ class Player extends Component {
       return this.player.setFullscreen(fullscreen);
     };
 
+    this.getPlaylistItem = () => {
+      if (!this.player) {
+        return Promise.reject(null);
+      }
+
+      return this.player.getPlaylistItem();
+    };
+
+    this.switchTo = id => {
+      if (!this.player) {
+        return Promise.reject(null);
+      }
+
+      return this.player.switchTo(id);
+    };
+
+    this.next = () => {
+      if (!this.player) {
+        return Promise.reject(null);
+      }
+
+      return this.player.next();
+    };
+
+    this.previous = () => {
+      if (!this.player) {
+        return Promise.reject(null);
+      }
+
+      return this.player.next();
+    };
+
     this.handleEventReady = ({
       data
     }) => {
@@ -824,13 +862,13 @@ class Player extends Component {
       onQualityChanged && onQualityChanged(data);
     };
 
-    this.handleAutoQualityChanged = ({
+    this.handleCurrentTrackChanged = ({
       data
     }) => {
       const {
-        onAutoQualityChanged
+        onCurrentTrackChanged
       } = this.props;
-      onAutoQualityChanged && onAutoQualityChanged(data);
+      onCurrentTrackChanged && onCurrentTrackChanged(data);
     };
 
     this.handleSeekChapter = ({
@@ -931,11 +969,11 @@ class Player extends Component {
       onPlaybackRateChange && onPlaybackRateChange(data);
     };
 
-    this.handleSeeking = () => {
+    this.handleSeeked = () => {
       const {
-        onSeeking
+        onSeeked
       } = this.props;
-      onSeeking && onSeeking();
+      onSeeked && onSeeked();
     };
 
     this.handleFullscreenChange = ({
