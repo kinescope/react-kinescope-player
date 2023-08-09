@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/kinescope/react-kinescope-player/compare/v0.3.4...v0.4.0) (2023-08-09)
+
+### Features
+* playlist,
+* add event onCurrentTrackChanged,
+* remove event onAutoQualityChanged,
+* rename event onSeeked,
+* add methods: getPlaylistItem, switchTo, next, previous
+
 ### [0.3.4](https://github.com/kinescope/react-kinescope-player/compare/v0.3.3...v0.3.4) (2023-04-21)
 
 ### Features
