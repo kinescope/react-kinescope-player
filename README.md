@@ -78,7 +78,7 @@ export default Player;
   </tr>
   <tr>
       <td>videoId</td>
-      <td>string</td>
+      <td>string | string[]</td>
       <td>No</td>
       <td>Yes</td>
   </tr>
@@ -322,9 +322,9 @@ type Watermark =
       </td>
   </tr>
   <tr>
-      <td>onAutoQualityChanged</td>
+      <td>onCurrentTrackChanged</td>
       <td>
-        	quality: VideoQuality;
+        	item: {id?: string};
       </td>
   </tr>
   <tr>
@@ -384,7 +384,7 @@ type Watermark =
       <td>playbackRate: number;</td>
   </tr>
   <tr>
-      <td>onSeeking</td>
+      <td>onSeeked</td>
       <td>No</td>
   </tr>
   <tr>
@@ -508,7 +508,7 @@ type Watermark =
       <td>Promise&lt;VideoQuality[]&gt;</td>
   </tr>
   <tr>
-      <td>getCurrentVideoQuality</td>
+      <td>getVideoQuality</td>
       <td>No</td>
       <td>Promise&lt;VideoQuality&gt;</td>
   </tr>
@@ -540,6 +540,26 @@ type Watermark =
   <tr>
       <td>setFullscreen</td>
       <td>(fullscreen: boolean)</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>getPlaylistItem</td>
+      <td>No</td>
+      <td>Promise<{id: string | undefined} | undefined></td>
+  </tr>
+  <tr>
+      <td>switchTo</td>
+      <td>(id: string)</td>
+       <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>next</td>
+       <td>No</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
+      <td>previous</td>
+      <td>No</td>
       <td>Promise&lt;void&gt;</td>
   </tr>
 </table>
