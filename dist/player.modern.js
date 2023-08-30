@@ -840,7 +840,7 @@ class Player extends Component {
         return Promise.reject(null);
       }
 
-      return this.player.next();
+      return this.player.previous();
     };
 
     this.handleEventReady = ({

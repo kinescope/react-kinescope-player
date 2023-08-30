@@ -736,7 +736,7 @@ class Player extends Component<PlayerPropsTypes> {
 		if (!this.player) {
 			return Promise.reject(null);
 		}
-		return this.player.next();
+		return this.player.previous();
 	};
 
 	private handleEventReady = ({data}) => {

@@ -948,7 +948,7 @@
           return Promise.reject(null);
         }
 
-        return _this.player.next();
+        return _this.player.previous();
       };
 
       _this.handleEventReady = function (_ref) {
