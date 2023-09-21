@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.2](https://github.com/kinescope/react-kinescope-player/compare/v0.4.1...v0.4.2) (2023-09-21)
+
+### Bug Fixes
+
+* package.json export types ([ed0e780](https://github.com/kinescope/react-kinescope-player/commit/ed0e78022e0ca959db15ca48bdbfc2d7d4d1763f))
+
 ### [0.4.1](https://github.com/kinescope/react-kinescope-player/compare/v0.4.0...v0.4.1) (2023-08-30)
 
 ### Bug Fixes
