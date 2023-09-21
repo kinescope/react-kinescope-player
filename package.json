@@ -28,10 +28,23 @@
 		"access": "public",
 		"tag": "latest"
 	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/player.d.ts",
+			"import": "./dist/player.module.js",
+			"require": "./dist/player.js",
+			"default": "./dist/player.module.js"
+		}
+	},
 	"main": "dist/player.js",
-	"exports": "./dist/player.modern.js",
 	"module": "dist/player.module.js",
+	"jsnext:main": "dist/player.module.js",
 	"unpkg": "dist/player.umd.js",
+	"umd:main": "dist/player.umd.js",
 	"types": "dist/player.d.ts",
 	"typings": "dist/player.d.ts",
 	"source": "src/player.tsx",
