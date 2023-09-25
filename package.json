@@ -28,10 +28,6 @@
 		"access": "public",
 		"tag": "latest"
 	},
-	"files": [
-		"dist",
-		"src"
-	],
 	"exports": {
 		".": {
 			"types": "./dist/player.d.ts",
