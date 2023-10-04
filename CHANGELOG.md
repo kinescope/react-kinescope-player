@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.3](https://github.com/kinescope/react-kinescope-player/compare/v0.4.2...v0.4.3) (2023-10-04)
+
+### Features
+
+* example next js tsx ([2aa05ff](https://github.com/kinescope/react-kinescope-player/commit/2aa05fff5a58bbf65001dbe9f3aa864257c5fdac))
+* preload ([f36d604](https://github.com/kinescope/react-kinescope-player/commit/f36d604585330d3ba20d7b37307583fd109dc242))
+
 ### [0.4.2](https://github.com/kinescope/react-kinescope-player/compare/v0.4.1...v0.4.2) (2023-09-21)
 
 ### Bug Fixes
