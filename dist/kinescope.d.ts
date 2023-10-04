@@ -54,6 +54,7 @@ export declare type VideoQualityLevels = {
         url?: string;
     };
 };
+export declare type PreloadTypes = boolean | 'auto';
 export declare type WatermarkModeTypes = 'stripes' | 'random';
 export declare type WatermarkTypes = string | {
     text: string;
@@ -132,6 +133,7 @@ export interface KinescopeCreateOptions {
         autoPause?: boolean | 'reset';
         loop?: boolean;
         playsInline?: boolean;
+        preload?: PreloadTypes;
         muted?: boolean;
         localStorage?: boolean;
     };

@@ -298,6 +298,7 @@
               loop = _this$props.loop,
               muted = _this$props.muted,
               playsInline = _this$props.playsInline,
+              preload = _this$props.preload,
               language = _this$props.language,
               controls = _this$props.controls,
               mainPlayButton = _this$props.mainPlayButton,
@@ -310,7 +311,7 @@
           }
 
           var _temp2 = function () {
-            if (!reactFastCompare(videoId, prevProps.videoId) || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage)) {
+            if (!reactFastCompare(videoId, prevProps.videoId) || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || preload !== prevProps.preload || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage)) {
               return Promise.resolve(_this.create()).then(function () {});
             }
           }();
@@ -673,6 +674,7 @@
             loop = _this$props4.loop,
             muted = _this$props4.muted,
             playsInline = _this$props4.playsInline,
+            preload = _this$props4.preload,
             language = _this$props4.language,
             controls = _this$props4.controls,
             mainPlayButton = _this$props4.mainPlayButton,
@@ -693,6 +695,7 @@
             loop: loop,
             muted: muted,
             playsInline: playsInline,
+            preload: preload,
             localStorage: localStorage
           },
           playlist: [{

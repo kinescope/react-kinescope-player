@@ -10,6 +10,7 @@ import {
 	ActionToolBar,
 	KinescopeCreateOptions,
 	WatermarkTypes,
+	PreloadTypes,
 } from './kinescope';
 import Loader from './loader';
 import {VIDEO_HOST, VIDEO_PLAYLIST_HOST} from './constant';
@@ -123,6 +124,7 @@ export type PlayerPropsTypes = {
 	autoPause?: boolean | 'reset';
 	loop?: boolean;
 	playsInline?: boolean;
+	preload?: PreloadTypes;
 	muted?: boolean;
 	language?: 'ru' | 'en';
 	controls?: boolean;
@@ -220,6 +222,7 @@ class Player extends Component<PlayerPropsTypes> {
 			loop,
 			muted,
 			playsInline,
+			preload,
 			language,
 			controls,
 			mainPlayButton,
@@ -241,6 +244,7 @@ class Player extends Component<PlayerPropsTypes> {
 			autoPlay !== prevProps.autoPlay ||
 			loop !== prevProps.loop ||
 			playsInline !== prevProps.playsInline ||
+			preload !== prevProps.preload ||
 			language !== prevProps.language ||
 			controls !== prevProps.controls ||
 			mainPlayButton !== prevProps.mainPlayButton ||
@@ -491,6 +495,7 @@ class Player extends Component<PlayerPropsTypes> {
 			loop,
 			muted,
 			playsInline,
+			preload,
 			language,
 			controls,
 			mainPlayButton,
@@ -510,6 +515,7 @@ class Player extends Component<PlayerPropsTypes> {
 				loop: loop,
 				muted: muted,
 				playsInline: playsInline,
+				preload: preload,
 				localStorage: localStorage,
 			},
 			playlist: [

@@ -95,6 +95,12 @@ export default Player;
       <td>No</td>
   </tr>
   <tr>
+      <td>preload</td>
+      <td>boolean | 'auto'</td>
+      <td>false</td>
+      <td>No</td>
+  </tr> 
+  <tr>
       <td>title</td>
       <td>string</td>
       <td>No</td>

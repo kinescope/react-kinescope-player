@@ -71,6 +71,8 @@ export type VideoQualityLevels = {
 	};
 };
 
+export type PreloadTypes = boolean | 'auto';
+
 export type WatermarkModeTypes = 'stripes' | 'random';
 
 export type WatermarkTypes =
@@ -151,6 +153,7 @@ export interface KinescopeCreateOptions {
 		autoPause?: boolean | 'reset';
 		loop?: boolean;
 		playsInline?: boolean;
+		preload?: PreloadTypes;
 		muted?: boolean;
 		localStorage?: boolean;
 	};

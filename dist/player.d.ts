@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { VideoQuality, VideoQualityLevels, ActionCallToAction, ActionToolBar, WatermarkTypes } from './kinescope';
+import { VideoQuality, VideoQualityLevels, ActionCallToAction, ActionToolBar, WatermarkTypes, PreloadTypes } from './kinescope';
 export declare type VttTypes = {
     label: string;
     src: string;
@@ -88,6 +88,7 @@ export declare type PlayerPropsTypes = {
     autoPause?: boolean | 'reset';
     loop?: boolean;
     playsInline?: boolean;
+    preload?: PreloadTypes;
     muted?: boolean;
     language?: 'ru' | 'en';
     controls?: boolean;
