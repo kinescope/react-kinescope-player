@@ -399,6 +399,12 @@ type Watermark =
         isFullscreen: boolean;<br/>
         video: boolean;
       </td>
+  </tr>  
+  <tr>
+      <td>onPipChange</td>
+      <td>
+        isPip: boolean;
+      </td>
   </tr>
   <tr>
       <td>onCallAction</td>
