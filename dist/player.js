@@ -624,7 +624,7 @@ var Player = /*#__PURE__*/function (_Component) {
         return [];
       }
 
-      return [[Events.Ready, _this.handleEventReady], [Events.QualityChanged, _this.handleQualityChanged], [Events.CurrentTrackChanged, _this.handleCurrentTrackChanged], [Events.SeekChapter, _this.handleSeekChapter], [Events.SizeChanged, _this.handleSizeChanged], [Events.Play, _this.handlePlay], [Events.Playing, _this.handlePlaying], [Events.Waiting, _this.handleWaiting], [Events.Pause, _this.handlePause], [Events.Ended, _this.handleEnded], [Events.TimeUpdate, _this.handleTimeUpdate], [Events.Progress, _this.handleProgress], [Events.DurationChange, _this.handleDurationChange], [Events.VolumeChange, _this.handleVolumeChange], [Events.PlaybackRateChange, _this.handlePlaybackRateChange], [Events.Seeked, _this.handleSeeked], [Events.FullscreenChange, _this.handleFullscreenChange], [Events.CallAction, _this.handleCallAction], [Events.CallBookmark, _this.handleCallBookmark], [Events.Error, _this.handleError], [Events.Destroy, _this.handleDestroy]];
+      return [[Events.Ready, _this.handleEventReady], [Events.QualityChanged, _this.handleQualityChanged], [Events.CurrentTrackChanged, _this.handleCurrentTrackChanged], [Events.SeekChapter, _this.handleSeekChapter], [Events.SizeChanged, _this.handleSizeChanged], [Events.Play, _this.handlePlay], [Events.Playing, _this.handlePlaying], [Events.Waiting, _this.handleWaiting], [Events.Pause, _this.handlePause], [Events.Ended, _this.handleEnded], [Events.TimeUpdate, _this.handleTimeUpdate], [Events.Progress, _this.handleProgress], [Events.DurationChange, _this.handleDurationChange], [Events.VolumeChange, _this.handleVolumeChange], [Events.PlaybackRateChange, _this.handlePlaybackRateChange], [Events.PipChange, _this.handlePipChange], [Events.Seeked, _this.handleSeeked], [Events.FullscreenChange, _this.handleFullscreenChange], [Events.CallAction, _this.handleCallAction], [Events.CallBookmark, _this.handleCallBookmark], [Events.Error, _this.handleError], [Events.Destroy, _this.handleDestroy]];
     };
 
     _this.getQueryParams = function () {
@@ -1039,31 +1039,37 @@ var Player = /*#__PURE__*/function (_Component) {
       onPlaybackRateChange && onPlaybackRateChange(data);
     };
 
+    _this.handlePipChange = function (_ref11) {
+      var data = _ref11.data;
+      var onPipChange = _this.props.onPipChange;
+      onPipChange && onPipChange(data);
+    };
+
     _this.handleSeeked = function () {
       var onSeeked = _this.props.onSeeked;
       onSeeked && onSeeked();
     };
 
-    _this.handleFullscreenChange = function (_ref11) {
-      var data = _ref11.data;
+    _this.handleFullscreenChange = function (_ref12) {
+      var data = _ref12.data;
       var onFullscreenChange = _this.props.onFullscreenChange;
       onFullscreenChange && onFullscreenChange(data);
     };
 
-    _this.handleCallAction = function (_ref12) {
-      var data = _ref12.data;
+    _this.handleCallAction = function (_ref13) {
+      var data = _ref13.data;
       var onCallAction = _this.props.onCallAction;
       onCallAction && onCallAction(data);
     };
 
-    _this.handleCallBookmark = function (_ref13) {
-      var data = _ref13.data;
+    _this.handleCallBookmark = function (_ref14) {
+      var data = _ref14.data;
       var onCallBookmark = _this.props.onCallBookmark;
       onCallBookmark && onCallBookmark(data);
     };
 
-    _this.handleError = function (_ref14) {
-      var data = _ref14.data;
+    _this.handleError = function (_ref15) {
+      var data = _ref15.data;
       var onError = _this.props.onError;
       onError && onError(data);
     };

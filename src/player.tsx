@@ -77,6 +77,10 @@ export type EventPlaybackRateChangeTypes = {
 	playbackRate: number;
 };
 
+export type EventPipChangeTypes = {
+	isPip: boolean;
+};
+
 export type EventSizeChangedTypes = {
 	width: number;
 	height: number;
@@ -154,6 +158,7 @@ export type PlayerPropsTypes = {
 	onDurationChange?: (data: EventDurationChangeTypes) => void;
 	onVolumeChange?: (data: EventVolumeChangeTypes) => void;
 	onPlaybackRateChange?: (data: EventPlaybackRateChangeTypes) => void;
+	onPipChange?: (data: EventPipChangeTypes) => void;
 	onSeeked?: () => void;
 	onFullscreenChange?: (data: EventFullscreenChangeTypes) => void;
 	onCallAction?: (data: EventCallActionTypes) => void;
@@ -446,6 +451,7 @@ class Player extends Component<PlayerPropsTypes> {
 			[Events.DurationChange, this.handleDurationChange],
 			[Events.VolumeChange, this.handleVolumeChange],
 			[Events.PlaybackRateChange, this.handlePlaybackRateChange],
+			[Events.PipChange, this.handlePipChange],
 			[Events.Seeked, this.handleSeeked],
 			[Events.FullscreenChange, this.handleFullscreenChange],
 			[Events.CallAction, this.handleCallAction],
@@ -819,6 +825,11 @@ class Player extends Component<PlayerPropsTypes> {
 	private handlePlaybackRateChange = ({data}) => {
 		const {onPlaybackRateChange} = this.props;
 		onPlaybackRateChange && onPlaybackRateChange(data);
+	};
+
+	private handlePipChange = ({data}) => {
+		const {onPipChange} = this.props;
+		onPipChange && onPipChange(data);
 	};
 
 	private handleSeeked = () => {

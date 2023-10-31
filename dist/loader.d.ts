@@ -1,5 +1,5 @@
 import { Component, ReactNode } from 'react';
-declare type LoaderProps = {
+type LoaderProps = {
     children: ReactNode;
     onJSLoad: () => void;
     onJSLoadError?: (e: ErrorEvent) => void;

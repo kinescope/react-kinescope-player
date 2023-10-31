@@ -17,10 +17,11 @@ export declare enum KinescopePlayerEvent {
     VolumeChange = 14,
     PlaybackRateChange = 15,
     FullscreenChange = 16,
-    CallAction = 17,
-    CallBookmark = 18,
-    Error = 19,
-    Destroy = 20
+    PipChange = 17,
+    CallAction = 18,
+    CallBookmark = 19,
+    Error = 20,
+    Destroy = 21
 }
 export interface PlaylistItemOptions {
     title?: string;
@@ -47,16 +48,16 @@ export interface PlaylistItemOptions {
         };
     };
 }
-export declare type VideoQuality = 'auto' | 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
-export declare type VideoQualityLevels = {
+export type VideoQuality = 'auto' | 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
+export type VideoQualityLevels = {
     [quality in VideoQuality]: {
         level: number;
         url?: string;
     };
 };
-export declare type PreloadTypes = boolean | 'auto';
-export declare type WatermarkModeTypes = 'stripes' | 'random';
-export declare type WatermarkTypes = string | {
+export type PreloadTypes = boolean | 'auto';
+export type WatermarkModeTypes = 'stripes' | 'random';
+export type WatermarkTypes = string | {
     text: string;
     mode?: WatermarkModeTypes;
     scale?: number;
@@ -65,13 +66,13 @@ export declare type WatermarkTypes = string | {
         hidden: number;
     };
 };
-export declare type ActionToolBar = {
+export type ActionToolBar = {
     id: string;
     type: 'tool';
     title?: string;
     icon: 'note';
 };
-export declare type ActionCallToAction = {
+export type ActionCallToAction = {
     id: string;
     type: 'cta';
     title: string;

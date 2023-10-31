@@ -18,6 +18,7 @@ export enum KinescopePlayerEvent {
 	VolumeChange,
 	PlaybackRateChange,
 	FullscreenChange,
+	PipChange,
 	CallAction,
 	CallBookmark,
 	Error,

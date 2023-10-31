@@ -1,78 +1,81 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { VideoQuality, VideoQualityLevels, ActionCallToAction, ActionToolBar, WatermarkTypes, PreloadTypes } from './kinescope';
-export declare type VttTypes = {
+export type VttTypes = {
     label: string;
     src: string;
     srcLang: string;
 };
-export declare type ChapterTypes = {
+export type ChapterTypes = {
     position: number;
     title: string;
 };
-export declare type ActionsTypes = ActionToolBar | ActionCallToAction;
-export declare type BookmarkTypes = {
+export type ActionsTypes = ActionToolBar | ActionCallToAction;
+export type BookmarkTypes = {
     id: string;
     time: number;
     title?: string;
 };
-export declare type EventReadyTypes = {
+export type EventReadyTypes = {
     currentTime: number;
     duration: number;
     quality: VideoQuality;
     qualityLevels: VideoQualityLevels;
 };
-export declare type EventQualityChangedTypes = {
+export type EventQualityChangedTypes = {
     quality: VideoQuality;
 };
-export declare type EventCurrentTrackChangedTypes = {
+export type EventCurrentTrackChangedTypes = {
     item: {
         id?: string;
     };
 };
-export declare type EventSeekChapterTypes = {
+export type EventSeekChapterTypes = {
     position: number;
 };
-export declare type EventDurationChangeTypes = {
+export type EventDurationChangeTypes = {
     duration: number;
 };
-export declare type EventProgressTypes = {
+export type EventProgressTypes = {
     bufferedTime: number;
 };
-export declare type EventTimeUpdateTypes = {
+export type EventTimeUpdateTypes = {
     currentTime: number;
 };
-export declare type EventVolumeChangeTypes = {
+export type EventVolumeChangeTypes = {
     muted: boolean;
     volume: number;
 };
-export declare type EventPlaybackRateChangeTypes = {
+export type EventPlaybackRateChangeTypes = {
     playbackRate: number;
 };
-export declare type EventSizeChangedTypes = {
+export type EventPipChangeTypes = {
+    isPip: boolean;
+};
+export type EventSizeChangedTypes = {
     width: number;
     height: number;
 };
-export declare type EventFullscreenChangeTypes = {
+export type EventFullscreenChangeTypes = {
     isFullscreen: boolean;
     video: boolean;
 };
-export declare type EventCallActionTypes = {
+export type EventCallActionTypes = {
     id: string;
     title?: string;
     type: string;
 };
-export declare type EventCallBookmarkTypes = {
+export type EventCallBookmarkTypes = {
     id: string;
     time: number;
 };
-export declare type EventErrorTypes = {
+export type EventErrorTypes = {
     error: unknown;
 };
-export declare type QueryTypes = {
+export type QueryTypes = {
     seek?: number;
     duration?: number;
 };
-export declare type PlayerPropsTypes = {
+export type PlayerPropsTypes = {
     videoId: string | string[];
     query?: QueryTypes;
     className?: string;
@@ -117,6 +120,7 @@ export declare type PlayerPropsTypes = {
     onDurationChange?: (data: EventDurationChangeTypes) => void;
     onVolumeChange?: (data: EventVolumeChangeTypes) => void;
     onPlaybackRateChange?: (data: EventPlaybackRateChangeTypes) => void;
+    onPipChange?: (data: EventPipChangeTypes) => void;
     onSeeked?: () => void;
     onFullscreenChange?: (data: EventFullscreenChangeTypes) => void;
     onCallAction?: (data: EventCallActionTypes) => void;
@@ -202,12 +206,13 @@ declare class Player extends Component<PlayerPropsTypes> {
     private handleDurationChange;
     private handleVolumeChange;
     private handlePlaybackRateChange;
+    private handlePipChange;
     private handleSeeked;
     private handleFullscreenChange;
     private handleCallAction;
     private handleCallBookmark;
     private handleError;
     private handleDestroy;
-    render(): JSX.Element;
+    render(): React.JSX.Element;
 }
 export default Player;
