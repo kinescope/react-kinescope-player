@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.4](https://github.com/kinescope/react-kinescope-player/compare/v0.4.3...v0.4.4) (2023-10-31)
+
+### Features
+
+* PipChange ([aa6b09b](https://github.com/kinescope/react-kinescope-player/commit/aa6b09b53061f6cf81c14c92c260c6f2a2a4e45f))
+
 ### [0.4.3](https://github.com/kinescope/react-kinescope-player/compare/v0.4.2...v0.4.3) (2023-10-04)
 
 ### Features
