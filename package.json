@@ -51,6 +51,7 @@
 	"devDependencies": {
 		"@types/react": "^18.2.33",
 		"@types/react-dom": "^18.2.14",
+		"base-x": "^4.0.0",
 		"microbundle": "^0.15.1",
 		"prettier": "^3.0.3",
 		"react": "^18.2.0",

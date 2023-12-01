@@ -14,6 +14,7 @@ import {
 } from './kinescope';
 import Loader from './loader';
 import {VIDEO_HOST, VIDEO_PLAYLIST_HOST} from './constant';
+import {base64to58, baseTo64} from './tools/token';
 
 type CallbackTypes = (any) => void;
 type EventListTypes = [KinescopePlayerEvent, CallbackTypes][];
@@ -737,18 +738,33 @@ class Player extends Component<PlayerPropsTypes> {
 		return this.player.setPip(pip);
 	};
 
-	public getPlaylistItem = (): Promise<{id: string | undefined} | undefined> => {
+	/**
+	 * @param base58 boolean - force base58
+	 * */
+	public getPlaylistItem = (
+		base58: boolean = false,
+	): Promise<{id: string | undefined} | undefined> => {
 		if (!this.player) {
 			return Promise.reject(null);
 		}
-		return this.player.getPlaylistItem();
+		return this.player.getPlaylistItem().then(data => {
+			if (!data || !data.id) {
+				return data;
+			}
+			return {
+				id: base58 ? base64to58(data.id) : data.id,
+			};
+		});
 	};
 
+	/**
+	 * @param id string - uuid base58 or base64
+	 * */
 	public switchTo = (id: string): Promise<void> => {
 		if (!this.player) {
 			return Promise.reject(null);
 		}
-		return this.player.switchTo(id);
+		return this.player.switchTo(baseTo64(id));
 	};
 
 	public next = (): Promise<void> => {

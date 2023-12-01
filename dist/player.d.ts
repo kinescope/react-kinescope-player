@@ -187,9 +187,15 @@ declare class Player extends Component<PlayerPropsTypes> {
     setFullscreen: (fullscreen: boolean) => Promise<void>;
     isPip: () => Promise<boolean>;
     setPip: (pip: boolean) => Promise<void>;
-    getPlaylistItem: () => Promise<{
+    /**
+     * @param base58 boolean - force base58
+     * */
+    getPlaylistItem: (base58?: boolean) => Promise<{
         id: string | undefined;
     } | undefined>;
+    /**
+     * @param id string - uuid base58 or base64
+     * */
     switchTo: (id: string) => Promise<void>;
     next: () => Promise<void>;
     previous: () => Promise<void>;
