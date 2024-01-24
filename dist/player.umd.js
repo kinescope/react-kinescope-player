@@ -922,6 +922,22 @@
         return _this.player.setFullscreen(fullscreen);
       };
 
+      _this.isPip = function () {
+        if (!_this.player) {
+          return Promise.reject(null);
+        }
+
+        return _this.player.isPip();
+      };
+
+      _this.setPip = function (pip) {
+        if (!_this.player) {
+          return Promise.reject(null);
+        }
+
+        return _this.player.setPip(pip);
+      };
+
       _this.getPlaylistItem = function () {
         if (!_this.player) {
           return Promise.reject(null);

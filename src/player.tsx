@@ -723,6 +723,20 @@ class Player extends Component<PlayerPropsTypes> {
 		return this.player.setFullscreen(fullscreen);
 	};
 
+	public isPip = (): Promise<boolean> => {
+		if (!this.player) {
+			return Promise.reject(null);
+		}
+		return this.player.isPip();
+	};
+
+	public setPip = (pip: boolean): Promise<void> => {
+		if (!this.player) {
+			return Promise.reject(null);
+		}
+		return this.player.setPip(pip);
+	};
+
 	public getPlaylistItem = (): Promise<{id: string | undefined} | undefined> => {
 		if (!this.player) {
 			return Promise.reject(null);

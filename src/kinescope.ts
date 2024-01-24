@@ -134,6 +134,8 @@ export interface KinescopePlayer {
 	closeCTA(): Promise<void>;
 	isFullscreen(): Promise<boolean>;
 	setFullscreen(fullscreen: boolean): Promise<void>;
+	isPip(): Promise<boolean>;
+	setPip(pip: boolean): Promise<void>;
 	setPlaylistItemOptions(options: PlaylistItemOptions): Promise<void>;
 	getPlaylistItem(): Promise<{id: string | undefined} | undefined>;
 	switchTo(id: string): Promise<void>;

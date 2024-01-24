@@ -185,6 +185,8 @@ declare class Player extends Component<PlayerPropsTypes> {
     closeCTA: () => Promise<void>;
     isFullscreen: () => Promise<boolean>;
     setFullscreen: (fullscreen: boolean) => Promise<void>;
+    isPip: () => Promise<boolean>;
+    setPip: (pip: boolean) => Promise<void>;
     getPlaylistItem: () => Promise<{
         id: string | undefined;
     } | undefined>;
