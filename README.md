@@ -555,6 +555,16 @@ type Watermark =
       <td>Promise&lt;void&gt;</td>
   </tr>
   <tr>
+      <td>isPip</td>
+      <td>No</td>
+      <td>Promise&lt;boolean&gt;</td>
+  </tr>
+  <tr>
+      <td>setPip</td>
+      <td>(pip: boolean)</td>
+      <td>Promise&lt;void&gt;</td>
+  </tr>
+  <tr>
       <td>getPlaylistItem</td>
       <td>No</td>
       <td>Promise<{id: string | undefined} | undefined></td>
