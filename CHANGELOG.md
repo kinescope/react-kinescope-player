@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.5](https://github.com/kinescope/react-kinescope-player/compare/v0.4.4...v0.4.5) (2024-01-24)
+
+### Features
+
+* isPip setPip ([c5c8373](https://github.com/kinescope/react-kinescope-player/commit/c5c8373eaeee7a25738841f752125dc5184557d0))
+
 ### [0.4.4](https://github.com/kinescope/react-kinescope-player/compare/v0.4.3...v0.4.4) (2023-10-31)
 
 ### Features
