@@ -1127,6 +1127,7 @@ var Player = /*#__PURE__*/function (_Component) {
       if (base58 === void 0) {
         base58 = false;
       }
+
       if (!_this.player) {
         return Promise.reject(null);
       }
