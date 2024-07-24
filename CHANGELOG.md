@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.6](https://github.com/kinescope/react-kinescope-player/compare/v0.4.5...v0.4.6) (2024-07-24)
+
+### Features
+
+* theme subtitles ([838aeca](https://github.com/kinescope/react-kinescope-player/commit/838aeca0aa323e8877cc092b36496a4b9c97be38))
+
 ### [0.4.5](https://github.com/kinescope/react-kinescope-player/compare/v0.4.4...v0.4.5) (2024-01-24)
 
 ### Features
