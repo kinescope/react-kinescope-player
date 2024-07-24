@@ -297,14 +297,15 @@ var Player = /*#__PURE__*/function (_Component) {
             mainPlayButton = _this$props.mainPlayButton,
             playbackRateButton = _this$props.playbackRateButton,
             watermark = _this$props.watermark,
-            localStorage = _this$props.localStorage;
+            localStorage = _this$props.localStorage,
+            theme = _this$props.theme;
 
         if (muted !== prevProps.muted) {
           muted ? _this.mute() : _this.unmute();
         }
 
         var _temp2 = function () {
-          if (!reactFastCompare(videoId, prevProps.videoId) || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || preload !== prevProps.preload || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage)) {
+          if (!reactFastCompare(videoId, prevProps.videoId) || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || preload !== prevProps.preload || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage) || !reactFastCompare(theme, prevProps.theme)) {
             return Promise.resolve(_this.create()).then(function () {});
           }
         }();
@@ -675,7 +676,8 @@ var Player = /*#__PURE__*/function (_Component) {
           bookmarks = _this$props4.bookmarks,
           actions = _this$props4.actions,
           watermark = _this$props4.watermark,
-          localStorage = _this$props4.localStorage;
+          localStorage = _this$props4.localStorage,
+          theme = _this$props4.theme;
       var options = {
         url: _this.getIFrameUrl(),
         size: {
@@ -712,6 +714,7 @@ var Player = /*#__PURE__*/function (_Component) {
           playbackRateButton: playbackRateButton,
           watermark: watermark
         },
+        theme: theme,
         settings: {
           externalId: externalId
         }

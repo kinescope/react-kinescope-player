@@ -11,6 +11,7 @@ import {
 	KinescopeCreateOptions,
 	WatermarkTypes,
 	PreloadTypes,
+	Theme,
 } from './kinescope';
 import Loader from './loader';
 import {VIDEO_HOST, VIDEO_PLAYLIST_HOST} from './constant';
@@ -142,6 +143,7 @@ export type PlayerPropsTypes = {
 	bookmarks?: BookmarkTypes[];
 	watermark?: WatermarkTypes;
 	localStorage?: boolean;
+	theme?: Theme;
 
 	onReady?: (data: EventReadyTypes) => void;
 	onQualityChanged?: (data: EventQualityChangedTypes) => void;
@@ -234,6 +236,7 @@ class Player extends Component<PlayerPropsTypes> {
 			playbackRateButton,
 			watermark,
 			localStorage,
+			theme,
 		} = this.props;
 
 		if (muted !== prevProps.muted) {
@@ -255,7 +258,8 @@ class Player extends Component<PlayerPropsTypes> {
 			mainPlayButton !== prevProps.mainPlayButton ||
 			playbackRateButton !== prevProps.playbackRateButton ||
 			!isEqual(watermark, prevProps.watermark) ||
-			!isEqual(localStorage, prevProps.localStorage)
+			!isEqual(localStorage, prevProps.localStorage) ||
+			!isEqual(theme, prevProps.theme)
 		) {
 			await this.create();
 		}
@@ -510,6 +514,7 @@ class Player extends Component<PlayerPropsTypes> {
 			actions,
 			watermark,
 			localStorage,
+			theme,
 		} = this.props;
 
 		let options: KinescopeCreateOptions = {
@@ -547,6 +552,7 @@ class Player extends Component<PlayerPropsTypes> {
 				playbackRateButton: playbackRateButton,
 				watermark: watermark,
 			},
+			theme: theme,
 			settings: {
 				externalId: externalId,
 			},

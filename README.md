@@ -225,6 +225,12 @@ export default Player;
       <td><a href="#watermark">Watermark</a></td>
       <td>No</td>
       <td>No</td>
+  </tr>
+  <tr>
+      <td>theme</td>
+      <td><a href="#theme">Theme</a></td>
+      <td>No</td>
+      <td>No</td>
   </tr>  
   <tr>
       <td>localStorage</td>
@@ -296,6 +302,18 @@ type Watermark =
 			scale?: number;
 			displayTimeout?: number | {visible: number; hidden: number};
 	  };
+```
+
+##### Theme
+```ts
+type Theme = {
+	subtitles?: {
+		/** Base font size in em. */
+		textSize: number;
+		textAlign: 'left' | 'center';
+		textLength: 'auto' | number;
+	};
+};
 ```
 
 ## Events

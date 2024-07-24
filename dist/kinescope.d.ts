@@ -48,6 +48,15 @@ export interface PlaylistItemOptions {
         };
     };
 }
+export interface ThemeSubtitles {
+    /** Base font size in em. */
+    textSize: number;
+    textAlign: 'left' | 'center';
+    textLength: 'auto' | number;
+}
+export interface Theme {
+    subtitles?: ThemeSubtitles;
+}
 export type VideoQuality = 'auto' | 'index' | 144 | 240 | 360 | 480 | 576 | 720 | 1080 | 1440 | 2160 | 4320;
 export type VideoQualityLevels = {
     [quality in VideoQuality]: {
@@ -147,6 +156,7 @@ export interface KinescopeCreateOptions {
         playbackRateButton?: boolean;
         watermark?: WatermarkTypes;
     };
+    theme?: Theme;
     settings?: {
         externalId?: string;
     };

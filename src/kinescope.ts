@@ -51,6 +51,17 @@ export interface PlaylistItemOptions {
 	};
 }
 
+export interface ThemeSubtitles {
+	/** Base font size in em. */
+	textSize: number;
+	textAlign: 'left' | 'center';
+	textLength: 'auto' | number;
+}
+
+export interface Theme {
+	subtitles?: ThemeSubtitles;
+}
+
 export type VideoQuality =
 	| 'auto'
 	| 'index'
@@ -167,6 +178,7 @@ export interface KinescopeCreateOptions {
 		playbackRateButton?: boolean;
 		watermark?: WatermarkTypes;
 	};
+	theme?: Theme;
 	settings?: {
 		externalId?: string;
 	};

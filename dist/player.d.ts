@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { VideoQuality, VideoQualityLevels, ActionCallToAction, ActionToolBar, WatermarkTypes, PreloadTypes } from './kinescope';
+import { VideoQuality, VideoQualityLevels, ActionCallToAction, ActionToolBar, WatermarkTypes, PreloadTypes, Theme } from './kinescope';
 export type VttTypes = {
     label: string;
     src: string;
@@ -105,6 +105,7 @@ export type PlayerPropsTypes = {
     bookmarks?: BookmarkTypes[];
     watermark?: WatermarkTypes;
     localStorage?: boolean;
+    theme?: Theme;
     onReady?: (data: EventReadyTypes) => void;
     onQualityChanged?: (data: EventQualityChangedTypes) => void;
     onCurrentTrackChanged?: (data: EventCurrentTrackChangedTypes) => void;
