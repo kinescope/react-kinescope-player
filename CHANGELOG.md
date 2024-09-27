@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.7](https://github.com/kinescope/react-kinescope-player/compare/v0.4.6...v0.4.7) (2024-09-27)
+
+### Features
+
+* onInit, onInitError ([7d19dbe](https://github.com/kinescope/react-kinescope-player/commit/7d19dbe517d44e280c51f721f898e22d7fdbdb11))
+
 ### [0.4.6](https://github.com/kinescope/react-kinescope-player/compare/v0.4.5...v0.4.6) (2024-07-24)
 
 ### Features
