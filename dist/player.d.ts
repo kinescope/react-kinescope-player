@@ -15,6 +15,9 @@ export type BookmarkTypes = {
     time: number;
     title?: string;
 };
+export type EventInitTypes = {
+    playerId: string;
+};
 export type EventReadyTypes = {
     currentTime: number;
     duration: number;
@@ -106,6 +109,8 @@ export type PlayerPropsTypes = {
     watermark?: WatermarkTypes;
     localStorage?: boolean;
     theme?: Theme;
+    onInit?: (data: EventInitTypes) => void;
+    onInitError?: (error: Error) => void;
     onReady?: (data: EventReadyTypes) => void;
     onQualityChanged?: (data: EventQualityChangedTypes) => void;
     onCurrentTrackChanged?: (data: EventCurrentTrackChangedTypes) => void;

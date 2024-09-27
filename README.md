@@ -331,6 +331,16 @@ type Theme = {
       <td>No</td>
   </tr>
   <tr>
+      <td>onInit</td>
+      <td>
+        playerId: string;
+      </td>
+  </tr>
+  <tr>
+      <td>onInitError</td>
+      <td>Error</td>
+  </tr>
+  <tr>
       <td>onReady</td>
       <td>
         currentTime: number;<br/>

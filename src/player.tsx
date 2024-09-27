@@ -38,6 +38,10 @@ export type BookmarkTypes = {
 	title?: string;
 };
 
+export type EventInitTypes = {
+	playerId: string;
+};
+
 export type EventReadyTypes = {
 	currentTime: number;
 	duration: number;
@@ -145,6 +149,8 @@ export type PlayerPropsTypes = {
 	localStorage?: boolean;
 	theme?: Theme;
 
+	onInit?: (data: EventInitTypes) => void;
+	onInitError?: (error: Error) => void;
 	onReady?: (data: EventReadyTypes) => void;
 	onQualityChanged?: (data: EventQualityChangedTypes) => void;
 	onCurrentTrackChanged?: (data: EventCurrentTrackChangedTypes) => void;
@@ -398,6 +404,7 @@ class Player extends Component<PlayerPropsTypes> {
 	};
 
 	private create = async () => {
+		const {onInit, onInitError} = this.props;
 		await this.destroy();
 
 		const parentsRef = this.parentsRef.current;
@@ -412,15 +419,24 @@ class Player extends Component<PlayerPropsTypes> {
 		playerDiv.setAttribute('id', playerId);
 		parentsRef.appendChild(playerDiv);
 
-		/* fast re create player fix */
+		/* fast re-create player fix */
 		await new Promise(resolve => {
 			setTimeout(resolve, 0);
 		});
 		if (!document.getElementById(playerId)) {
 			return;
 		}
-
-		this.player = await this.createPlayer(playerId);
+		this.player = await new Promise((resolve, reject) => {
+			this.createPlayer(playerId)
+				.then(player => {
+					resolve(player);
+					onInit && onInit({playerId: playerId});
+				})
+				.catch((e: Error) => {
+					reject(e);
+					onInitError && onInitError(e);
+				});
+		});
 		this.getEventList().forEach(event => {
 			this.player?.on(event[0], event[1]);
 		});

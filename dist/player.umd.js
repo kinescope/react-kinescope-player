@@ -566,6 +566,9 @@
 
       _this.create = function () {
         try {
+          var _this$props4 = _this.props,
+              onInit = _this$props4.onInit,
+              onInitError = _this$props4.onInitError;
           return Promise.resolve(_this.destroy()).then(function () {
             var parentsRef = _this.parentsRef.current;
 
@@ -580,7 +583,7 @@
             var playerDiv = document.createElement('div');
             playerDiv.setAttribute('id', playerId);
             parentsRef.appendChild(playerDiv);
-            /* fast re create player fix */
+            /* fast re-create player fix */
 
             return Promise.resolve(new Promise(function (resolve) {
               setTimeout(resolve, 0);
@@ -589,8 +592,18 @@
                 return;
               }
 
-              return Promise.resolve(_this.createPlayer(playerId)).then(function (_this$createPlayer) {
-                _this.player = _this$createPlayer;
+              return Promise.resolve(new Promise(function (resolve, reject) {
+                _this.createPlayer(playerId).then(function (player) {
+                  resolve(player);
+                  onInit && onInit({
+                    playerId: playerId
+                  });
+                })["catch"](function (e) {
+                  reject(e);
+                  onInitError && onInitError(e);
+                });
+              })).then(function (_Promise) {
+                _this.player = _Promise;
 
                 _this.getEventList().forEach(function (event) {
                   var _this$player;
@@ -660,31 +673,31 @@
       };
 
       _this.createPlayer = function (playerId) {
-        var _this$props4 = _this.props,
-            title = _this$props4.title,
-            subtitle = _this$props4.subtitle,
-            poster = _this$props4.poster,
-            chapters = _this$props4.chapters,
-            vtt = _this$props4.vtt,
-            externalId = _this$props4.externalId,
-            drmAuthToken = _this$props4.drmAuthToken,
-            width = _this$props4.width,
-            height = _this$props4.height,
-            autoPause = _this$props4.autoPause,
-            autoPlay = _this$props4.autoPlay,
-            loop = _this$props4.loop,
-            muted = _this$props4.muted,
-            playsInline = _this$props4.playsInline,
-            preload = _this$props4.preload,
-            language = _this$props4.language,
-            controls = _this$props4.controls,
-            mainPlayButton = _this$props4.mainPlayButton,
-            playbackRateButton = _this$props4.playbackRateButton,
-            bookmarks = _this$props4.bookmarks,
-            actions = _this$props4.actions,
-            watermark = _this$props4.watermark,
-            localStorage = _this$props4.localStorage,
-            theme = _this$props4.theme;
+        var _this$props5 = _this.props,
+            title = _this$props5.title,
+            subtitle = _this$props5.subtitle,
+            poster = _this$props5.poster,
+            chapters = _this$props5.chapters,
+            vtt = _this$props5.vtt,
+            externalId = _this$props5.externalId,
+            drmAuthToken = _this$props5.drmAuthToken,
+            width = _this$props5.width,
+            height = _this$props5.height,
+            autoPause = _this$props5.autoPause,
+            autoPlay = _this$props5.autoPlay,
+            loop = _this$props5.loop,
+            muted = _this$props5.muted,
+            playsInline = _this$props5.playsInline,
+            preload = _this$props5.preload,
+            language = _this$props5.language,
+            controls = _this$props5.controls,
+            mainPlayButton = _this$props5.mainPlayButton,
+            playbackRateButton = _this$props5.playbackRateButton,
+            bookmarks = _this$props5.bookmarks,
+            actions = _this$props5.actions,
+            watermark = _this$props5.watermark,
+            localStorage = _this$props5.localStorage,
+            theme = _this$props5.theme;
         var options = {
           url: _this.getIFrameUrl(),
           size: {
@@ -1126,10 +1139,10 @@
     };
 
     _proto.render = function render() {
-      var _this$props5 = this.props,
-          className = _this$props5.className,
-          style = _this$props5.style,
-          onJSLoadError = _this$props5.onJSLoadError;
+      var _this$props6 = this.props,
+          className = _this$props6.className,
+          style = _this$props6.style,
+          onJSLoadError = _this$props6.onJSLoadError;
       return React__default['default'].createElement(Loader, {
         onJSLoad: this.handleJSLoad,
         onJSLoadError: onJSLoadError
