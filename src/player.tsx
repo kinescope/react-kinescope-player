@@ -1,115 +1,77 @@
 import React, {Component, createRef} from 'react';
 import isEqual from 'react-fast-compare';
-import {
-	KinescopePlayerEvent,
-	KinescopePlayer,
-	VideoQuality,
-	VideoQualityLevels,
-	PlaylistItemOptions,
-	ActionCallToAction,
-	ActionToolBar,
-	KinescopeCreateOptions,
-	WatermarkTypes,
-	PreloadTypes,
-	Theme,
-} from './kinescope';
 import Loader from './loader';
 import {VIDEO_HOST, VIDEO_PLAYLIST_HOST} from './constant';
 
-type CallbackTypes = (any) => void;
-type EventListTypes = [KinescopePlayerEvent, CallbackTypes][];
+type CallbackTypes = (event: any) => void;
+type EventListTypes = [Kinescope.IframePlayer.Player.EventType, CallbackTypes][];
 
-export type VttTypes = {
-	label: string;
-	src: string;
-	srcLang: string;
-};
+export type VttTypes = NonNullable<Kinescope.IframePlayer.PlaylistItemOptions['vtt']>[number];
 
-export type ChapterTypes = {
-	position: number;
-	title: string;
-};
+type WatermarkTypes = NonNullable<
+	NonNullable<Kinescope.IframePlayer.CreateOptions['ui']>['watermark']
+>;
 
-export type ActionsTypes = ActionToolBar | ActionCallToAction;
+type Theme = NonNullable<Kinescope.IframePlayer.CreateOptions['theme']>;
 
-export type BookmarkTypes = {
-	id: string;
-	time: number;
-	title?: string;
-};
+export type ChapterTypes = NonNullable<
+	Kinescope.IframePlayer.PlaylistItemOptions['chapters']
+>[number];
+
+export type CTAItem = NonNullable<Kinescope.IframePlayer.PlaylistItemOptions['cta']>[number];
+
+export type BookmarkTypes = NonNullable<
+	Kinescope.IframePlayer.PlaylistItemOptions['bookmarks']
+>[number];
 
 export type EventInitTypes = {
 	playerId: string;
 };
 
-export type EventReadyTypes = {
-	currentTime: number;
-	duration: number;
-	quality: VideoQuality;
-	qualityLevels: VideoQualityLevels;
-};
+export type EventReadyTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['Ready']];
 
-export type EventQualityChangedTypes = {
-	quality: VideoQuality;
-};
+export type EventQualityChangedTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['QualityChanged']];
 
-export type EventCurrentTrackChangedTypes = {
-	item: {id?: string};
-};
+export type EventCurrentTrackChangedTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['CurrentTrackChanged']];
 
-export type EventSeekChapterTypes = {
-	position: number;
-};
+export type EventSeekChapterTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['SeekChapter']];
 
-export type EventDurationChangeTypes = {
-	duration: number;
-};
+export type EventDurationChangeTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['DurationChange']];
 
-export type EventProgressTypes = {
-	bufferedTime: number;
-};
+export type EventProgressTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['Progress']];
 
-export type EventTimeUpdateTypes = {
-	currentTime: number;
-};
+export type EventTimeUpdateTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['TimeUpdate']];
 
-export type EventVolumeChangeTypes = {
-	muted: boolean;
-	volume: number;
-};
+export type EventVolumeChangeTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['VolumeChange']];
 
-export type EventPlaybackRateChangeTypes = {
-	playbackRate: number;
-};
+export type EventPlaybackRateChangeTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['PlaybackRateChange']];
 
-export type EventPipChangeTypes = {
-	isPip: boolean;
-};
+export type EventPipChangeTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['PipChange']];
 
-export type EventSizeChangedTypes = {
-	width: number;
-	height: number;
-};
+export type EventSizeChangedTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['SizeChanged']];
 
-export type EventFullscreenChangeTypes = {
-	isFullscreen: boolean;
-	video: boolean;
-};
+export type EventFullscreenChangeTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['FullscreenChange']];
 
-export type EventCallActionTypes = {
-	id: string;
-	title?: string;
-	type: string;
-};
+export type EventCallActionTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['CallAction']];
 
-export type EventCallBookmarkTypes = {
-	id: string;
-	time: number;
-};
+export type EventCallBookmarkTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['CallBookmark']];
 
-export type EventErrorTypes = {
-	error: unknown;
-};
+export type EventErrorTypes =
+	Kinescope.IframePlayer.Player.EventMap[Kinescope.IframePlayer.Player.Events['Error']];
 
 export type QueryTypes = {
 	seek?: number;
@@ -133,7 +95,7 @@ export type PlayerPropsTypes = {
 	autoPause?: boolean | 'reset';
 	loop?: boolean;
 	playsInline?: boolean;
-	preload?: PreloadTypes;
+	preload?: NonNullable<Kinescope.IframePlayer.CreateOptions['behavior']>['preload'];
 	muted?: boolean;
 	language?: 'ru' | 'en';
 	controls?: boolean;
@@ -143,7 +105,7 @@ export type PlayerPropsTypes = {
 	vtt?: VttTypes[];
 	externalId?: string;
 	drmAuthToken?: string;
-	actions?: ActionsTypes[];
+	cta?: CTAItem[];
 	bookmarks?: BookmarkTypes[];
 	watermark?: WatermarkTypes;
 	localStorage?: boolean;
@@ -188,7 +150,7 @@ function getNextPlayerId() {
 class Player extends Component<PlayerPropsTypes> {
 	private playerLoad: boolean;
 	private readonly parentsRef: React.RefObject<HTMLDivElement>;
-	private player: KinescopePlayer | null;
+	private player: Kinescope.IframePlayer.Player | null;
 
 	static defaultProps = {
 		width: '100%',
@@ -271,8 +233,8 @@ class Player extends Component<PlayerPropsTypes> {
 		}
 	};
 
-	private shouldPlaylistUpdate = async prevProps => {
-		const {title, subtitle, poster, chapters, vtt, bookmarks, actions, drmAuthToken} = this.props;
+	private shouldPlaylistUpdate = async (prevProps: PlayerPropsTypes) => {
+		const {title, subtitle, poster, chapters, vtt, bookmarks, cta, drmAuthToken} = this.props;
 
 		if (title !== prevProps.title) {
 			await this.updateTitleOptions();
@@ -302,8 +264,8 @@ class Player extends Component<PlayerPropsTypes> {
 			await this.updateBookmarksOptions();
 		}
 
-		if (!isEqual(actions, prevProps.actions)) {
-			await this.updateActionsOptions();
+		if (!isEqual(cta, prevProps.cta)) {
+			await this.updateCtaOptions();
 		}
 	};
 
@@ -360,16 +322,16 @@ class Player extends Component<PlayerPropsTypes> {
 		});
 	};
 
-	private updateActionsOptions = async () => {
-		const {actions} = this.props;
+	private updateCtaOptions = async () => {
+		const {cta} = this.props;
 		await this.setPlaylistItemOptions({
-			actions: actions,
+			cta,
 		});
 	};
 
 	private readyPlaylistOptions = async () => {
-		const {title, subtitle, poster, chapters, vtt, bookmarks, actions, drmAuthToken} = this.props;
-		let options: PlaylistItemOptions = {};
+		const {title, subtitle, poster, chapters, vtt, bookmarks, cta, drmAuthToken} = this.props;
+		let options: Kinescope.IframePlayer.PlaylistItemOptions = {};
 
 		if (title !== undefined) {
 			options.title = title;
@@ -389,8 +351,8 @@ class Player extends Component<PlayerPropsTypes> {
 		if (bookmarks !== undefined) {
 			options.bookmarks = bookmarks;
 		}
-		if (actions !== undefined) {
-			options.actions = actions;
+		if (cta !== undefined) {
+			options.cta = cta;
 		}
 		if (drmAuthToken !== undefined) {
 			options.drm = {
@@ -527,16 +489,16 @@ class Player extends Component<PlayerPropsTypes> {
 			mainPlayButton,
 			playbackRateButton,
 			bookmarks,
-			actions,
+			cta,
 			watermark,
 			localStorage,
 			theme,
 		} = this.props;
 
-		let options: KinescopeCreateOptions = {
+		let options: Kinescope.IframePlayer.CreateOptions = {
 			url: this.getIFrameUrl(),
 			size: {width: width, height: height},
-			behaviour: {
+			behavior: {
 				autoPause: autoPause,
 				autoPlay: autoPlay,
 				loop: loop,
@@ -553,7 +515,7 @@ class Player extends Component<PlayerPropsTypes> {
 					chapters: chapters,
 					vtt: vtt,
 					bookmarks: bookmarks,
-					actions: actions,
+					cta,
 					drm: {
 						auth: {
 							token: drmAuthToken,
@@ -577,7 +539,9 @@ class Player extends Component<PlayerPropsTypes> {
 		return window.Kinescope.IframePlayer.create(playerId, options);
 	};
 
-	private setPlaylistItemOptions = async (options: PlaylistItemOptions): Promise<void> => {
+	private setPlaylistItemOptions = async (
+		options: Kinescope.IframePlayer.PlaylistItemOptions,
+	): Promise<void> => {
 		if (!this.player) {
 			return Promise.resolve();
 		}
@@ -605,7 +569,7 @@ class Player extends Component<PlayerPropsTypes> {
 		return this.player.play();
 	};
 
-	public pause = (): Promise<boolean> => {
+	public pause = (): Promise<void> => {
 		if (!this.player) {
 			return Promise.reject(null);
 		}
@@ -689,21 +653,21 @@ class Player extends Component<PlayerPropsTypes> {
 		return this.player.setPlaybackRate(value);
 	};
 
-	public getVideoQualityList = (): Promise<VideoQuality[]> => {
+	public getVideoQualityList = (): Promise<readonly Kinescope.IframePlayer.VideoQuality[]> => {
 		if (!this.player) {
 			return Promise.reject(null);
 		}
 		return this.player.getVideoQualityList();
 	};
 
-	public getVideoQuality = (): Promise<VideoQuality> => {
+	public getVideoQuality = (): Promise<Kinescope.IframePlayer.VideoQuality> => {
 		if (!this.player) {
 			return Promise.reject(null);
 		}
 		return this.player.getVideoQuality();
 	};
 
-	public setVideoQuality = (quality: VideoQuality): Promise<void> => {
+	public setVideoQuality = (quality: Kinescope.IframePlayer.VideoQuality): Promise<void> => {
 		if (!this.player) {
 			return Promise.reject(null);
 		}
