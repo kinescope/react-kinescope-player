@@ -60,7 +60,7 @@
 	},
 	"dependencies": {
 		"react-fast-compare": "^3.2.1",
-		"@kinescope/player-iframe-api-loader": "^0.0.7"
+		"@kinescope/player-iframe-api-loader": "^0.0.8"
 	},
 	"standard-version": {
 		"skip": {
