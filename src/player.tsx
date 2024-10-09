@@ -519,6 +519,8 @@ class Player extends Component<PlayerPropsTypes> {
 			},
 		};
 
+		if (!window.Kinescope?.IframePlayer)
+			throw new Error('Something went wrong. Kinescope.IframePlayer is not exists.');
 		return window.Kinescope.IframePlayer.create(playerId, options);
 	};
 

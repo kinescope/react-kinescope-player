@@ -1,10 +1,10 @@
 import {Component, ReactNode} from 'react';
-import * as playerApiLoader from '@kinescope/player-iframe-api-loader';
+import {load as iframeApiLoad} from '@kinescope/player-iframe-api-loader';
 
 type LoaderProps = {
-	children: ReactNode,
-	onJSLoad: () => void,
-	onJSLoadError?: (e: ErrorEvent) => void,
+	children: ReactNode;
+	onJSLoad: () => void;
+	onJSLoadError?: (e: ErrorEvent) => void;
 };
 
 class Loader extends Component<LoaderProps> {
@@ -19,7 +19,7 @@ class Loader extends Component<LoaderProps> {
 			return;
 		}
 
-		playerApiLoader.load().then(this.handleJSLoad).catch(this.handleJSLoadError);
+		iframeApiLoad().then(this.handleJSLoad).catch(this.handleJSLoadError);
 	};
 
 	handleJSLoad = () => {
