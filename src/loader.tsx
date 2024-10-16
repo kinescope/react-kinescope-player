@@ -11,7 +11,7 @@ type LoaderProps = {
 };
 
 class Loader extends Component<LoaderProps> {
-	constructor(props) {
+	constructor(props: LoaderProps) {
 		super(props);
 		this.jsLoading();
 	}

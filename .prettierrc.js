@@ -1,6 +1,6 @@
 module.exports = {
 	printWidth: 100,
-	parser: 'babel-flow',
+	// parser: 'babel-flow',
 	bracketSpacing: false,
 	useTabs: true,
 	singleQuote: true,

@@ -49,13 +49,14 @@
 		"react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0"
 	},
 	"devDependencies": {
+		"@kinescope/player-iframe-api-loader": "^0.0.12",
 		"@types/react": "^18.2.33",
 		"@types/react-dom": "^18.2.14",
 		"microbundle": "^0.15.1",
 		"prettier": "^3.0.3",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"react-fast-compare": "^3.2.1",
+		"react-fast-compare": "^3.2.2",
 		"standard-version": "^9.5.0",
 		"typescript": "^4.9.5"
 	},

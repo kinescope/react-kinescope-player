@@ -330,8 +330,8 @@ var Player = /*#__PURE__*/function (_Component) {
                   function _temp7() {
                     function _temp5() {
                       var _temp3 = function () {
-                        if (!reactFastCompare(actions, prevProps.actions)) {
-                          return Promise.resolve(_this.updateActionsOptions()).then(function () {});
+                        if (!reactFastCompare(callToAction, prevProps.callToAction)) {
+                          return Promise.resolve(_this.updateCtaOptions()).then(function () {});
                         }
                       }();
 
@@ -399,7 +399,7 @@ var Player = /*#__PURE__*/function (_Component) {
             chapters = _this$props2.chapters,
             vtt = _this$props2.vtt,
             bookmarks = _this$props2.bookmarks,
-            actions = _this$props2.actions,
+            callToAction = _this$props2.callToAction,
             drmAuthToken = _this$props2.drmAuthToken;
 
         var _temp18 = function () {
@@ -495,11 +495,11 @@ var Player = /*#__PURE__*/function (_Component) {
       }
     };
 
-    _this.updateActionsOptions = function () {
+    _this.updateCtaOptions = function () {
       try {
-        var actions = _this.props.actions;
+        var callToAction = _this.props.callToAction;
         return Promise.resolve(_this.setPlaylistItemOptions({
-          actions: actions
+          cta: callToAction
         })).then(function () {});
       } catch (e) {
         return Promise.reject(e);
@@ -515,7 +515,7 @@ var Player = /*#__PURE__*/function (_Component) {
             chapters = _this$props3.chapters,
             vtt = _this$props3.vtt,
             bookmarks = _this$props3.bookmarks,
-            actions = _this$props3.actions,
+            callToAction = _this$props3.callToAction,
             drmAuthToken = _this$props3.drmAuthToken;
         var options = {};
 
@@ -543,8 +543,8 @@ var Player = /*#__PURE__*/function (_Component) {
           options.bookmarks = bookmarks;
         }
 
-        if (actions !== undefined) {
-          options.actions = actions;
+        if (callToAction !== undefined) {
+          options.cta = callToAction;
         }
 
         if (drmAuthToken !== undefined) {
@@ -670,73 +670,80 @@ var Player = /*#__PURE__*/function (_Component) {
     };
 
     _this.createPlayer = function (playerId) {
-      var _this$props5 = _this.props,
-          title = _this$props5.title,
-          subtitle = _this$props5.subtitle,
-          poster = _this$props5.poster,
-          chapters = _this$props5.chapters,
-          vtt = _this$props5.vtt,
-          externalId = _this$props5.externalId,
-          drmAuthToken = _this$props5.drmAuthToken,
-          width = _this$props5.width,
-          height = _this$props5.height,
-          autoPause = _this$props5.autoPause,
-          autoPlay = _this$props5.autoPlay,
-          loop = _this$props5.loop,
-          muted = _this$props5.muted,
-          playsInline = _this$props5.playsInline,
-          preload = _this$props5.preload,
-          language = _this$props5.language,
-          controls = _this$props5.controls,
-          mainPlayButton = _this$props5.mainPlayButton,
-          playbackRateButton = _this$props5.playbackRateButton,
-          bookmarks = _this$props5.bookmarks,
-          actions = _this$props5.actions,
-          watermark = _this$props5.watermark,
-          localStorage = _this$props5.localStorage,
-          theme = _this$props5.theme;
-      var options = {
-        url: _this.getIFrameUrl(),
-        size: {
-          width: width,
-          height: height
-        },
-        behaviour: {
-          autoPause: autoPause,
-          autoPlay: autoPlay,
-          loop: loop,
-          muted: muted,
-          playsInline: playsInline,
-          preload: preload,
-          localStorage: localStorage
-        },
-        playlist: [{
-          title: title,
-          subtitle: subtitle,
-          poster: poster,
-          chapters: chapters,
-          vtt: vtt,
-          bookmarks: bookmarks,
-          actions: actions,
-          drm: {
-            auth: {
-              token: drmAuthToken
+      try {
+        var _window$Kinescope;
+
+        var _this$props5 = _this.props,
+            title = _this$props5.title,
+            subtitle = _this$props5.subtitle,
+            poster = _this$props5.poster,
+            chapters = _this$props5.chapters,
+            vtt = _this$props5.vtt,
+            externalId = _this$props5.externalId,
+            drmAuthToken = _this$props5.drmAuthToken,
+            width = _this$props5.width,
+            height = _this$props5.height,
+            autoPause = _this$props5.autoPause,
+            autoPlay = _this$props5.autoPlay,
+            loop = _this$props5.loop,
+            muted = _this$props5.muted,
+            playsInline = _this$props5.playsInline,
+            preload = _this$props5.preload,
+            language = _this$props5.language,
+            controls = _this$props5.controls,
+            mainPlayButton = _this$props5.mainPlayButton,
+            playbackRateButton = _this$props5.playbackRateButton,
+            bookmarks = _this$props5.bookmarks,
+            callToAction = _this$props5.callToAction,
+            watermark = _this$props5.watermark,
+            localStorage = _this$props5.localStorage,
+            theme = _this$props5.theme;
+        var options = {
+          url: _this.getIFrameUrl(),
+          size: {
+            width: width,
+            height: height
+          },
+          behavior: {
+            autoPause: autoPause,
+            autoPlay: autoPlay,
+            loop: loop,
+            muted: muted,
+            playsInline: playsInline,
+            preload: preload,
+            localStorage: localStorage
+          },
+          playlist: [{
+            title: title,
+            subtitle: subtitle,
+            poster: poster,
+            chapters: chapters,
+            vtt: vtt,
+            bookmarks: bookmarks,
+            cta: callToAction,
+            drm: {
+              auth: {
+                token: drmAuthToken
+              }
             }
+          }],
+          ui: {
+            language: language,
+            controls: controls,
+            mainPlayButton: mainPlayButton,
+            playbackRateButton: playbackRateButton,
+            watermark: watermark
+          },
+          theme: theme,
+          settings: {
+            externalId: externalId
           }
-        }],
-        ui: {
-          language: language,
-          controls: controls,
-          mainPlayButton: mainPlayButton,
-          playbackRateButton: playbackRateButton,
-          watermark: watermark
-        },
-        theme: theme,
-        settings: {
-          externalId: externalId
-        }
-      };
-      return window.Kinescope.IframePlayer.create(playerId, options);
+        };
+        if (!((_window$Kinescope = window.Kinescope) != null && _window$Kinescope.IframePlayer)) throw new Error('Kinescope PLayer: IframeApi is not loaded.');
+        return Promise.resolve(window.Kinescope.IframePlayer.create(playerId, options));
+      } catch (e) {
+        return Promise.reject(e);
+      }
     };
 
     _this.setPlaylistItemOptions = function (options) {

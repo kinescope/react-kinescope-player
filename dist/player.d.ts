@@ -1,79 +1,31 @@
 import React, { Component } from 'react';
-import { VideoQuality, VideoQualityLevels, ActionCallToAction, ActionToolBar, WatermarkTypes, PreloadTypes, Theme } from './kinescope';
-export type VttTypes = {
-    label: string;
-    src: string;
-    srcLang: string;
-};
-export type ChapterTypes = {
-    position: number;
-    title: string;
-};
-export type ActionsTypes = ActionToolBar | ActionCallToAction;
-export type BookmarkTypes = {
-    id: string;
-    time: number;
-    title?: string;
-};
+import '@kinescope/player-iframe-api-loader';
+import Api = Kinescope.IframePlayer;
+type PreloadTypes = NonNullable<Api.CreateOptions['behavior']>['preload'];
+export type VttTypes = NonNullable<Api.PlaylistItemOptions['vtt']>[number];
+type WatermarkTypes = NonNullable<NonNullable<Api.CreateOptions['ui']>['watermark']>;
+type ThemeTypes = NonNullable<Api.CreateOptions['theme']>;
+export type ChapterTypes = NonNullable<Api.PlaylistItemOptions['chapters']>[number];
+export type ActionCallToActionTypes = NonNullable<Api.PlaylistItemOptions['cta']>[number];
+export type BookmarkTypes = NonNullable<Api.PlaylistItemOptions['bookmarks']>[number];
 export type EventInitTypes = {
     playerId: string;
 };
-export type EventReadyTypes = {
-    currentTime: number;
-    duration: number;
-    quality: VideoQuality;
-    qualityLevels: VideoQualityLevels;
-};
-export type EventQualityChangedTypes = {
-    quality: VideoQuality;
-};
-export type EventCurrentTrackChangedTypes = {
-    item: {
-        id?: string;
-    };
-};
-export type EventSeekChapterTypes = {
-    position: number;
-};
-export type EventDurationChangeTypes = {
-    duration: number;
-};
-export type EventProgressTypes = {
-    bufferedTime: number;
-};
-export type EventTimeUpdateTypes = {
-    currentTime: number;
-};
-export type EventVolumeChangeTypes = {
-    muted: boolean;
-    volume: number;
-};
-export type EventPlaybackRateChangeTypes = {
-    playbackRate: number;
-};
-export type EventPipChangeTypes = {
-    isPip: boolean;
-};
-export type EventSizeChangedTypes = {
-    width: number;
-    height: number;
-};
-export type EventFullscreenChangeTypes = {
-    isFullscreen: boolean;
-    video: boolean;
-};
-export type EventCallActionTypes = {
-    id: string;
-    title?: string;
-    type: string;
-};
-export type EventCallBookmarkTypes = {
-    id: string;
-    time: number;
-};
-export type EventErrorTypes = {
-    error: unknown;
-};
+export type EventReadyTypes = Api.Player.EventMap[Api.Player.Events['Ready']];
+export type EventQualityChangedTypes = Api.Player.EventMap[Api.Player.Events['QualityChanged']];
+export type EventCurrentTrackChangedTypes = Api.Player.EventMap[Api.Player.Events['CurrentTrackChanged']];
+export type EventSeekChapterTypes = Api.Player.EventMap[Api.Player.Events['SeekChapter']];
+export type EventDurationChangeTypes = Api.Player.EventMap[Api.Player.Events['DurationChange']];
+export type EventProgressTypes = Api.Player.EventMap[Api.Player.Events['Progress']];
+export type EventTimeUpdateTypes = Api.Player.EventMap[Api.Player.Events['TimeUpdate']];
+export type EventVolumeChangeTypes = Api.Player.EventMap[Api.Player.Events['VolumeChange']];
+export type EventPlaybackRateChangeTypes = Api.Player.EventMap[Api.Player.Events['PlaybackRateChange']];
+export type EventPipChangeTypes = Api.Player.EventMap[Api.Player.Events['PipChange']];
+export type EventSizeChangedTypes = Api.Player.EventMap[Api.Player.Events['SizeChanged']];
+export type EventFullscreenChangeTypes = Api.Player.EventMap[Api.Player.Events['FullscreenChange']];
+export type EventCallActionTypes = Api.Player.EventMap[Api.Player.Events['CallAction']];
+export type EventCallBookmarkTypes = Api.Player.EventMap[Api.Player.Events['CallBookmark']];
+export type EventErrorTypes = Api.Player.EventMap[Api.Player.Events['Error']];
 export type QueryTypes = {
     seek?: number;
     duration?: number;
@@ -104,11 +56,11 @@ export type PlayerPropsTypes = {
     vtt?: VttTypes[];
     externalId?: string;
     drmAuthToken?: string;
-    actions?: ActionsTypes[];
+    callToAction?: ActionCallToActionTypes[];
     bookmarks?: BookmarkTypes[];
     watermark?: WatermarkTypes;
     localStorage?: boolean;
-    theme?: Theme;
+    theme?: ThemeTypes;
     onInit?: (data: EventInitTypes) => void;
     onInitError?: (error: Error) => void;
     onReady?: (data: EventReadyTypes) => void;
@@ -158,7 +110,7 @@ declare class Player extends Component<PlayerPropsTypes> {
     private updateChaptersOptions;
     private updateVttOptions;
     private updateBookmarksOptions;
-    private updateActionsOptions;
+    private updateCtaOptions;
     private readyPlaylistOptions;
     private create;
     private destroy;
@@ -171,7 +123,7 @@ declare class Player extends Component<PlayerPropsTypes> {
     isPaused: () => Promise<boolean>;
     isEnded: () => Promise<boolean>;
     play: () => Promise<void>;
-    pause: () => Promise<boolean>;
+    pause: () => Promise<void>;
     stop: () => Promise<void>;
     getCurrentTime: () => Promise<number>;
     getDuration: () => Promise<number>;
@@ -183,9 +135,9 @@ declare class Player extends Component<PlayerPropsTypes> {
     setVolume: (value: number) => Promise<void>;
     getPlaybackRate: () => Promise<number>;
     setPlaybackRate: (value: number) => Promise<void>;
-    getVideoQualityList: () => Promise<VideoQuality[]>;
-    getVideoQuality: () => Promise<VideoQuality>;
-    setVideoQuality: (quality: VideoQuality) => Promise<void>;
+    getVideoQualityList: () => Promise<readonly Api.VideoQuality[]>;
+    getVideoQuality: () => Promise<Api.VideoQuality>;
+    setVideoQuality: (quality: Api.VideoQuality) => Promise<void>;
     enableTextTrack: (lang: string) => Promise<void>;
     disableTextTrack: () => Promise<void>;
     closeCTA: () => Promise<void>;
