@@ -296,11 +296,11 @@ type Bookmark = {
 type Watermark =
 	| string
 	| {
-			text: string;
-			mode?: WatermarkModeTypes;
-			scale?: number;
-			displayTimeout?: number | {visible: number; hidden: number};
-	  };
+	text: string;
+	mode?: WatermarkModeTypes;
+	scale?: number;
+	displayTimeout?: number | { visible: number; hidden: number };
+};
 ```
 
 ##### Theme
