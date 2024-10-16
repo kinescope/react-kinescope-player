@@ -13,15 +13,17 @@ type PreloadTypes = NonNullable<Api.CreateOptions['behavior']>['preload'];
 
 export type VttTypes = NonNullable<Api.PlaylistItemOptions['vtt']>[number];
 
-type WatermarkTypes = NonNullable<NonNullable<Api.CreateOptions['ui']>['watermark']>;
+export type WatermarkTypes = NonNullable<NonNullable<Api.CreateOptions['ui']>['watermark']>;
 
-type ThemeTypes = NonNullable<Api.CreateOptions['theme']>;
+export type ThemeTypes = NonNullable<Api.CreateOptions['theme']>;
 
 export type ChapterTypes = NonNullable<Api.PlaylistItemOptions['chapters']>[number];
 
-export type ActionCallToActionTypes = NonNullable<Api.PlaylistItemOptions['cta']>[number];
+export type CallToActionTypes = NonNullable<Api.PlaylistItemOptions['cta']>[number];
 
 export type BookmarkTypes = NonNullable<Api.PlaylistItemOptions['bookmarks']>[number];
+
+export type LocalStorageTypes = NonNullable<Api.CreateOptions['behavior']>['localStorage'];
 
 export type EventInitTypes = {
 	playerId: string;
@@ -91,10 +93,10 @@ export type PlayerPropsTypes = {
 	vtt?: VttTypes[];
 	externalId?: string;
 	drmAuthToken?: string;
-	callToAction?: ActionCallToActionTypes[];
+	callToAction?: CallToActionTypes[];
 	bookmarks?: BookmarkTypes[];
 	watermark?: WatermarkTypes;
-	localStorage?: boolean;
+	localStorage?: LocalStorageTypes;
 	theme?: ThemeTypes;
 
 	onInit?: (data: EventInitTypes) => void;

@@ -96,7 +96,7 @@ export default Player;
   </tr>
   <tr>
       <td>preload</td>
-      <td>boolean | 'auto'</td>
+      <td>boolean | 'none' | 'metadata' | 'auto'</td>
       <td>false</td>
       <td>No</td>
   </tr> 
@@ -209,8 +209,8 @@ export default Player;
       <td>No</td>
   </tr>
   <tr>
-      <td>actions</td>
-      <td><a href="#action">Action</a>[]</td>
+      <td>callToAction</td>
+      <td><a href="#callToAction">CallToAction</a>[]</td>
       <td>No</td>
       <td>No</td>
   </tr>
@@ -234,7 +234,7 @@ export default Player;
   </tr>  
   <tr>
       <td>localStorage</td>
-      <td>boolean</td>
+      <td><a href="#localStorage">LocalStorage</a></td>
       <td>true</td>
       <td>No</td>
   </tr>
@@ -248,6 +248,15 @@ type Chapter = {
 };
 ```
 
+##### LocalStorage
+```ts
+type LocalStorage = boolean | {
+	quality?: 'item' | 'global' | boolean;
+	time?: boolean;
+	textTrack?: 'item' | 'global' | boolean;
+};
+```
+
 ##### vtt
 ```ts
 type Vtt = {
@@ -257,30 +266,25 @@ type Vtt = {
 };
 ```
 
-##### Action
+##### CallToAction
 ```ts
-type Action = (ActionToolBar | ActionCallToAction);
-
-type ActionToolBar = {
+type CallToAction = {
 	id: string;
-	type: 'tool';
-	title?: string;
-	icon: 'note';
-};
-
-type ActionCallToAction = {
-	id: string;
-	type: 'cta';
 	title: string;
 	description?: string;
+	/** Возможность закрыть/пропустить. */
 	skipable?: boolean;
-	buttonStyle?: CSSProperties;
+	buttonStyle?: object;
+	/** Срабатывание CTA */
 	trigger: {
+		/** Процент текущего времени, например: `[0, 100]`. */
 		percentages: number[];
+		/** Точки времени (сек.), например: `[60, 600]`. */
 		timePoints: number[];
+		/** На паузе */
 		pause: boolean;
 	};
-};
+}[];
 ```
 
 ##### Bookmark
@@ -345,8 +349,7 @@ type Theme = {
       <td>
         currentTime: number;<br/>
         duration: number;<br/>
-        quality: VideoQuality;<br/>
-        qualityLevels: VideoQualityLevels;
+        quality: VideoQuality;
       </td>
   </tr>
   <tr>
@@ -485,7 +488,7 @@ type Theme = {
   <tr>
       <td>pause</td>
       <td>No</td>
-      <td>Promise&lt;boolean&gt;</td>
+      <td>Promise&lt;void&gt;</td>
   </tr>
   <tr>
       <td>stop</td>
