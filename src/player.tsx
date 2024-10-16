@@ -1,5 +1,6 @@
 import React, {Component, createRef} from 'react';
 import isEqual from 'react-fast-compare';
+import '@kinescope/player-iframe-api-loader';
 import Loader from './loader';
 import {VIDEO_HOST, VIDEO_PLAYLIST_HOST} from './constant';
 
@@ -8,15 +9,17 @@ import Api = Kinescope.IframePlayer;
 type CallbackTypes = (event: any) => void;
 type EventListTypes = [Api.Player.EventType, CallbackTypes][];
 
+type PreloadTypes = NonNullable<Api.CreateOptions['behavior']>['preload'];
+
 export type VttTypes = NonNullable<Api.PlaylistItemOptions['vtt']>[number];
 
 type WatermarkTypes = NonNullable<NonNullable<Api.CreateOptions['ui']>['watermark']>;
 
-type Theme = NonNullable<Api.CreateOptions['theme']>;
+type ThemeTypes = NonNullable<Api.CreateOptions['theme']>;
 
 export type ChapterTypes = NonNullable<Api.PlaylistItemOptions['chapters']>[number];
 
-export type CTAItem = NonNullable<Api.PlaylistItemOptions['cta']>[number];
+export type ActionCallToActionTypes = NonNullable<Api.PlaylistItemOptions['cta']>[number];
 
 export type BookmarkTypes = NonNullable<Api.PlaylistItemOptions['bookmarks']>[number];
 
@@ -78,7 +81,7 @@ export type PlayerPropsTypes = {
 	autoPause?: boolean | 'reset';
 	loop?: boolean;
 	playsInline?: boolean;
-	preload?: NonNullable<Api.CreateOptions['behavior']>['preload'];
+	preload?: PreloadTypes;
 	muted?: boolean;
 	language?: 'ru' | 'en';
 	controls?: boolean;
@@ -88,11 +91,11 @@ export type PlayerPropsTypes = {
 	vtt?: VttTypes[];
 	externalId?: string;
 	drmAuthToken?: string;
-	cta?: CTAItem[];
+	callToAction?: ActionCallToActionTypes[];
 	bookmarks?: BookmarkTypes[];
 	watermark?: WatermarkTypes;
 	localStorage?: boolean;
-	theme?: Theme;
+	theme?: ThemeTypes;
 
 	onInit?: (data: EventInitTypes) => void;
 	onInitError?: (error: Error) => void;
@@ -217,7 +220,8 @@ class Player extends Component<PlayerPropsTypes> {
 	};
 
 	private shouldPlaylistUpdate = async (prevProps: PlayerPropsTypes) => {
-		const {title, subtitle, poster, chapters, vtt, bookmarks, cta, drmAuthToken} = this.props;
+		const {title, subtitle, poster, chapters, vtt, bookmarks, callToAction, drmAuthToken} =
+			this.props;
 
 		if (title !== prevProps.title) {
 			await this.updateTitleOptions();
@@ -247,7 +251,7 @@ class Player extends Component<PlayerPropsTypes> {
 			await this.updateBookmarksOptions();
 		}
 
-		if (!isEqual(cta, prevProps.cta)) {
+		if (!isEqual(callToAction, prevProps.callToAction)) {
 			await this.updateCtaOptions();
 		}
 	};
@@ -306,14 +310,15 @@ class Player extends Component<PlayerPropsTypes> {
 	};
 
 	private updateCtaOptions = async () => {
-		const {cta} = this.props;
+		const {callToAction} = this.props;
 		await this.setPlaylistItemOptions({
-			cta,
+			cta: callToAction,
 		});
 	};
 
 	private readyPlaylistOptions = async () => {
-		const {title, subtitle, poster, chapters, vtt, bookmarks, cta, drmAuthToken} = this.props;
+		const {title, subtitle, poster, chapters, vtt, bookmarks, callToAction, drmAuthToken} =
+			this.props;
 		let options: Api.PlaylistItemOptions = {};
 
 		if (title !== undefined) {
@@ -334,8 +339,8 @@ class Player extends Component<PlayerPropsTypes> {
 		if (bookmarks !== undefined) {
 			options.bookmarks = bookmarks;
 		}
-		if (cta !== undefined) {
-			options.cta = cta;
+		if (callToAction !== undefined) {
+			options.cta = callToAction;
 		}
 		if (drmAuthToken !== undefined) {
 			options.drm = {
@@ -450,7 +455,7 @@ class Player extends Component<PlayerPropsTypes> {
 		return this.makeURL(VIDEO_HOST + videoId);
 	};
 
-	private createPlayer = playerId => {
+	private createPlayer = async (playerId: string) => {
 		const {
 			title,
 			subtitle,
@@ -472,7 +477,7 @@ class Player extends Component<PlayerPropsTypes> {
 			mainPlayButton,
 			playbackRateButton,
 			bookmarks,
-			cta,
+			callToAction,
 			watermark,
 			localStorage,
 			theme,
@@ -498,7 +503,7 @@ class Player extends Component<PlayerPropsTypes> {
 					chapters: chapters,
 					vtt: vtt,
 					bookmarks: bookmarks,
-					cta,
+					cta: callToAction,
 					drm: {
 						auth: {
 							token: drmAuthToken,
@@ -520,7 +525,8 @@ class Player extends Component<PlayerPropsTypes> {
 		};
 
 		if (!window.Kinescope?.IframePlayer)
-			throw new Error('Something went wrong. Kinescope.IframePlayer is not exists.');
+			throw new Error('Kinescope PLayer: IframeApi is not loaded.');
+
 		return window.Kinescope.IframePlayer.create(playerId, options);
 	};
 
@@ -734,113 +740,130 @@ class Player extends Component<PlayerPropsTypes> {
 		return this.player.previous();
 	};
 
-	private handleEventReady = ({data}) => {
+	private handleEventReady: Api.Player.EventHandler<Api.Player.Events['Ready']> = ({data}) => {
 		const {onReady} = this.props;
 		this.readyPlaylistOptions();
 		onReady && onReady(data);
 	};
 
-	private handleQualityChanged = ({data}) => {
+	private handleQualityChanged: Api.Player.EventHandler<Api.Player.Events['QualityChanged']> = ({
+		data,
+	}) => {
 		const {onQualityChanged} = this.props;
 		onQualityChanged && onQualityChanged(data);
 	};
 
-	private handleCurrentTrackChanged = ({data}) => {
+	private handleCurrentTrackChanged: Api.Player.EventHandler<
+		Api.Player.Events['CurrentTrackChanged']
+	> = ({data}) => {
 		const {onCurrentTrackChanged} = this.props;
 		onCurrentTrackChanged && onCurrentTrackChanged(data);
 	};
 
-	private handleSeekChapter = ({data}) => {
+	private handleSeekChapter: Api.Player.EventHandler<Api.Player.Events['SeekChapter']> = ({
+		data,
+	}) => {
 		const {onSeekChapter} = this.props;
 		onSeekChapter && onSeekChapter(data);
 	};
 
-	private handleSizeChanged = ({data}) => {
+	private handleSizeChanged: Api.Player.EventHandler<Api.Player.Events['SizeChanged']> = ({
+		data,
+	}) => {
 		const {onSizeChanged} = this.props;
 		onSizeChanged && onSizeChanged(data);
 	};
 
-	private handlePlay = () => {
+	private handlePlay: Api.Player.EventHandler<Api.Player.Events['Play']> = () => {
 		const {onPlay} = this.props;
 		onPlay && onPlay();
 	};
 
-	private handlePlaying = () => {
+	private handlePlaying: Api.Player.EventHandler<Api.Player.Events['Playing']> = () => {
 		const {onPlaying} = this.props;
 		onPlaying && onPlaying();
 	};
 
-	private handleWaiting = () => {
+	private handleWaiting: Api.Player.EventHandler<Api.Player.Events['Waiting']> = () => {
 		const {onWaiting} = this.props;
 		onWaiting && onWaiting();
 	};
 
-	private handlePause = () => {
+	private handlePause: Api.Player.EventHandler<Api.Player.Events['Pause']> = () => {
 		const {onPause} = this.props;
 		onPause && onPause();
 	};
 
-	private handleEnded = () => {
+	private handleEnded: Api.Player.EventHandler<Api.Player.Events['Ended']> = () => {
 		const {onEnded} = this.props;
 		onEnded && onEnded();
 	};
 
-	private handleTimeUpdate = ({data}) => {
+	private handleTimeUpdate: Api.Player.EventHandler<Api.Player.Events['TimeUpdate']> = ({data}) => {
 		const {onTimeUpdate} = this.props;
 		onTimeUpdate && onTimeUpdate(data);
 	};
 
-	private handleProgress = ({data}) => {
+	private handleProgress: Api.Player.EventHandler<Api.Player.Events['Progress']> = ({data}) => {
 		const {onProgress} = this.props;
 		onProgress && onProgress(data);
 	};
 
-	private handleDurationChange = ({data}) => {
+	private handleDurationChange: Api.Player.EventHandler<Api.Player.Events['DurationChange']> = ({
+		data,
+	}) => {
 		const {onDurationChange} = this.props;
 		onDurationChange && onDurationChange(data);
 	};
 
-	private handleVolumeChange = ({data}) => {
+	private handleVolumeChange: Api.Player.EventHandler<Api.Player.Events['VolumeChange']> = ({
+		data,
+	}) => {
 		const {onVolumeChange} = this.props;
 		onVolumeChange && onVolumeChange(data);
 	};
 
-	private handlePlaybackRateChange = ({data}) => {
+	private handlePlaybackRateChange: Api.Player.EventHandler<
+		Api.Player.Events['PlaybackRateChange']
+	> = ({data}) => {
 		const {onPlaybackRateChange} = this.props;
 		onPlaybackRateChange && onPlaybackRateChange(data);
 	};
 
-	private handlePipChange = ({data}) => {
+	private handlePipChange: Api.Player.EventHandler<Api.Player.Events['PipChange']> = ({data}) => {
 		const {onPipChange} = this.props;
 		onPipChange && onPipChange(data);
 	};
 
-	private handleSeeked = () => {
+	private handleSeeked: Api.Player.EventHandler<Api.Player.Events['Seeked']> = () => {
 		const {onSeeked} = this.props;
 		onSeeked && onSeeked();
 	};
 
-	private handleFullscreenChange = ({data}) => {
-		const {onFullscreenChange} = this.props;
-		onFullscreenChange && onFullscreenChange(data);
-	};
+	private handleFullscreenChange: Api.Player.EventHandler<Api.Player.Events['FullscreenChange']> =
+		({data}) => {
+			const {onFullscreenChange} = this.props;
+			onFullscreenChange && onFullscreenChange(data);
+		};
 
-	private handleCallAction = ({data}) => {
+	private handleCallAction: Api.Player.EventHandler<Api.Player.Events['CallAction']> = ({data}) => {
 		const {onCallAction} = this.props;
 		onCallAction && onCallAction(data);
 	};
 
-	private handleCallBookmark = ({data}) => {
+	private handleCallBookmark: Api.Player.EventHandler<Api.Player.Events['CallBookmark']> = ({
+		data,
+	}) => {
 		const {onCallBookmark} = this.props;
 		onCallBookmark && onCallBookmark(data);
 	};
 
-	private handleError = ({data}) => {
+	private handleError: Api.Player.EventHandler<Api.Player.Events['Error']> = ({data}) => {
 		const {onError} = this.props;
 		onError && onError(data);
 	};
 
-	private handleDestroy = () => {
+	private handleDestroy: Api.Player.EventHandler<Api.Player.Events['Destroy']> = () => {
 		const {onDestroy} = this.props;
 		onDestroy && onDestroy();
 	};

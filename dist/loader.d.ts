@@ -5,7 +5,7 @@ type LoaderProps = {
     onJSLoadError?: (e: ErrorEvent) => void;
 };
 declare class Loader extends Component<LoaderProps> {
-    constructor(props: any);
+    constructor(props: LoaderProps);
     loadJsNotLoad: () => void;
     loadJs: () => void;
     jsLoading: () => void;
