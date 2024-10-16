@@ -272,16 +272,11 @@ type CallToAction = {
 	id: string;
 	title: string;
 	description?: string;
-	/** Возможность закрыть/пропустить. */
 	skipable?: boolean;
 	buttonStyle?: object;
-	/** Срабатывание CTA */
 	trigger: {
-		/** Процент текущего времени, например: `[0, 100]`. */
 		percentages: number[];
-		/** Точки времени (сек.), например: `[60, 600]`. */
 		timePoints: number[];
-		/** На паузе */
 		pause: boolean;
 	};
 }[];
