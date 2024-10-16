@@ -279,7 +279,7 @@ type CallToAction = {
 		timePoints: number[];
 		pause: boolean;
 	};
-}[];
+};
 ```
 
 ##### Bookmark
