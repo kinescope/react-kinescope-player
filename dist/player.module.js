@@ -296,8 +296,10 @@ var Player = /*#__PURE__*/function (_Component) {
             controls = _this$props.controls,
             mainPlayButton = _this$props.mainPlayButton,
             playbackRateButton = _this$props.playbackRateButton,
+            textTrack = _this$props.textTrack,
             watermark = _this$props.watermark,
             localStorage = _this$props.localStorage,
+            playlistOptions = _this$props.playlistOptions,
             theme = _this$props.theme;
 
         if (muted !== prevProps.muted) {
@@ -305,7 +307,7 @@ var Player = /*#__PURE__*/function (_Component) {
         }
 
         var _temp2 = function () {
-          if (!reactFastCompare(videoId, prevProps.videoId) || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || preload !== prevProps.preload || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage) || !reactFastCompare(theme, prevProps.theme)) {
+          if (!reactFastCompare(videoId, prevProps.videoId) || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || preload !== prevProps.preload || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || textTrack !== prevProps.textTrack || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage) || !reactFastCompare(playlistOptions, prevProps.playlistOptions) || !reactFastCompare(theme, prevProps.theme)) {
             return Promise.resolve(_this.create()).then(function () {});
           }
         }();
@@ -689,10 +691,12 @@ var Player = /*#__PURE__*/function (_Component) {
             controls = _this$props5.controls,
             mainPlayButton = _this$props5.mainPlayButton,
             playbackRateButton = _this$props5.playbackRateButton,
+            textTrack = _this$props5.textTrack,
             bookmarks = _this$props5.bookmarks,
             callToAction = _this$props5.callToAction,
             watermark = _this$props5.watermark,
             localStorage = _this$props5.localStorage,
+            playlistOptions = _this$props5.playlistOptions,
             theme = _this$props5.theme;
         var options = {
           url: _this.getIFrameUrl(),
@@ -707,7 +711,9 @@ var Player = /*#__PURE__*/function (_Component) {
             muted: muted,
             playsInline: playsInline,
             preload: preload,
-            localStorage: localStorage
+            localStorage: localStorage,
+            textTrack: textTrack,
+            playlist: playlistOptions
           },
           playlist: [{
             title: title,

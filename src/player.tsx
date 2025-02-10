@@ -23,6 +23,8 @@ export type CallToActionTypes = NonNullable<Api.PlaylistItemOptions['cta']>[numb
 
 export type BookmarkTypes = NonNullable<Api.PlaylistItemOptions['bookmarks']>[number];
 
+export type PlaylistOptionsTypes = NonNullable<Api.PlaylistOptions>;
+
 export type LocalStorageTypes = NonNullable<Api.CreateOptions['behavior']>['localStorage'];
 
 export type EventInitTypes = {
@@ -89,6 +91,12 @@ export type PlayerPropsTypes = {
 	controls?: boolean;
 	mainPlayButton?: boolean;
 	playbackRateButton?: boolean;
+	/**
+	 * Whether to include subtitles when loading the video.
+	 * - `true` - auto-select in the following order: in the browser language, in the player language, first in the list.
+	 * - `string` - enable the track with the specified language.
+	 */
+	textTrack?: boolean | string;
 	chapters?: ChapterTypes[];
 	vtt?: VttTypes[];
 	externalId?: string;
@@ -97,6 +105,7 @@ export type PlayerPropsTypes = {
 	bookmarks?: BookmarkTypes[];
 	watermark?: WatermarkTypes;
 	localStorage?: LocalStorageTypes;
+	playlistOptions?: PlaylistOptionsTypes;
 	theme?: ThemeTypes;
 
 	onInit?: (data: EventInitTypes) => void;
@@ -190,8 +199,10 @@ class Player extends Component<PlayerPropsTypes> {
 			controls,
 			mainPlayButton,
 			playbackRateButton,
+			textTrack,
 			watermark,
 			localStorage,
+			playlistOptions,
 			theme,
 		} = this.props;
 
@@ -213,8 +224,10 @@ class Player extends Component<PlayerPropsTypes> {
 			controls !== prevProps.controls ||
 			mainPlayButton !== prevProps.mainPlayButton ||
 			playbackRateButton !== prevProps.playbackRateButton ||
+			textTrack !== prevProps.textTrack ||
 			!isEqual(watermark, prevProps.watermark) ||
 			!isEqual(localStorage, prevProps.localStorage) ||
+			!isEqual(playlistOptions, prevProps.playlistOptions) ||
 			!isEqual(theme, prevProps.theme)
 		) {
 			await this.create();
@@ -478,10 +491,12 @@ class Player extends Component<PlayerPropsTypes> {
 			controls,
 			mainPlayButton,
 			playbackRateButton,
+			textTrack,
 			bookmarks,
 			callToAction,
 			watermark,
 			localStorage,
+			playlistOptions,
 			theme,
 		} = this.props;
 
@@ -496,6 +511,8 @@ class Player extends Component<PlayerPropsTypes> {
 				playsInline: playsInline,
 				preload: preload,
 				localStorage: localStorage,
+				textTrack: textTrack,
+				playlist: playlistOptions,
 			},
 			playlist: [
 				{

@@ -197,6 +197,12 @@ export default Player;
       <td>No</td>
   </tr> 
   <tr>
+      <td>textTrack</td>
+      <td>boolean | string</td>
+      <td>true</td>
+      <td>No</td>
+  </tr> 
+  <tr>
       <td>externalId</td>
       <td>string</td>
       <td>No</td>
@@ -226,6 +232,12 @@ export default Player;
       <td>No</td>
       <td>No</td>
   </tr>
+  <tr>
+      <td>playlistOptions</td>
+      <td><a href="#PlaylistOptions">PlaylistOptions</a></td>
+      <td>No</td>
+      <td>No</td>
+  </tr>   
   <tr>
       <td>theme</td>
       <td><a href="#theme">Theme</a></td>
@@ -303,12 +315,21 @@ type Watermark =
 };
 ```
 
+##### PlaylistOptions
+```ts
+type PlaylistOptions = {
+	autoSwitch?: boolean;
+	initialItem?: string;
+	loop?: boolean;
+};
+```
+
 ##### Theme
 ```ts
 type Theme = {
 	subtitles?: {
 		/** Base font size in em. */
-		textSize: number;
+		textSсale: number;
 		textAlign: 'left' | 'center';
 		textLength: 'auto' | number;
 	};
