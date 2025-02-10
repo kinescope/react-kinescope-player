@@ -145,9 +145,9 @@ function getNextPlayerId() {
 }
 
 class Player extends Component<PlayerPropsTypes> {
-	private playerLoad: boolean;
-	private readonly parentsRef: React.RefObject<HTMLDivElement>;
-	private player: Api.Player | null;
+	private playerLoad: boolean = false;
+	private readonly parentsRef = createRef<HTMLDivElement>();
+	private player: Api.Player | null = null;
 
 	static defaultProps = {
 		width: '100%',
@@ -156,13 +156,6 @@ class Player extends Component<PlayerPropsTypes> {
 		localStorage: true,
 		playsInline: true,
 	};
-
-	constructor(props) {
-		super(props);
-		this.playerLoad = false;
-		this.parentsRef = createRef();
-		this.player = null;
-	}
 
 	async componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>) {
 		await this.shouldPlayerUpdate(prevProps);

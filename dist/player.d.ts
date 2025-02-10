@@ -106,7 +106,6 @@ declare class Player extends Component<PlayerPropsTypes> {
         localStorage: boolean;
         playsInline: boolean;
     };
-    constructor(props: any);
     componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>): Promise<void>;
     componentWillUnmount(): void;
     private handleJSLoad;

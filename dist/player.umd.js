@@ -263,13 +263,17 @@
   var Player = /*#__PURE__*/function (_Component) {
     _inheritsLoose(Player, _Component);
 
-    function Player(props) {
+    function Player() {
       var _this;
 
-      _this = _Component.call(this, props) || this;
-      _this.playerLoad = void 0;
-      _this.parentsRef = void 0;
-      _this.player = void 0;
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+      _this.playerLoad = false;
+      _this.parentsRef = React.createRef();
+      _this.player = null;
 
       _this.handleJSLoad = function () {
         try {
@@ -1127,9 +1131,6 @@
         onDestroy && onDestroy();
       };
 
-      _this.playerLoad = false;
-      _this.parentsRef = React.createRef();
-      _this.player = null;
       return _this;
     }
 
