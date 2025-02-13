@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.3](https://github.com/kinescope/react-kinescope-player/compare/v0.5.2...v0.5.3) (2025-02-13)
+
+### Features
+
+* react 19 ([d4cacd4](https://github.com/kinescope/react-kinescope-player/commit/d4cacd42f5fed356562b4cc4ba7bc7a881fb367a))
+
+### Update
+
+* player-iframe-api-loader@0.0.19 ([dfa5e20](https://github.com/kinescope/react-kinescope-player/commit/dfa5e204e0e70e6d609a0ff43111d3ce13e97a68))
+
 ### [0.5.2](https://github.com/kinescope/react-kinescope-player/compare/v0.4.7...v0.5.2) (2024-10-16)
 
 ### [0.4.7](https://github.com/kinescope/react-kinescope-player/compare/v0.4.6...v0.4.7) (2024-09-27)
