@@ -8,6 +8,7 @@ export type ThemeTypes = NonNullable<Api.CreateOptions['theme']>;
 export type ChapterTypes = NonNullable<Api.PlaylistItemOptions['chapters']>[number];
 export type CallToActionTypes = NonNullable<Api.PlaylistItemOptions['cta']>[number];
 export type BookmarkTypes = NonNullable<Api.PlaylistItemOptions['bookmarks']>[number];
+export type PlaylistOptionsTypes = NonNullable<Api.PlaylistOptions>;
 export type LocalStorageTypes = NonNullable<Api.CreateOptions['behavior']>['localStorage'];
 export type EventInitTypes = {
     playerId: string;
@@ -53,6 +54,12 @@ export type PlayerPropsTypes = {
     controls?: boolean;
     mainPlayButton?: boolean;
     playbackRateButton?: boolean;
+    /**
+     * Whether to include subtitles when loading the video.
+     * - `true` - auto-select in the following order: in the browser language, in the player language, first in the list.
+     * - `string` - enable the track with the specified language.
+     */
+    textTrack?: boolean | string;
     chapters?: ChapterTypes[];
     vtt?: VttTypes[];
     externalId?: string;
@@ -61,6 +68,7 @@ export type PlayerPropsTypes = {
     bookmarks?: BookmarkTypes[];
     watermark?: WatermarkTypes;
     localStorage?: LocalStorageTypes;
+    playlistOptions?: PlaylistOptionsTypes;
     theme?: ThemeTypes;
     onInit?: (data: EventInitTypes) => void;
     onInitError?: (error: Error) => void;
@@ -98,7 +106,6 @@ declare class Player extends Component<PlayerPropsTypes> {
         localStorage: boolean;
         playsInline: boolean;
     };
-    constructor(props: any);
     componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>): Promise<void>;
     componentWillUnmount(): void;
     private handleJSLoad;
