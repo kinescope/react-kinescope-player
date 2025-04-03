@@ -66,6 +66,7 @@ export type EventErrorTypes = Api.Player.EventMap[Api.Player.Events['Error']];
 export type QueryTypes = {
 	seek?: number;
 	duration?: number;
+	playerId?: string;
 };
 
 export type PlayerPropsTypes = {
@@ -444,6 +445,7 @@ class Player extends Component<PlayerPropsTypes> {
 		const params: [string, string][] = [];
 		query?.duration && params.push(['duration', query.duration.toString()]);
 		query?.seek && params.push(['seek', query.seek.toString()]);
+		query?.playerId && params.push(['player_id', query.playerId]);
 		return params;
 	};
 

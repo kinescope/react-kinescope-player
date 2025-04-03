@@ -655,6 +655,7 @@
         var params = [];
         (query == null ? void 0 : query.duration) && params.push(['duration', query.duration.toString()]);
         (query == null ? void 0 : query.seek) && params.push(['seek', query.seek.toString()]);
+        (query == null ? void 0 : query.playerId) && params.push(['player_id', query.playerId]);
         return params;
       };
 
