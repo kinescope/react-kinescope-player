@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.4](https://github.com/kinescope/react-kinescope-player/compare/v0.5.3...v0.5.4) (2025-04-04)
+
+
+### Features
+
+* Query ([2e3b4ed](https://github.com/kinescope/react-kinescope-player/commit/2e3b4eda3173658c7be82c178dcda7250445ffe9))
+
 ### [0.5.3](https://github.com/kinescope/react-kinescope-player/compare/v0.5.2...v0.5.3) (2025-02-13)
 
 ### Features
