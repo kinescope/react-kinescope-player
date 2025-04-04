@@ -87,6 +87,12 @@ export default Player;
       <td>string</td>
       <td>No</td>
       <td>No</td>
+  </tr>  
+  <tr>
+      <td>query</td>
+      <td><a href="#query">Query</a></td>
+      <td>No</td>
+      <td>No</td>
   </tr>
   <tr>
       <td>style</td>
@@ -257,6 +263,15 @@ export default Player;
 type Chapter = {
 	position: number;
 	title: string;
+};
+```
+
+##### Query
+```ts
+type QueryTypes = {
+    seek?: number;
+    duration?: number;
+    playerId?: string;
 };
 ```
 

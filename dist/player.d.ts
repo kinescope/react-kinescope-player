@@ -31,6 +31,7 @@ export type EventErrorTypes = Api.Player.EventMap[Api.Player.Events['Error']];
 export type QueryTypes = {
     seek?: number;
     duration?: number;
+    playerId?: string;
 };
 export type PlayerPropsTypes = {
     videoId: string | string[];
