@@ -59,16 +59,16 @@
 	"devDependencies": {
 		"@testing-library/dom": "^10.4.2",
 		"@testing-library/react": "^16.3.3",
-		"@types/react": "^18.3.11",
-		"@types/react-dom": "^18.3.1",
+		"@types/react": "^18.3.31",
+		"@types/react-dom": "^18.3.7",
 		"jsdom": "^31.0.1",
 		"microbundle": "^0.15.1",
-		"prettier": "^3.5.0",
+		"prettier": "^3.10.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
-		"react-fast-compare": "^3.2.2",
+		"react-fast-compare": "^3.2.3",
 		"standard-version": "^9.5.0",
-		"typescript": "^5.7.3",
+		"typescript": "^6.0.3",
 		"vitest": "^5.1.1"
 	},
 	"standard-version": {
@@ -76,5 +76,9 @@
 			"tag": true,
 			"commit": true
 		}
+	},
+	"overrides": {
+		"rollup-plugin-typescript2": "^0.37.0",
+		"serialize-javascript": "^7.1.4"
 	}
 }
