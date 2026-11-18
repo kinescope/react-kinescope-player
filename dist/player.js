@@ -153,19 +153,221 @@ var VIDEO_PLAYLIST_HOST = 'https://kinescope.io/embed/playlist?video_ids=';
 var VIDEO_HOST = 'https://kinescope.io/embed/';
 var PLAYER_LATEST = 'https://player.kinescope.io/latest/iframe.player.js';
 
-function loadScript(src, id) {
-  return new Promise(function (resolve, reject) {
-    var script = document.createElement('script');
-    script.id = id;
-    script.src = src;
-    script.addEventListener('load', function () {
-      resolve(true);
-    });
-    script.addEventListener('error', function (e) {
-      reject(e);
-    });
-    document.body.appendChild(script);
+function _catch(body, recover) {
+  try {
+    var result = body();
+  } catch (e) {
+    return recover(e);
+  }
+
+  if (result && result.then) {
+    return result.then(void 0, recover);
+  }
+
+  return result;
+}
+
+var loadOnce = function loadOnce(_ref) {
+  var src = _ref.src,
+      id = _ref.id,
+      _ref$foreignTagTimeou = _ref.foreignTagTimeout,
+      foreignTagTimeout = _ref$foreignTagTimeou === void 0 ? DEFAULT_FOREIGN_TAG_TIMEOUT : _ref$foreignTagTimeou;
+
+  try {
+    var _exit3;
+
+    var _temp8 = function _temp8(_result3) {
+      var _exit2;
+
+      if (_exit3) return _result3;
+
+      function _temp6(_result4) {
+        if (_exit2) ;
+
+        if (!isApiLoaded()) {
+          script.remove();
+          throw apiNotFoundError(src);
+        }
+      }
+
+      var script = document.createElement('script');
+      script.id = id;
+      script.src = src;
+      var loaded = waitForScript(script);
+      document.body.appendChild(script);
+
+      var _temp5 = _catch(function () {
+        return Promise.resolve(loaded).then(function () {});
+      }, function (e) {
+        script.remove();
+        throw e;
+      });
+
+      return _temp5 && _temp5.then ? _temp5.then(_temp6) : _temp6(_temp5);
+    };
+
+    if (isApiLoaded()) {
+      return Promise.resolve();
+    }
+    /*
+     * A tag with our id, but not inserted by this module. There is no way to know
+     * whether it is still loading or has already failed, so wait for `load`/`error`
+     * with a timeout and remove it only after an error or timeout: removing a tag
+     * that is still loading would load the script twice.
+     */
+
+
+    var foreign = document.getElementById(id);
+
+    var _temp9 = function () {
+      if (foreign) {
+        var _temp4 = function _temp4(_result2) {
+          if (_exit3) return _result2;
+          foreign.remove();
+        };
+
+        var _temp10 = function () {
+          if (foreign instanceof HTMLScriptElement) {
+            var _temp2 = function _temp2(_result) {
+              if (_exit3) return _result;
+
+              if (isApiLoaded()) {
+                _exit3 = 1;
+              }
+            };
+
+            var _temp11 = _catch(function () {
+              return Promise.resolve(waitForScript(foreign, foreignTagTimeout)).then(function () {
+                if (isApiLoaded()) {
+                  _exit3 = 1;
+                }
+              });
+            }, function () {});
+
+            return _temp11 && _temp11.then ? _temp11.then(_temp2) : _temp2(_temp11);
+          }
+        }();
+
+        return _temp10 && _temp10.then ? _temp10.then(_temp4) : _temp4(_temp10);
+      }
+    }();
+
+    return Promise.resolve(_temp9 && _temp9.then ? _temp9.then(_temp8) : _temp8(_temp9));
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};
+
+var DEFAULT_RETRIES = 2;
+var DEFAULT_RETRY_DELAY = 1000;
+var DEFAULT_FOREIGN_TAG_TIMEOUT = 15000;
+/**
+ * Loading state is shared by every player on the page.
+ * - pending/resolved promise: every player waits for it and gets the same result;
+ * - `null`: nothing is loading, the next player starts a new load.
+ * After a failure the promise is reset, so the next player can try again
+ * without reloading the page.
+ */
+
+var shared = null;
+
+function isApiLoaded() {
+  var _window$Kinescope;
+
+  return !!((_window$Kinescope = window.Kinescope) != null && _window$Kinescope.IframePlayer);
+}
+
+function delay(ms) {
+  return new Promise(function (resolve) {
+    return setTimeout(resolve, ms);
   });
+}
+/** Resolves on `load`, rejects on `error` or after `timeout` ms (when `timeout` > 0). */
+
+
+function waitForScript(script, timeout) {
+  if (timeout === void 0) {
+    timeout = 0;
+  }
+
+  return new Promise(function (resolve, reject) {
+    var timer;
+
+    var cleanup = function cleanup() {
+      script.removeEventListener('load', onLoad);
+      script.removeEventListener('error', onError);
+      timer !== undefined && clearTimeout(timer);
+    };
+
+    var onLoad = function onLoad() {
+      cleanup();
+      resolve();
+    };
+
+    var onError = function onError(e) {
+      cleanup();
+      reject(e);
+    };
+
+    script.addEventListener('load', onLoad);
+    script.addEventListener('error', onError);
+
+    if (timeout > 0) {
+      timer = setTimeout(function () {
+        cleanup();
+        reject(new Error("Kinescope Player: script \"" + script.src + "\" load timeout (" + timeout + " ms)."));
+      }, timeout);
+    }
+  });
+}
+
+function apiNotFoundError(src) {
+  return new Error("Kinescope Player: script \"" + src + "\" loaded, but IframePlayer API is not found.");
+}
+
+function loadWithRetries(options, attempt) {
+  if (attempt === void 0) {
+    attempt = 0;
+  }
+
+  var _options$retries = options.retries,
+      retries = _options$retries === void 0 ? DEFAULT_RETRIES : _options$retries,
+      _options$retryDelay = options.retryDelay,
+      retryDelay = _options$retryDelay === void 0 ? DEFAULT_RETRY_DELAY : _options$retryDelay;
+  return loadOnce(options)["catch"](function (e) {
+    if (attempt >= retries) {
+      throw e;
+    }
+
+    return delay(retryDelay).then(function () {
+      return loadWithRetries(options, attempt + 1);
+    });
+  });
+}
+/**
+ * Loads Kinescope IFrame API once per page.
+ * All callers share one promise, so every waiting player gets either success or the error.
+ * After a failure the state is reset and the next call loads the script again.
+ */
+
+
+function loadIframeApi(options) {
+  if (isApiLoaded()) {
+    return Promise.resolve();
+  }
+
+  if (!shared) {
+    var current = loadWithRetries(options)["catch"](function (e) {
+      if (shared === current) {
+        shared = null;
+      }
+
+      throw e;
+    });
+    shared = current;
+  }
+
+  return shared;
 }
 
 var NODE_JS_ID = '__kinescope_player_react_js';
@@ -173,71 +375,49 @@ var NODE_JS_ID = '__kinescope_player_react_js';
 var Loader = /*#__PURE__*/function (_Component) {
   _inheritsLoose(Loader, _Component);
 
-  function Loader(props) {
+  function Loader() {
     var _this;
 
-    _this = _Component.call(this, props) || this;
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _this.loadJsNotLoad = function () {
-      var el = document.getElementById(NODE_JS_ID);
-
-      if (el) {
-        el.addEventListener('load', _this.loadJs);
-      }
-    };
-
-    _this.loadJs = function () {
-      var el = document.getElementById(NODE_JS_ID);
-
-      if (el) {
-        el.removeEventListener('load', _this.loadJs);
-      }
-
-      _this.handleJSLoad();
-    };
-
-    _this.jsLoading = function () {
-      var _window, _window$Kinescope;
-
-      if (!!((_window = window) != null && (_window$Kinescope = _window.Kinescope) != null && _window$Kinescope.IframePlayer)) {
-        _this.handleJSLoad();
-
-        return;
-      }
-
-      if (_this.testLoadJS()) {
-        _this.loadJsNotLoad();
-
-        return;
-      }
-
-      loadScript(PLAYER_LATEST, NODE_JS_ID).then(function (success) {
-        success && _this.handleJSLoad();
-      })["catch"](function (e) {
-        _this.handleJSLoadError(e);
-      });
-    };
-
-    _this.testLoadJS = function () {
-      return !!document.getElementById(NODE_JS_ID);
-    };
-
-    _this.handleJSLoad = function () {
-      var onJSLoad = _this.props.onJSLoad;
-      onJSLoad && onJSLoad();
-    };
-
-    _this.handleJSLoadError = function (e) {
-      var onJSLoadError = _this.props.onJSLoadError;
-      onJSLoadError && onJSLoadError(e);
-    };
-
-    _this.jsLoading();
-
+    _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+    _this.generation = 0;
     return _this;
   }
 
   var _proto = Loader.prototype;
+
+  /*
+   * Loading starts in componentDidMount, not in the constructor: the constructor runs
+   * during render, before the container ref is attached (and may run twice in StrictMode
+   * or be thrown away by a concurrent render).
+   */
+  _proto.componentDidMount = function componentDidMount() {
+    var _this2 = this;
+
+    var generation = ++this.generation;
+    var _this$props$src = this.props.src,
+        src = _this$props$src === void 0 ? PLAYER_LATEST : _this$props$src;
+    loadIframeApi({
+      src: src,
+      id: NODE_JS_ID
+    }).then(function () {
+      generation === _this2.generation && _this2.props.onJSLoad();
+    }, function (e) {
+      if (generation !== _this2.generation) {
+        return;
+      }
+
+      var onJSLoadError = _this2.props.onJSLoadError;
+      onJSLoadError && onJSLoadError(e);
+    });
+  };
+
+  _proto.componentWillUnmount = function componentWillUnmount() {
+    this.generation++;
+  };
 
   _proto.render = function render() {
     var children = this.props.children;
@@ -247,7 +427,35 @@ var Loader = /*#__PURE__*/function (_Component) {
   return Loader;
 }(React.Component);
 
+function _finallyRethrows(body, finalizer) {
+  try {
+    var result = body();
+  } catch (e) {
+    return finalizer(true, e);
+  }
+
+  if (result && result.then) {
+    return result.then(finalizer.bind(null, false), finalizer.bind(null, true));
+  }
+
+  return finalizer(false, result);
+}
+
 var index = 1;
+
+function _catch$1(body, recover) {
+  try {
+    var result = body();
+  } catch (e) {
+    return recover(e);
+  }
+
+  if (result && result.then) {
+    return result.then(void 0, recover);
+  }
+
+  return result;
+}
 
 function getNextIndex() {
   return index++;
@@ -271,131 +479,130 @@ var Player = /*#__PURE__*/function (_Component) {
     _this.playerLoad = false;
     _this.parentsRef = React.createRef();
     _this.player = null;
+    _this.createSeq = 0;
+    _this.creatingSeq = null;
+    _this.unmounted = false;
 
     _this.handleJSLoad = function () {
-      try {
-        if (_this.playerLoad) {
-          return Promise.resolve();
-        }
+      if (_this.unmounted) {
+        return;
+      }
 
+      if (!_this.playerLoad) {
         _this.playerLoad = true;
         var onJSLoad = _this.props.onJSLoad;
         onJSLoad && onJSLoad();
-        return Promise.resolve(_this.create()).then(function () {});
-      } catch (e) {
-        return Promise.reject(e);
       }
+
+      if (_this.player || _this.creatingSeq !== null) {
+        return;
+      }
+
+      _this.create();
     };
 
     _this.shouldPlayerUpdate = function (prevProps) {
-      try {
-        var _this$props = _this.props,
-            videoId = _this$props.videoId,
-            query = _this$props.query,
-            width = _this$props.width,
-            height = _this$props.height,
-            autoPause = _this$props.autoPause,
-            autoPlay = _this$props.autoPlay,
-            loop = _this$props.loop,
-            muted = _this$props.muted,
-            playsInline = _this$props.playsInline,
-            preload = _this$props.preload,
-            language = _this$props.language,
-            controls = _this$props.controls,
-            mainPlayButton = _this$props.mainPlayButton,
-            playbackRateButton = _this$props.playbackRateButton,
-            textTrack = _this$props.textTrack,
-            watermark = _this$props.watermark,
-            localStorage = _this$props.localStorage,
-            playlistOptions = _this$props.playlistOptions,
-            theme = _this$props.theme;
+      var _this$props = _this.props,
+          videoId = _this$props.videoId,
+          query = _this$props.query,
+          width = _this$props.width,
+          height = _this$props.height,
+          autoPause = _this$props.autoPause,
+          autoPlay = _this$props.autoPlay,
+          loop = _this$props.loop,
+          muted = _this$props.muted,
+          playsInline = _this$props.playsInline,
+          preload = _this$props.preload,
+          language = _this$props.language,
+          controls = _this$props.controls,
+          mainPlayButton = _this$props.mainPlayButton,
+          playbackRateButton = _this$props.playbackRateButton,
+          textTrack = _this$props.textTrack,
+          watermark = _this$props.watermark,
+          localStorage = _this$props.localStorage,
+          playlistOptions = _this$props.playlistOptions,
+          theme = _this$props.theme,
+          createTimeout = _this$props.createTimeout,
+          attemptTimeout = _this$props.attemptTimeout,
+          errorScreen = _this$props.errorScreen;
 
-        if (muted !== prevProps.muted) {
-          muted ? _this.mute() : _this.unmute();
-        }
-
-        var _temp2 = function () {
-          if (!reactFastCompare(videoId, prevProps.videoId) || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || preload !== prevProps.preload || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || textTrack !== prevProps.textTrack || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage) || !reactFastCompare(playlistOptions, prevProps.playlistOptions) || !reactFastCompare(theme, prevProps.theme)) {
-            return Promise.resolve(_this.create()).then(function () {});
-          }
-        }();
-
-        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
-      } catch (e) {
-        return Promise.reject(e);
+      if (muted !== prevProps.muted && _this.player) {
+        (muted ? _this.mute() : _this.unmute())["catch"](function () {});
       }
+
+      return !reactFastCompare(videoId, prevProps.videoId) || !reactFastCompare(query, prevProps.query) || width !== prevProps.width || height !== prevProps.height || autoPause !== prevProps.autoPause || autoPlay !== prevProps.autoPlay || loop !== prevProps.loop || playsInline !== prevProps.playsInline || preload !== prevProps.preload || language !== prevProps.language || controls !== prevProps.controls || mainPlayButton !== prevProps.mainPlayButton || playbackRateButton !== prevProps.playbackRateButton || textTrack !== prevProps.textTrack || !reactFastCompare(watermark, prevProps.watermark) || !reactFastCompare(localStorage, prevProps.localStorage) || !reactFastCompare(playlistOptions, prevProps.playlistOptions) || !reactFastCompare(theme, prevProps.theme) || createTimeout !== prevProps.createTimeout || attemptTimeout !== prevProps.attemptTimeout || errorScreen !== prevProps.errorScreen;
     };
 
     _this.shouldPlaylistUpdate = function (prevProps) {
       try {
-        var _temp17 = function _temp17() {
-          function _temp15() {
-            function _temp13() {
-              function _temp11() {
-                function _temp9() {
-                  function _temp7() {
-                    function _temp5() {
-                      var _temp3 = function () {
+        var _temp15 = function _temp15() {
+          function _temp13() {
+            function _temp11() {
+              function _temp9() {
+                function _temp7() {
+                  function _temp5() {
+                    function _temp3() {
+                      var _temp = function () {
                         if (!reactFastCompare(callToAction, prevProps.callToAction)) {
                           return Promise.resolve(_this.updateCtaOptions()).then(function () {});
                         }
                       }();
 
-                      if (_temp3 && _temp3.then) return _temp3.then(function () {});
+                      if (_temp && _temp.then) return _temp.then(function () {});
                     }
 
-                    var _temp4 = function () {
+                    var _temp2 = function () {
                       if (!reactFastCompare(bookmarks, prevProps.bookmarks)) {
                         return Promise.resolve(_this.updateBookmarksOptions()).then(function () {});
                       }
                     }();
 
-                    return _temp4 && _temp4.then ? _temp4.then(_temp5) : _temp5(_temp4);
+                    return _temp2 && _temp2.then ? _temp2.then(_temp3) : _temp3(_temp2);
                   }
 
-                  var _temp6 = function () {
+                  var _temp4 = function () {
                     if (!reactFastCompare(vtt, prevProps.vtt)) {
                       return Promise.resolve(_this.updateVttOptions()).then(function () {});
                     }
                   }();
 
-                  return _temp6 && _temp6.then ? _temp6.then(_temp7) : _temp7(_temp6);
+                  return _temp4 && _temp4.then ? _temp4.then(_temp5) : _temp5(_temp4);
                 }
 
-                var _temp8 = function () {
+                var _temp6 = function () {
                   if (!reactFastCompare(chapters, prevProps.chapters)) {
                     return Promise.resolve(_this.updateChaptersOptions()).then(function () {});
                   }
                 }();
 
-                return _temp8 && _temp8.then ? _temp8.then(_temp9) : _temp9(_temp8);
+                return _temp6 && _temp6.then ? _temp6.then(_temp7) : _temp7(_temp6);
               }
 
-              var _temp10 = function () {
+              var _temp8 = function () {
                 if (drmAuthToken !== prevProps.drmAuthToken) {
                   return Promise.resolve(_this.updateDrmAuthTokenOptions()).then(function () {});
                 }
               }();
 
-              return _temp10 && _temp10.then ? _temp10.then(_temp11) : _temp11(_temp10);
+              return _temp8 && _temp8.then ? _temp8.then(_temp9) : _temp9(_temp8);
             }
 
-            var _temp12 = function () {
+            var _temp10 = function () {
               if (subtitle !== prevProps.subtitle) {
                 return Promise.resolve(_this.updateSubtitleOptions()).then(function () {});
               }
             }();
 
-            return _temp12 && _temp12.then ? _temp12.then(_temp13) : _temp13(_temp12);
+            return _temp10 && _temp10.then ? _temp10.then(_temp11) : _temp11(_temp10);
           }
 
-          var _temp14 = function () {
+          var _temp12 = function () {
             if (poster !== prevProps.poster) {
               return Promise.resolve(_this.updatePosterOptions()).then(function () {});
             }
           }();
 
-          return _temp14 && _temp14.then ? _temp14.then(_temp15) : _temp15(_temp14);
+          return _temp12 && _temp12.then ? _temp12.then(_temp13) : _temp13(_temp12);
         };
 
         var _this$props2 = _this.props,
@@ -408,13 +615,13 @@ var Player = /*#__PURE__*/function (_Component) {
             callToAction = _this$props2.callToAction,
             drmAuthToken = _this$props2.drmAuthToken;
 
-        var _temp18 = function () {
+        var _temp16 = function () {
           if (title !== prevProps.title) {
             return Promise.resolve(_this.updateTitleOptions()).then(function () {});
           }
         }();
 
-        return Promise.resolve(_temp18 && _temp18.then ? _temp18.then(_temp17) : _temp17(_temp18));
+        return Promise.resolve(_temp16 && _temp16.then ? _temp16.then(_temp15) : _temp15(_temp16));
       } catch (e) {
         return Promise.reject(e);
       }
@@ -567,15 +774,45 @@ var Player = /*#__PURE__*/function (_Component) {
       }
     };
 
+    _this.isCurrentCreate = function (seq) {
+      return !_this.unmounted && seq === _this.createSeq;
+    };
+
+    _this.invalidateCreate = function () {
+      _this.createSeq++;
+      _this.creatingSeq = null;
+    };
+
     _this.create = function () {
       try {
-        var _this$props4 = _this.props,
-            onInit = _this$props4.onInit,
-            onInitError = _this$props4.onInitError;
+        _this.invalidateCreate();
+
+        var seq = _this.createSeq;
+        _this.creatingSeq = seq;
+
+        var _temp18 = _finallyRethrows(function () {
+          return Promise.resolve(_this.createInternal(seq)).then(function () {});
+        }, function (_wasThrown, _result) {
+          if (_this.creatingSeq === seq) {
+            _this.creatingSeq = null;
+          }
+
+          if (_wasThrown) throw _result;
+          return _result;
+        });
+
+        return Promise.resolve(_temp18 && _temp18.then ? _temp18.then(function () {}) : void 0);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    _this.createInternal = function (seq) {
+      try {
         return Promise.resolve(_this.destroy()).then(function () {
           var parentsRef = _this.parentsRef.current;
 
-          if (!_this.playerLoad || !parentsRef) {
+          if (!_this.isCurrentCreate(seq) || !_this.playerLoad || !parentsRef) {
             return;
           }
           /* create playerId */
@@ -591,29 +828,49 @@ var Player = /*#__PURE__*/function (_Component) {
           return Promise.resolve(new Promise(function (resolve) {
             setTimeout(resolve, 0);
           })).then(function () {
-            if (!document.getElementById(playerId)) {
+            var _exit;
+
+            function _temp20(_result2) {
+              if (_exit) return _result2;
+
+              if (!_this.isCurrentCreate(seq)) {
+                /* superseded or unmounted while creating */
+                _this.destroyPlayer(player);
+
+                return;
+              }
+
+              _this.player = player;
+
+              _this.getEventList().forEach(function (event) {
+                player.on(event[0], event[1]);
+              });
+
+              var onInit = _this.props.onInit;
+              onInit && onInit({
+                playerId: playerId
+              });
+            }
+
+            if (!_this.isCurrentCreate(seq) || !document.getElementById(playerId)) {
               return;
             }
 
-            return Promise.resolve(new Promise(function (resolve, reject) {
-              _this.createPlayer(playerId).then(function (player) {
-                resolve(player);
-                onInit && onInit({
-                  playerId: playerId
-                });
-              })["catch"](function (e) {
-                reject(e);
-                onInitError && onInitError(e);
-              });
-            })).then(function (_Promise) {
-              _this.player = _Promise;
+            var player;
 
-              _this.getEventList().forEach(function (event) {
-                var _this$player;
-
-                (_this$player = _this.player) == null ? void 0 : _this$player.on(event[0], event[1]);
+            var _temp19 = _catch$1(function () {
+              return Promise.resolve(_this.createPlayer(playerId)).then(function (_this$createPlayer) {
+                player = _this$createPlayer;
               });
+            }, function (e) {
+              if (_this.isCurrentCreate(seq)) {
+                _this.handleInitError(e);
+              }
+
+              _exit = 1;
             });
+
+            return _temp19 && _temp19.then ? _temp19.then(_temp20) : _temp20(_temp19);
           });
         });
       } catch (e) {
@@ -621,24 +878,48 @@ var Player = /*#__PURE__*/function (_Component) {
       }
     };
 
+    _this.handleInitError = function (error) {
+      var onInitError = _this.props.onInitError;
+
+      if (onInitError) {
+        onInitError(error);
+        return;
+      }
+
+      console.error(error);
+    };
+
+    _this.destroyPlayer = function (player) {
+      try {
+        var _temp22 = _catch$1(function () {
+          return Promise.resolve(player.destroy()).then(function () {});
+        }, function () {});
+
+        return Promise.resolve(_temp22 && _temp22.then ? _temp22.then(function () {}) : void 0);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
     _this.destroy = function () {
       try {
-        if (!_this.player) {
+        var _player = _this.player;
+
+        if (!_player) {
           return Promise.resolve();
         }
 
-        return Promise.resolve(_this.player.destroy()).then(function () {
-          _this.player = null;
-        });
+        _this.player = null;
+        return Promise.resolve(_this.destroyPlayer(_player)).then(function () {});
       } catch (e) {
         return Promise.reject(e);
       }
     };
 
     _this.getEventList = function () {
-      var _this$player2;
+      var _this$player;
 
-      var Events = (_this$player2 = _this.player) == null ? void 0 : _this$player2.Events;
+      var Events = (_this$player = _this.player) == null ? void 0 : _this$player.Events;
 
       if (!Events) {
         return [];
@@ -680,33 +961,36 @@ var Player = /*#__PURE__*/function (_Component) {
       try {
         var _window$Kinescope;
 
-        var _this$props5 = _this.props,
-            title = _this$props5.title,
-            subtitle = _this$props5.subtitle,
-            poster = _this$props5.poster,
-            chapters = _this$props5.chapters,
-            vtt = _this$props5.vtt,
-            externalId = _this$props5.externalId,
-            drmAuthToken = _this$props5.drmAuthToken,
-            width = _this$props5.width,
-            height = _this$props5.height,
-            autoPause = _this$props5.autoPause,
-            autoPlay = _this$props5.autoPlay,
-            loop = _this$props5.loop,
-            muted = _this$props5.muted,
-            playsInline = _this$props5.playsInline,
-            preload = _this$props5.preload,
-            language = _this$props5.language,
-            controls = _this$props5.controls,
-            mainPlayButton = _this$props5.mainPlayButton,
-            playbackRateButton = _this$props5.playbackRateButton,
-            textTrack = _this$props5.textTrack,
-            bookmarks = _this$props5.bookmarks,
-            callToAction = _this$props5.callToAction,
-            watermark = _this$props5.watermark,
-            localStorage = _this$props5.localStorage,
-            playlistOptions = _this$props5.playlistOptions,
-            theme = _this$props5.theme;
+        var _this$props4 = _this.props,
+            title = _this$props4.title,
+            subtitle = _this$props4.subtitle,
+            poster = _this$props4.poster,
+            chapters = _this$props4.chapters,
+            vtt = _this$props4.vtt,
+            externalId = _this$props4.externalId,
+            drmAuthToken = _this$props4.drmAuthToken,
+            width = _this$props4.width,
+            height = _this$props4.height,
+            autoPause = _this$props4.autoPause,
+            autoPlay = _this$props4.autoPlay,
+            loop = _this$props4.loop,
+            muted = _this$props4.muted,
+            playsInline = _this$props4.playsInline,
+            preload = _this$props4.preload,
+            language = _this$props4.language,
+            controls = _this$props4.controls,
+            mainPlayButton = _this$props4.mainPlayButton,
+            playbackRateButton = _this$props4.playbackRateButton,
+            textTrack = _this$props4.textTrack,
+            bookmarks = _this$props4.bookmarks,
+            callToAction = _this$props4.callToAction,
+            watermark = _this$props4.watermark,
+            localStorage = _this$props4.localStorage,
+            playlistOptions = _this$props4.playlistOptions,
+            theme = _this$props4.theme,
+            createTimeout = _this$props4.createTimeout,
+            attemptTimeout = _this$props4.attemptTimeout,
+            errorScreen = _this$props4.errorScreen;
         var options = {
           url: _this.getIFrameUrl(),
           size: {
@@ -750,6 +1034,19 @@ var Player = /*#__PURE__*/function (_Component) {
             externalId: externalId
           }
         };
+
+        if (createTimeout !== undefined) {
+          options.timeout = createTimeout;
+        }
+
+        if (attemptTimeout !== undefined) {
+          options.attemptTimeout = attemptTimeout;
+        }
+
+        if (errorScreen !== undefined) {
+          options.errorScreen = errorScreen;
+        }
+
         if (!((_window$Kinescope = window.Kinescope) != null && _window$Kinescope.IframePlayer)) throw new Error('Kinescope PLayer: IframeApi is not loaded.');
         return Promise.resolve(window.Kinescope.IframePlayer.create(playerId, options));
       } catch (e) {
@@ -1001,11 +1298,20 @@ var Player = /*#__PURE__*/function (_Component) {
       return _this.player.previous();
     };
 
+    _this.handleJSLoadError = function (error) {
+      if (_this.unmounted) {
+        return;
+      }
+
+      var onJSLoadError = _this.props.onJSLoadError;
+      onJSLoadError && onJSLoadError(error);
+    };
+
     _this.handleEventReady = function (_ref) {
       var data = _ref.data;
       var onReady = _this.props.onReady;
 
-      _this.readyPlaylistOptions();
+      _this.readyPlaylistOptions()["catch"](function () {});
 
       onReady && onReady(data);
     };
@@ -1134,30 +1440,39 @@ var Player = /*#__PURE__*/function (_Component) {
 
   var _proto = Player.prototype;
 
-  _proto.componentDidUpdate = function componentDidUpdate(prevProps) {
-    try {
-      var _this3 = this;
+  _proto.componentDidMount = function componentDidMount() {
+    /* StrictMode and <Activity> unmount and mount the same instance again */
+    this.unmounted = false;
+  };
 
-      return Promise.resolve(_this3.shouldPlayerUpdate(prevProps)).then(function () {
-        return Promise.resolve(_this3.shouldPlaylistUpdate(prevProps)).then(function () {});
-      });
-    } catch (e) {
-      return Promise.reject(e);
+  _proto.componentDidUpdate = function componentDidUpdate(prevProps) {
+    if (this.shouldPlayerUpdate(prevProps)) {
+      /*
+       * The new player is created with the current props, playlist options included.
+       * Until the script is loaded there is nothing to re-create: handleJSLoad creates the player.
+       */
+      this.playerLoad && this.create();
+      return;
     }
+
+    this.shouldPlaylistUpdate(prevProps)["catch"](function () {});
   };
 
   _proto.componentWillUnmount = function componentWillUnmount() {
+    this.unmounted = true;
+    this.invalidateCreate();
     this.destroy();
   };
 
   _proto.render = function render() {
-    var _this$props6 = this.props,
-        className = _this$props6.className,
-        style = _this$props6.style,
-        onJSLoadError = _this$props6.onJSLoadError;
+    var _this$props5 = this.props,
+        className = _this$props5.className,
+        style = _this$props5.style,
+        playerScriptUrl = _this$props5.playerScriptUrl;
     return React__default['default'].createElement(Loader, {
+      src: playerScriptUrl,
       onJSLoad: this.handleJSLoad,
-      onJSLoadError: onJSLoadError
+      onJSLoadError: this.handleJSLoadError
     }, React__default['default'].createElement("span", {
       ref: this.parentsRef,
       className: className,

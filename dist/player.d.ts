@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import '@kinescope/player-iframe-api-loader';
+import { JSLoadError } from './loader';
 import Api = Kinescope.IframePlayer;
 type PreloadTypes = NonNullable<Api.CreateOptions['behavior']>['preload'];
 export type VttTypes = NonNullable<Api.PlaylistItemOptions['vtt']>[number];
@@ -39,7 +40,19 @@ export type PlayerPropsTypes = {
     className?: string;
     style?: any;
     onJSLoad?: () => void;
-    onJSLoadError?: () => void;
+    /**
+     * IFrame API script failed to load (after retries).
+     * Every player waiting for the script gets this callback.
+     */
+    onJSLoadError?: (error: JSLoadError) => void;
+    /** IFrame API script URL. Defaults to `https://player.kinescope.io/latest/iframe.player.js`. */
+    playerScriptUrl?: string;
+    /** Total player creation timeout, ms. IFrame API defaults to 30000. */
+    createTimeout?: number;
+    /** Timeout of a single connection attempt, ms. IFrame API >= 2.201.0, defaults to 15000. */
+    attemptTimeout?: number;
+    /** Show the error screen with the "Retry" button when the player fails to load. Defaults to `true`. */
+    errorScreen?: boolean;
     title?: string;
     subtitle?: string;
     poster?: string;
@@ -100,6 +113,15 @@ declare class Player extends Component<PlayerPropsTypes> {
     private playerLoad;
     private readonly parentsRef;
     private player;
+    /**
+     * Creation generation. Every `create()` and unmount bumps it; a `create()` whose
+     * generation is no longer current drops its result (destroying the created player)
+     * and does not call `onInit`/`onInitError`.
+     */
+    private createSeq;
+    /** Generation of the `create()` in progress, `null` if none. */
+    private creatingSeq;
+    private unmounted;
     static defaultProps: {
         width: string;
         height: string;
@@ -107,9 +129,11 @@ declare class Player extends Component<PlayerPropsTypes> {
         localStorage: boolean;
         playsInline: boolean;
     };
-    componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>): Promise<void>;
+    componentDidMount(): void;
+    componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>): void;
     componentWillUnmount(): void;
     private handleJSLoad;
+    /** Returns `true` if the player has to be re-created. */
     private shouldPlayerUpdate;
     private shouldPlaylistUpdate;
     private updateTitleOptions;
@@ -121,7 +145,19 @@ declare class Player extends Component<PlayerPropsTypes> {
     private updateBookmarksOptions;
     private updateCtaOptions;
     private readyPlaylistOptions;
+    private isCurrentCreate;
+    /** Marks the `create()` in progress as stale: its result will be dropped. */
+    private invalidateCreate;
+    /**
+     * (Re)creates the player. Never rejects: errors of the current generation go to `onInitError`,
+     * results and errors of stale generations are dropped.
+     * There is no way to abort `IframePlayer.create`, so a stale creation is not awaited:
+     * the container is cleared right away and the stale player is destroyed when it arrives.
+     */
     private create;
+    private createInternal;
+    private handleInitError;
+    private destroyPlayer;
     private destroy;
     private getEventList;
     private getQueryParams;
@@ -160,6 +196,7 @@ declare class Player extends Component<PlayerPropsTypes> {
     switchTo: (id: string) => Promise<void>;
     next: () => Promise<void>;
     previous: () => Promise<void>;
+    private handleJSLoadError;
     private handleEventReady;
     private handleQualityChanged;
     private handleCurrentTrackChanged;

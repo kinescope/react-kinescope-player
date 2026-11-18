@@ -3,9 +3,11 @@
 	"version": "0.5.4",
 	"description": "React.js wrapper for Kinescope player",
 	"scripts": {
-		"prettier": "npx prettier --parser typescript --write \"{src,packages}/**/*.{tsx,ts}\"",
+		"prettier": "npx prettier --parser typescript --write \"{src,test}/**/*.{tsx,ts}\"",
 		"dev": "npx microbundle watch --jsx React.createElement --compress false",
 		"build": "npx microbundle --name=KinescopePlayer --globals react=React --jsx React.createElement --compress false --no-sourcemap",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"release": "npx standard-version -a"
 	},
 	"keywords": [
@@ -49,16 +51,20 @@
 		"react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
 	},
 	"devDependencies": {
-		"@kinescope/player-iframe-api-loader": "^0.0.19",
+		"@kinescope/player-iframe-api-loader": "^0.9.0",
+		"@testing-library/dom": "^10.4.2",
+		"@testing-library/react": "^16.3.3",
 		"@types/react": "^18.3.11",
 		"@types/react-dom": "^18.3.1",
+		"jsdom": "^26.1.0",
 		"microbundle": "^0.15.1",
 		"prettier": "^3.5.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-fast-compare": "^3.2.2",
 		"standard-version": "^9.5.0",
-		"typescript": "^5.7.3"
+		"typescript": "^5.7.3",
+		"vitest": "^3.2.7"
 	},
 	"standard-version": {
 		"skip": {
