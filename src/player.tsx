@@ -1,6 +1,10 @@
+/*
+ * Global `Kinescope` types. A reference (not an import) keeps them in the emitted d.ts
+ * without adding a runtime import to the bundle.
+ */
+/// <reference types="@kinescope/player-iframe-api-loader" preserve="true" />
 import React, {Component, createRef} from 'react';
 import isEqual from 'react-fast-compare';
-import '@kinescope/player-iframe-api-loader';
 import Loader, {JSLoadError} from './loader';
 import {VIDEO_HOST, VIDEO_PLAYLIST_HOST} from './constant';
 

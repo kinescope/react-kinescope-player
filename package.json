@@ -46,17 +46,22 @@
 	"types": "dist/player.d.ts",
 	"typings": "dist/player.d.ts",
 	"source": "src/player.tsx",
+	"files": [
+		"dist"
+	],
+	"dependencies": {
+		"@kinescope/player-iframe-api-loader": "^0.9.0"
+	},
 	"peerDependencies": {
 		"react": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
 		"react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
 	},
 	"devDependencies": {
-		"@kinescope/player-iframe-api-loader": "^0.9.0",
 		"@testing-library/dom": "^10.4.2",
 		"@testing-library/react": "^16.3.3",
 		"@types/react": "^18.3.11",
 		"@types/react-dom": "^18.3.1",
-		"jsdom": "^26.1.0",
+		"jsdom": "^31.0.1",
 		"microbundle": "^0.15.1",
 		"prettier": "^3.5.0",
 		"react": "^18.3.1",
@@ -64,7 +69,7 @@
 		"react-fast-compare": "^3.2.2",
 		"standard-version": "^9.5.0",
 		"typescript": "^5.7.3",
-		"vitest": "^3.2.7"
+		"vitest": "^5.1.1"
 	},
 	"standard-version": {
 		"skip": {

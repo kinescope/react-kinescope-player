@@ -1,5 +1,5 @@
+/// <reference types="@kinescope/player-iframe-api-loader" preserve="true" />
 import React, { Component } from 'react';
-import '@kinescope/player-iframe-api-loader';
 import { JSLoadError } from './loader';
 import Api = Kinescope.IframePlayer;
 type PreloadTypes = NonNullable<Api.CreateOptions['behavior']>['preload'];
