@@ -1,42 +1,107 @@
-name: Publish to NPM
+# Publishes the package to npm when a GitHub Release is published.
+#
+# - The release tag must be `v<version from package.json>` of the tagged commit.
+# - Version with a prerelease part (`0.6.0-beta.0`) goes to the `next` dist-tag and the
+#   GitHub Release must be marked as "pre-release"; a stable version goes to `latest`.
+# - Auth: npm Trusted Publishing (OIDC), no npm token. The trusted publisher on npmjs.com
+#   must point to this repository and this workflow file (`npm-publish.yml`).
+#
+# Third-party code (npm ci, tests, build) runs only in the `build` job, which has no
+# id-token; the `publish` job only publishes the tarball built there.
+name: Publish to npm
 
 on:
   release:
     types: [published]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      dist-tag: ${{ steps.version.outputs.dist-tag }}
+      tarball: ${{ steps.pack.outputs.tarball }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
         with:
-          # "ref" specifies the branch to check out.
-          # "github.event.release.target_commitish" is a global variable and specifies the branch the release targeted
-          ref: ${{ github.event.release.target_commitish }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      - run: npm ci
+          ref: ${{ github.event.release.tag_name }}
+          persist-credentials: false
 
-  publish-npm:
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Check tag, version and pre-release flag
+        id: version
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [ "$TAG_NAME" != "v$VERSION" ]; then
+            echo "::error::Release tag '$TAG_NAME' does not match package.json version 'v$VERSION'."
+            exit 1
+          fi
+          case "$VERSION" in
+            *-*) IS_PRE=true; DIST_TAG=next ;;
+            *)   IS_PRE=false; DIST_TAG=latest ;;
+          esac
+          if [ "$IS_PRE" != "$PRERELEASE" ]; then
+            echo "::error::Version '$VERSION' prerelease=$IS_PRE, but GitHub Release pre-release=$PRERELEASE."
+            exit 1
+          fi
+          echo "dist-tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
+          echo "Publishing $VERSION to '$DIST_TAG'"
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      - name: Check that committed dist matches the build
+        run: git diff --exit-code --stat -- dist
+
+      - name: Pack
+        id: pack
+        run: |
+          TARBALL=$(npm pack --silent | tail -n 1)
+          echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
+          tar -tzf "$TARBALL"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: package
+          path: ${{ steps.pack.outputs.tarball }}
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm Trusted Publishing (OIDC) and provenance
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v7
         with:
-          ref: ${{ github.event.release.target_commitish }}
-      - uses: actions/setup-node@v2
+          node-version: 24 # ships npm >= 11.5.1 required by Trusted Publishing
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - uses: actions/download-artifact@v8
         with:
-          node-version: 16
-          registry-url: https://registry.npmjs.org/
-          scope: '@kinescope'
-      - run: npm ci
-      - run: git config --global user.name "GitHub CD bot"
-      - run: git config --global user.email "github-cd-bot@kinescope.io"
-      # upgrade npm version in package.json to the tag used in the release.
-      - run: npm run build
-      - run: npm publish --access public
+          name: package
+
+      - name: Publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      # push the version changes to GitHub
-      - run: git push
+          TARBALL: ${{ needs.build.outputs.tarball }}
+          DIST_TAG: ${{ needs.build.outputs.dist-tag }}
+        # provenance is generated automatically with Trusted Publishing
+        run: npm publish "./$TARBALL" --access public --tag "$DIST_TAG"

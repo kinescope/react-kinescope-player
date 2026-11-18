@@ -8,7 +8,8 @@
 		"build": "npx microbundle --name=KinescopePlayer --globals react=React --jsx React.createElement --compress false --no-sourcemap",
 		"test": "vitest run",
 		"test:watch": "vitest",
-		"release": "npx standard-version -a"
+		"typecheck": "tsc --noEmit -p .",
+		"release": "commit-and-tag-version"
 	},
 	"keywords": [
 		"React",
@@ -24,11 +25,10 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/kinescope/react-kinescope-player.git"
+		"url": "git+https://github.com/kinescope/react-kinescope-player.git"
 	},
 	"publishConfig": {
-		"access": "public",
-		"tag": "latest"
+		"access": "public"
 	},
 	"exports": {
 		".": {
@@ -61,21 +61,21 @@
 		"@testing-library/react": "^16.3.3",
 		"@types/react": "^18.3.31",
 		"@types/react-dom": "^18.3.7",
+		"commit-and-tag-version": "^13.3.0",
 		"jsdom": "^31.0.1",
 		"microbundle": "^0.15.1",
 		"prettier": "^3.10.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-fast-compare": "^3.2.3",
-		"standard-version": "^9.5.0",
 		"typescript": "^6.0.3",
 		"vitest": "^5.1.1"
 	},
-	"standard-version": {
+	"commit-and-tag-version": {
 		"skip": {
-			"tag": true,
-			"commit": true
-		}
+			"tag": true
+		},
+		"releaseCommitMessageFormat": "chore: release {{currentTag}}"
 	},
 	"overrides": {
 		"rollup-plugin-typescript2": "^0.37.0",

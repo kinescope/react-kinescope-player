@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test (React ${{ matrix.react }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react: [18, 19]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install React ${{ matrix.react }}
+        if: matrix.react != 18
+        run: npm install --no-save react@${{ matrix.react }} react-dom@${{ matrix.react }}
+
+      - run: npm run typecheck
+      - run: npm test
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Check that committed dist matches the build
+        run: |
+          if ! git diff --exit-code --stat -- dist; then
+            echo "::error::dist is out of date: run 'npm run build' and commit dist."
+            exit 1
+          fi
+
+      - name: Check package contents
+        run: npm pack --dry-run
