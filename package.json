@@ -8,7 +8,7 @@
 		"build": "npx microbundle --name=KinescopePlayer --globals react=React --jsx React.createElement --compress false --no-sourcemap",
 		"test": "vitest run",
 		"test:watch": "vitest",
-		"typecheck": "tsc --noEmit -p .",
+		"typecheck": "tsc --noEmit -p . && tsc -p tsconfig.test.json",
 		"release": "commit-and-tag-version"
 	},
 	"keywords": [

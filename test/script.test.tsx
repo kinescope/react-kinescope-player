@@ -3,7 +3,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import KinescopePlayer from '../src/player';
 import {PLAYER_LATEST} from '../src/constant';
 import {NODE_JS_ID} from '../src/loader';
-import {DEFAULT_FOREIGN_TAG_TIMEOUT, DEFAULT_RETRY_DELAY} from '../src/tools/script';
+import {DEFAULT_TIMEOUT, DEFAULT_RETRY_DELAY} from '../src/tools/script';
 import {createMockApi, getScriptTag, scriptTags} from './helpers';
 
 async function tick(ms = 0) {
@@ -132,7 +132,7 @@ describe('IFrame API script loading', () => {
 		const foreign = insertForeignTag();
 		const onInit = vi.fn();
 		render(<KinescopePlayer videoId="v1" onInit={onInit} />);
-		await tick(DEFAULT_FOREIGN_TAG_TIMEOUT - 1);
+		await tick(DEFAULT_TIMEOUT - 1);
 		expect(scriptTags()).toHaveLength(1);
 		expect(getScriptTag()).toBe(foreign);
 
@@ -148,7 +148,7 @@ describe('IFrame API script loading', () => {
 		const foreign = insertForeignTag();
 		const onInit = vi.fn();
 		render(<KinescopePlayer videoId="v1" onInit={onInit} />);
-		await tick(DEFAULT_FOREIGN_TAG_TIMEOUT);
+		await tick(DEFAULT_TIMEOUT);
 
 		expect(foreign.isConnected).toBe(false);
 		expect(scriptTags()).toHaveLength(1);
@@ -183,6 +183,60 @@ describe('IFrame API script loading', () => {
 		unmount();
 		await failAllAttempts();
 		expect(onJSLoadError).not.toHaveBeenCalled();
+	});
+
+	it('own script request that never answers: the attempt times out and is retried', async () => {
+		const onJSLoadError = vi.fn();
+		const onInit = vi.fn();
+		render(<KinescopePlayer videoId="v1" onInit={onInit} onJSLoadError={onJSLoadError} />);
+		await tick();
+		const stalled = getScriptTag()!;
+
+		await tick(DEFAULT_TIMEOUT - 1);
+		expect(stalled.isConnected).toBe(true);
+		await tick(1);
+		expect(stalled.isConnected).toBe(false);
+
+		await tick(DEFAULT_RETRY_DELAY);
+		expect(scriptTags()).toHaveLength(1);
+		expect(getScriptTag()).not.toBe(stalled);
+
+		const api = await loadScript();
+		api.pending[0].resolve();
+		await tick();
+		expect(onInit).toHaveBeenCalledTimes(1);
+		expect(onJSLoadError).not.toHaveBeenCalled();
+	});
+
+	it('own script request that never answers on every attempt: onJSLoadError', async () => {
+		const onJSLoadError = vi.fn();
+		render(<KinescopePlayer videoId="v1" onJSLoadError={onJSLoadError} />);
+		await tick();
+		await tick(DEFAULT_TIMEOUT + DEFAULT_RETRY_DELAY);
+		await tick(DEFAULT_TIMEOUT + DEFAULT_RETRY_DELAY);
+		expect(onJSLoadError).not.toHaveBeenCalled();
+		await tick(DEFAULT_TIMEOUT);
+
+		expect(onJSLoadError).toHaveBeenCalledTimes(1);
+		expect(onJSLoadError.mock.calls[0][0]).toBeInstanceOf(Error);
+		expect(getScriptTag()).toBeNull();
+	});
+
+	it('onJSLoadError that throws: reported as an error, no unhandled rejection', async () => {
+		const reportError = vi.spyOn(globalThis, 'reportError').mockImplementation(() => {});
+		const error = new Error('consumer bug');
+		render(
+			<KinescopePlayer
+				videoId="v1"
+				onJSLoadError={() => {
+					throw error;
+				}}
+			/>,
+		);
+		await tick();
+		await failAllAttempts();
+		expect(reportError).toHaveBeenCalledWith(error);
+		reportError.mockRestore();
 	});
 
 	it('playerScriptUrl sets the script URL', async () => {

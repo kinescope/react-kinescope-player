@@ -218,13 +218,13 @@ function _catch$1(body, recover) {
 var loadOnce = function loadOnce(_ref) {
   var src = _ref.src,
     id = _ref.id,
-    _ref$foreignTagTimeou = _ref.foreignTagTimeout,
-    foreignTagTimeout = _ref$foreignTagTimeou === void 0 ? DEFAULT_FOREIGN_TAG_TIMEOUT : _ref$foreignTagTimeou;
+    _ref$timeout = _ref.timeout,
+    timeout = _ref$timeout === void 0 ? DEFAULT_TIMEOUT : _ref$timeout;
   try {
-    var _temp8 = function _temp8(_result3) {
+    var _temp8 = function _temp8(_result2) {
       var _exit2;
-      if (_exit) return _result3;
-      function _temp6(_result4) {
+      if (_exit) return _result2;
+      function _temp6(_result3) {
         if (_exit2) ;
         if (!isApiLoaded()) {
           script.remove();
@@ -234,7 +234,12 @@ var loadOnce = function loadOnce(_ref) {
       var script = document.createElement('script');
       script.id = id;
       script.src = src;
-      var loaded = waitForScript(script);
+      /*
+       * After a timeout the tag is removed and the next attempt inserts a new one. If the stalled
+       * request still completes, the script may run twice; IFrame API handles this (the later copy
+       * replaces the earlier one), and a next attempt that finds the API loaded does nothing.
+       */
+      var loaded = waitForScript(script, timeout);
       document.body.appendChild(script);
       var _temp5 = _catch$1(function () {
         return Promise.resolve(loaded).then(function () {});
@@ -257,24 +262,19 @@ var loadOnce = function loadOnce(_ref) {
     var foreign = document.getElementById(id);
     var _temp7 = function () {
       if (foreign) {
-        var _temp4 = function _temp4(_result2) {
-          if (_exit) return _result2;
+        var _temp4 = function _temp4(_result) {
+          if (_exit) return _result;
           foreign.remove();
         };
         var _temp3 = function () {
           if (foreign instanceof HTMLScriptElement) {
-            var _temp2 = function _temp2(_result) {
-              if (_exit) return _result;
+            var _temp2 = function _temp2() {
               if (isApiLoaded()) {
                 _exit = 1;
               }
             };
             var _temp = _catch$1(function () {
-              return Promise.resolve(waitForScript(foreign, foreignTagTimeout)).then(function () {
-                if (isApiLoaded()) {
-                  _exit = 1;
-                }
-              });
+              return Promise.resolve(waitForScript(foreign, timeout)).then(function () {});
             }, function () {});
             return _temp && _temp.then ? _temp.then(_temp2) : _temp2(_temp);
           }
@@ -289,7 +289,7 @@ var loadOnce = function loadOnce(_ref) {
 };
 var DEFAULT_RETRIES = 2;
 var DEFAULT_RETRY_DELAY = 1000;
-var DEFAULT_FOREIGN_TAG_TIMEOUT = 15000;
+var DEFAULT_TIMEOUT = 15000;
 /**
  * Loading state is shared by every player on the page.
  * - pending/resolved promise: every player waits for it and gets the same result;
@@ -425,18 +425,32 @@ var Loader = /*#__PURE__*/function (_Component) {
   return Loader;
 }(React.Component);
 
-function _finallyRethrows(body, finalizer) {
-  try {
-    var result = body();
-  } catch (e) {
-    return finalizer(true, e);
+/** Reports an error without throwing: to `window.onerror` / error monitoring, not as a promise rejection. */
+function report(error) {
+  /* `typeof` of an undeclared identifier is safe in browsers without reportError */
+  if (typeof reportError === 'function') {
+    reportError(error);
+    return;
   }
-  if (result && result.then) {
-    return result.then(finalizer.bind(null, false), finalizer.bind(null, true));
-  }
-  return finalizer(false, result);
+  setTimeout(function () {
+    throw error;
+  });
 }
-var index = 1;
+/**
+ * Calls a user callback. An exception thrown by the callback is reported as an uncaught error
+ * instead of breaking the caller (or becoming an unhandled promise rejection in async code).
+ */
+function callSafely(callback) {
+  if (!callback) {
+    return;
+  }
+  try {
+    callback.apply(void 0, [].slice.call(arguments, 1));
+  } catch (error) {
+    report(error);
+  }
+}
+
 function _catch(body, recover) {
   try {
     var result = body();
@@ -447,6 +461,18 @@ function _catch(body, recover) {
     return result.then(void 0, recover);
   }
   return result;
+}
+var index = 1;
+function _finallyRethrows(body, finalizer) {
+  try {
+    var result = body();
+  } catch (e) {
+    return finalizer(true, e);
+  }
+  if (result && result.then) {
+    return result.then(finalizer.bind(null, false), finalizer.bind(null, true));
+  }
+  return finalizer(false, result);
 }
 function getNextIndex() {
   return index++;
@@ -472,15 +498,11 @@ var Player = /*#__PURE__*/function (_Component) {
     _this.createSeq = 0;
     /** Generation of the `create()` in progress, `null` if none. */
     _this.creatingSeq = null;
-    _this.unmounted = false;
     _this.handleJSLoad = function () {
-      if (_this.unmounted) {
-        return;
-      }
       if (!_this.playerLoad) {
         _this.playerLoad = true;
         var onJSLoad = _this.props.onJSLoad;
-        onJSLoad && onJSLoad();
+        callSafely(onJSLoad);
       }
       if (_this.player || _this.creatingSeq !== null) {
         return;
@@ -724,7 +746,7 @@ var Player = /*#__PURE__*/function (_Component) {
       }
     };
     _this.isCurrentCreate = function (seq) {
-      return !_this.unmounted && seq === _this.createSeq;
+      return seq === _this.createSeq;
     };
     /** Marks the `create()` in progress as stale: its result will be dropped. */
     _this.invalidateCreate = function () {
@@ -743,7 +765,13 @@ var Player = /*#__PURE__*/function (_Component) {
         var seq = _this.createSeq;
         _this.creatingSeq = seq;
         var _temp14 = _finallyRethrows(function () {
-          return Promise.resolve(_this.createInternal(seq)).then(function () {});
+          return _catch(function () {
+            return Promise.resolve(_this.createInternal(seq)).then(function () {});
+          }, function (e) {
+            if (_this.isCurrentCreate(seq)) {
+              _this.handleInitError(e);
+            }
+          });
         }, function (_wasThrown, _result) {
           if (_this.creatingSeq === seq) {
             _this.creatingSeq = null;
@@ -765,6 +793,7 @@ var Player = /*#__PURE__*/function (_Component) {
           }
           /* create playerId */
           /* fast re-create player fix */
+          /* muted may change while creating; it is applied to the created player below */
           parentsRef.textContent = '';
           var playerId = getNextPlayerId();
           var playerDiv = document.createElement('div');
@@ -785,14 +814,20 @@ var Player = /*#__PURE__*/function (_Component) {
               _this.getEventList().forEach(function (event) {
                 player.on(event[0], event[1]);
               });
-              var onInit = _this.props.onInit;
-              onInit && onInit({
+              var _this$props4 = _this.props,
+                muted = _this$props4.muted,
+                onInit = _this$props4.onInit;
+              if (muted !== undefined && muted !== mutedOnCreate) {
+                (muted ? player.mute() : player.unmute())["catch"](function () {});
+              }
+              callSafely(onInit, {
                 playerId: playerId
               });
             }
             if (!_this.isCurrentCreate(seq) || !document.getElementById(playerId)) {
               return;
             }
+            var mutedOnCreate = _this.props.muted;
             var player;
             var _temp15 = _catch(function () {
               return Promise.resolve(_this.createPlayer(playerId)).then(function (_this$createPlayer) {
@@ -814,7 +849,7 @@ var Player = /*#__PURE__*/function (_Component) {
     _this.handleInitError = function (error) {
       var onInitError = _this.props.onInitError;
       if (onInitError) {
-        onInitError(error);
+        callSafely(onInitError, error);
         return;
       }
       console.error(error);
@@ -874,36 +909,36 @@ var Player = /*#__PURE__*/function (_Component) {
     _this.createPlayer = function (playerId) {
       try {
         var _window$Kinescope;
-        var _this$props4 = _this.props,
-          title = _this$props4.title,
-          subtitle = _this$props4.subtitle,
-          poster = _this$props4.poster,
-          chapters = _this$props4.chapters,
-          vtt = _this$props4.vtt,
-          externalId = _this$props4.externalId,
-          drmAuthToken = _this$props4.drmAuthToken,
-          width = _this$props4.width,
-          height = _this$props4.height,
-          autoPause = _this$props4.autoPause,
-          autoPlay = _this$props4.autoPlay,
-          loop = _this$props4.loop,
-          muted = _this$props4.muted,
-          playsInline = _this$props4.playsInline,
-          preload = _this$props4.preload,
-          language = _this$props4.language,
-          controls = _this$props4.controls,
-          mainPlayButton = _this$props4.mainPlayButton,
-          playbackRateButton = _this$props4.playbackRateButton,
-          textTrack = _this$props4.textTrack,
-          bookmarks = _this$props4.bookmarks,
-          callToAction = _this$props4.callToAction,
-          watermark = _this$props4.watermark,
-          localStorage = _this$props4.localStorage,
-          playlistOptions = _this$props4.playlistOptions,
-          theme = _this$props4.theme,
-          createTimeout = _this$props4.createTimeout,
-          attemptTimeout = _this$props4.attemptTimeout,
-          errorScreen = _this$props4.errorScreen;
+        var _this$props5 = _this.props,
+          title = _this$props5.title,
+          subtitle = _this$props5.subtitle,
+          poster = _this$props5.poster,
+          chapters = _this$props5.chapters,
+          vtt = _this$props5.vtt,
+          externalId = _this$props5.externalId,
+          drmAuthToken = _this$props5.drmAuthToken,
+          width = _this$props5.width,
+          height = _this$props5.height,
+          autoPause = _this$props5.autoPause,
+          autoPlay = _this$props5.autoPlay,
+          loop = _this$props5.loop,
+          muted = _this$props5.muted,
+          playsInline = _this$props5.playsInline,
+          preload = _this$props5.preload,
+          language = _this$props5.language,
+          controls = _this$props5.controls,
+          mainPlayButton = _this$props5.mainPlayButton,
+          playbackRateButton = _this$props5.playbackRateButton,
+          textTrack = _this$props5.textTrack,
+          bookmarks = _this$props5.bookmarks,
+          callToAction = _this$props5.callToAction,
+          watermark = _this$props5.watermark,
+          localStorage = _this$props5.localStorage,
+          playlistOptions = _this$props5.playlistOptions,
+          theme = _this$props5.theme,
+          createTimeout = _this$props5.createTimeout,
+          attemptTimeout = _this$props5.attemptTimeout,
+          errorScreen = _this$props5.errorScreen;
         var options = {
           url: _this.getIFrameUrl(),
           size: {
@@ -1147,11 +1182,8 @@ var Player = /*#__PURE__*/function (_Component) {
       return _this.player.previous();
     };
     _this.handleJSLoadError = function (error) {
-      if (_this.unmounted) {
-        return;
-      }
       var onJSLoadError = _this.props.onJSLoadError;
-      onJSLoadError && onJSLoadError(error);
+      callSafely(onJSLoadError, error);
     };
     _this.handleEventReady = function (_ref) {
       var data = _ref.data;
@@ -1261,10 +1293,6 @@ var Player = /*#__PURE__*/function (_Component) {
   }
   _inheritsLoose(Player, _Component);
   var _proto = Player.prototype;
-  _proto.componentDidMount = function componentDidMount() {
-    /* StrictMode and <Activity> unmount and mount the same instance again */
-    this.unmounted = false;
-  };
   _proto.componentDidUpdate = function componentDidUpdate(prevProps) {
     if (this.shouldPlayerUpdate(prevProps)) {
       /*
@@ -1275,17 +1303,20 @@ var Player = /*#__PURE__*/function (_Component) {
       return;
     }
     this.shouldPlaylistUpdate(prevProps)["catch"](function () {});
-  };
+  }
+  /*
+   * Callbacks after unmount: Loader drops script load results after its own unmount,
+   * invalidateCreate() drops the creation in progress.
+   */;
   _proto.componentWillUnmount = function componentWillUnmount() {
-    this.unmounted = true;
     this.invalidateCreate();
     this.destroy();
   };
   _proto.render = function render() {
-    var _this$props5 = this.props,
-      className = _this$props5.className,
-      style = _this$props5.style,
-      playerScriptUrl = _this$props5.playerScriptUrl;
+    var _this$props6 = this.props,
+      className = _this$props6.className,
+      style = _this$props6.style,
+      playerScriptUrl = _this$props6.playerScriptUrl;
     return React__default["default"].createElement(Loader, {
       src: playerScriptUrl,
       onJSLoad: this.handleJSLoad,

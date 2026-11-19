@@ -8,15 +8,16 @@ export type ScriptLoadOptions = {
 	/** Pause between attempts, ms. */
 	retryDelay?: number;
 	/**
-	 * How long to wait for a `<script>` tag that was inserted by someone else
-	 * (an older wrapper version, a second copy of this package) before removing it, ms.
+	 * How long to wait for `load`/`error` of a `<script>` tag, ms: a stalled request
+	 * (no answer from the server, captive portal) fails the attempt instead of hanging.
+	 * The same timeout is used for a tag inserted by someone else.
 	 */
-	foreignTagTimeout?: number;
+	timeout?: number;
 };
 
 export const DEFAULT_RETRIES = 2;
 export const DEFAULT_RETRY_DELAY = 1000;
-export const DEFAULT_FOREIGN_TAG_TIMEOUT = 15000;
+export const DEFAULT_TIMEOUT = 15000;
 
 /**
  * Loading state is shared by every player on the page.
@@ -67,11 +68,7 @@ function apiNotFoundError(src: string) {
 	return new Error(`Kinescope Player: script "${src}" loaded, but IframePlayer API is not found.`);
 }
 
-async function loadOnce({
-	src,
-	id,
-	foreignTagTimeout = DEFAULT_FOREIGN_TAG_TIMEOUT,
-}: ScriptLoadOptions): Promise<void> {
+async function loadOnce({src, id, timeout = DEFAULT_TIMEOUT}: ScriptLoadOptions): Promise<void> {
 	if (isApiLoaded()) {
 		return;
 	}
@@ -86,10 +83,7 @@ async function loadOnce({
 	if (foreign) {
 		if (foreign instanceof HTMLScriptElement) {
 			try {
-				await waitForScript(foreign, foreignTagTimeout);
-				if (isApiLoaded()) {
-					return;
-				}
+				await waitForScript(foreign, timeout);
 			} catch {
 				// handled below: the tag is removed and the script is loaded again
 			}
@@ -103,7 +97,12 @@ async function loadOnce({
 	const script = document.createElement('script');
 	script.id = id;
 	script.src = src;
-	const loaded = waitForScript(script);
+	/*
+	 * After a timeout the tag is removed and the next attempt inserts a new one. If the stalled
+	 * request still completes, the script may run twice; IFrame API handles this (the later copy
+	 * replaces the earlier one), and a next attempt that finds the API loaded does nothing.
+	 */
+	const loaded = waitForScript(script, timeout);
 	document.body.appendChild(script);
 	try {
 		await loaded;

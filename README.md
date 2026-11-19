@@ -387,7 +387,7 @@ type Theme = {
   </tr>
   <tr>
       <td>onJSLoadError</td>
-      <td>Event | Error — IFrame API script failed to load after retries. Every mounted player waiting for the script gets it; the next mounted player loads the script again</td>
+      <td>JSLoadError (Event | Error) — IFrame API script failed to load: 3 attempts, each fails on a network error or after 15 s without an answer. Every mounted player waiting for the script gets it; the next mounted player loads the script again</td>
   </tr>
   <tr>
       <td>onInit</td>

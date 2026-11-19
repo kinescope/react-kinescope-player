@@ -2,7 +2,7 @@ import {StrictMode, startTransition} from 'react';
 import {render, waitFor} from '@testing-library/react';
 import {createRoot} from 'react-dom/client';
 import {describe, expect, it, vi} from 'vitest';
-import KinescopePlayer from '../src/player';
+import KinescopePlayer, {type JSLoadError} from '../src/player';
 import {contentWindowIsNull, flush, installMockApi} from './helpers';
 
 function callbacks() {
@@ -84,6 +84,122 @@ describe('Player creation', () => {
 		await flush();
 		expect(consoleError).toHaveBeenCalledWith(error);
 		consoleError.mockRestore();
+	});
+});
+
+describe('Consumer callbacks that throw', () => {
+	function spyReportError() {
+		return vi.spyOn(globalThis, 'reportError').mockImplementation(() => {});
+	}
+
+	it('onInit throws: reported as an error, the player stays created, no unhandled rejection', async () => {
+		const reportError = spyReportError();
+		const api = installMockApi();
+		const error = new Error('consumer bug');
+		const onInitError = vi.fn();
+		const {unmount} = render(
+			<KinescopePlayer
+				videoId="v1"
+				onInit={() => {
+					throw error;
+				}}
+				onInitError={onInitError}
+			/>,
+		);
+		await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+		api.pending[0].resolve();
+		await flush();
+		expect(reportError).toHaveBeenCalledWith(error);
+		expect(onInitError).not.toHaveBeenCalled();
+
+		unmount();
+		await flush();
+		expect(api.pending[0].player.destroy).toHaveBeenCalledTimes(1);
+		reportError.mockRestore();
+	});
+
+	it('onInitError throws: reported as an error, no unhandled rejection', async () => {
+		const reportError = spyReportError();
+		const api = installMockApi();
+		const error = new Error('consumer bug');
+		render(
+			<KinescopePlayer
+				videoId="v1"
+				onInitError={() => {
+					throw error;
+				}}
+			/>,
+		);
+		await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+		api.pending[0].reject(new Error('EmbedError'));
+		await flush();
+		expect(reportError).toHaveBeenCalledWith(error);
+		reportError.mockRestore();
+	});
+
+	it('onJSLoad throws: reported as an error, the player is still created', async () => {
+		const reportError = spyReportError();
+		const api = installMockApi();
+		const error = new Error('consumer bug');
+		const onInit = vi.fn();
+		render(
+			<KinescopePlayer
+				videoId="v1"
+				onJSLoad={() => {
+					throw error;
+				}}
+				onInit={onInit}
+			/>,
+		);
+		await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+		api.pending[0].resolve();
+		await flush();
+		expect(reportError).toHaveBeenCalledWith(error);
+		expect(onInit).toHaveBeenCalledTimes(1);
+		reportError.mockRestore();
+	});
+
+	it('onJSLoadError argument type is exported', () => {
+		const handler = (error: JSLoadError) => error;
+		expect(handler(new Error('x'))).toBeInstanceOf(Error);
+	});
+});
+
+describe('muted', () => {
+	it('change while the player is being created is applied to the created player', async () => {
+		const api = installMockApi();
+		const {rerender} = render(<KinescopePlayer videoId="v1" muted={false} />);
+		await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+		expect(api.create.mock.calls[0][1].behavior.muted).toBe(false);
+
+		rerender(<KinescopePlayer videoId="v1" muted={true} />);
+		api.pending[0].resolve();
+		await flush();
+		const player = api.pending[0].player;
+		expect(player.mute).toHaveBeenCalledTimes(1);
+		expect(player.unmute).not.toHaveBeenCalled();
+	});
+
+	it('no change while creating: mute/unmute are not called', async () => {
+		const api = installMockApi();
+		render(<KinescopePlayer videoId="v1" muted={true} />);
+		await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+		api.pending[0].resolve();
+		await flush();
+		expect(api.pending[0].player.mute).not.toHaveBeenCalled();
+		expect(api.pending[0].player.unmute).not.toHaveBeenCalled();
+	});
+
+	it('change after creation calls mute/unmute', async () => {
+		const api = installMockApi();
+		const {rerender} = render(<KinescopePlayer videoId="v1" muted={false} />);
+		await waitFor(() => expect(api.create).toHaveBeenCalledTimes(1));
+		api.pending[0].resolve();
+		await flush();
+		rerender(<KinescopePlayer videoId="v1" muted={true} />);
+		await flush();
+		expect(api.pending[0].player.mute).toHaveBeenCalledTimes(1);
+		expect(api.create).toHaveBeenCalledTimes(1);
 	});
 });
 

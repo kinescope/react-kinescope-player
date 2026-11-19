@@ -6,6 +6,7 @@
 import React, {Component, createRef} from 'react';
 import isEqual from 'react-fast-compare';
 import Loader, {JSLoadError} from './loader';
+import {callSafely} from './tools/callback';
 import {VIDEO_HOST, VIDEO_PLAYLIST_HOST} from './constant';
 
 import Api = Kinescope.IframePlayer;
@@ -74,6 +75,8 @@ type CreateOptionsTypes = Api.CreateOptions & {
 	/** Show the error screen with the "Retry" button when the player fails to load. Defaults to `true`. */
 	errorScreen?: boolean;
 };
+
+export type {JSLoadError};
 
 export type QueryTypes = {
 	seek?: number;
@@ -182,7 +185,6 @@ class Player extends Component<PlayerPropsTypes> {
 	private createSeq: number = 0;
 	/** Generation of the `create()` in progress, `null` if none. */
 	private creatingSeq: number | null = null;
-	private unmounted: boolean = false;
 
 	static defaultProps = {
 		width: '100%',
@@ -191,11 +193,6 @@ class Player extends Component<PlayerPropsTypes> {
 		localStorage: true,
 		playsInline: true,
 	};
-
-	componentDidMount() {
-		/* StrictMode and <Activity> unmount and mount the same instance again */
-		this.unmounted = false;
-	}
 
 	componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>) {
 		if (this.shouldPlayerUpdate(prevProps)) {
@@ -209,20 +206,20 @@ class Player extends Component<PlayerPropsTypes> {
 		this.shouldPlaylistUpdate(prevProps).catch(() => {});
 	}
 
+	/*
+	 * Callbacks after unmount: Loader drops script load results after its own unmount,
+	 * invalidateCreate() drops the creation in progress.
+	 */
 	componentWillUnmount() {
-		this.unmounted = true;
 		this.invalidateCreate();
 		this.destroy();
 	}
 
 	private handleJSLoad = () => {
-		if (this.unmounted) {
-			return;
-		}
 		if (!this.playerLoad) {
 			this.playerLoad = true;
 			const {onJSLoad} = this.props;
-			onJSLoad && onJSLoad();
+			callSafely(onJSLoad);
 		}
 		if (this.player || this.creatingSeq !== null) {
 			return;
@@ -420,7 +417,7 @@ class Player extends Component<PlayerPropsTypes> {
 		await this.setPlaylistItemOptions(options);
 	};
 
-	private isCurrentCreate = (seq: number) => !this.unmounted && seq === this.createSeq;
+	private isCurrentCreate = (seq: number) => seq === this.createSeq;
 
 	/** Marks the `create()` in progress as stale: its result will be dropped. */
 	private invalidateCreate = () => {
@@ -440,6 +437,11 @@ class Player extends Component<PlayerPropsTypes> {
 		this.creatingSeq = seq;
 		try {
 			await this.createInternal(seq);
+		} catch (e) {
+			/* unexpected error: user callbacks are already guarded by callSafely */
+			if (this.isCurrentCreate(seq)) {
+				this.handleInitError(e as Error);
+			}
 		} finally {
 			if (this.creatingSeq === seq) {
 				this.creatingSeq = null;
@@ -470,6 +472,8 @@ class Player extends Component<PlayerPropsTypes> {
 			return;
 		}
 
+		/* muted may change while creating; it is applied to the created player below */
+		const mutedOnCreate = this.props.muted;
 		let player: Api.Player;
 		try {
 			player = await this.createPlayer(playerId);
@@ -490,14 +494,17 @@ class Player extends Component<PlayerPropsTypes> {
 		this.getEventList().forEach(event => {
 			player.on(event[0], event[1]);
 		});
-		const {onInit} = this.props;
-		onInit && onInit({playerId: playerId});
+		const {muted, onInit} = this.props;
+		if (muted !== undefined && muted !== mutedOnCreate) {
+			(muted ? player.mute() : player.unmute()).catch(() => {});
+		}
+		callSafely(onInit, {playerId: playerId});
 	};
 
 	private handleInitError = (error: Error) => {
 		const {onInitError} = this.props;
 		if (onInitError) {
-			onInitError(error);
+			callSafely(onInitError, error);
 			return;
 		}
 		console.error(error);
@@ -878,11 +885,8 @@ class Player extends Component<PlayerPropsTypes> {
 	};
 
 	private handleJSLoadError = (error: JSLoadError) => {
-		if (this.unmounted) {
-			return;
-		}
 		const {onJSLoadError} = this.props;
-		onJSLoadError && onJSLoadError(error);
+		callSafely(onJSLoadError, error);
 	};
 
 	private handleEventReady: Api.Player.EventHandler<Api.Player.Events['Ready']> = ({data}) => {

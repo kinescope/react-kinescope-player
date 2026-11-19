@@ -1,0 +1,11 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"rootDir": ".",
+		"jsx": "react-jsx",
+		"noUnusedLocals": false,
+		"types": ["node", "vitest/globals"]
+	},
+	"include": ["src", "test", "vitest.config.mts"]
+}

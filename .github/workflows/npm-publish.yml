@@ -95,9 +95,21 @@ jobs:
     steps:
       - uses: actions/setup-node@v7
         with:
-          node-version: 24 # ships npm >= 11.15.0 required by `npm stage`
+          node-version: 24 # latest 24.x ships npm >= 11.15.0 required by `npm stage`
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
+
+      - name: Check npm version
+        run: |
+          NPM_VERSION=$(npm --version)
+          node -e '
+            const [major, minor] = process.argv[1].split(".").map(Number);
+            if (major < 11 || (major === 11 && minor < 15)) {
+              console.log(`::error::npm ${process.argv[1]} is too old: npm stage publish needs >= 11.15.0.`);
+              process.exit(1);
+            }
+          ' "$NPM_VERSION"
+          echo "npm $NPM_VERSION"
 
       - uses: actions/download-artifact@v8
         with:

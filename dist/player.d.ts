@@ -29,6 +29,7 @@ export type EventFullscreenChangeTypes = Api.Player.EventMap[Api.Player.Events['
 export type EventCallActionTypes = Api.Player.EventMap[Api.Player.Events['CallAction']];
 export type EventCallBookmarkTypes = Api.Player.EventMap[Api.Player.Events['CallBookmark']];
 export type EventErrorTypes = Api.Player.EventMap[Api.Player.Events['Error']];
+export type { JSLoadError };
 export type QueryTypes = {
     seek?: number;
     duration?: number;
@@ -121,7 +122,6 @@ declare class Player extends Component<PlayerPropsTypes> {
     private createSeq;
     /** Generation of the `create()` in progress, `null` if none. */
     private creatingSeq;
-    private unmounted;
     static defaultProps: {
         width: string;
         height: string;
@@ -129,7 +129,6 @@ declare class Player extends Component<PlayerPropsTypes> {
         localStorage: boolean;
         playsInline: boolean;
     };
-    componentDidMount(): void;
     componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>): void;
     componentWillUnmount(): void;
     private handleJSLoad;
