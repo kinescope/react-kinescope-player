@@ -1,13 +1,17 @@
-# Publishes the package to npm when a GitHub Release is published.
+# Stages the package on npm when a GitHub Release is published.
 #
 # - The release tag must be `v<version from package.json>` of the tagged commit.
 # - Version with a prerelease part (`0.6.0-beta.0`) goes to the `next` dist-tag and the
 #   GitHub Release must be marked as "pre-release"; a stable version goes to `latest`.
 # - Auth: npm Trusted Publishing (OIDC), no npm token. The trusted publisher on npmjs.com
-#   must point to this repository and this workflow file (`npm-publish.yml`).
+#   must point to this repository and this workflow file (`npm-publish.yml`) and allow
+#   only `npm stage publish`.
+# - Staged publishing: the package is not installable until a package owner approves it
+#   with 2FA (npmjs.com → package → Staged Packages, or `npm stage approve <stage-id>`).
+#   The stage id is in the job summary.
 #
 # Third-party code (npm ci, tests, build) runs only in the `build` job, which has no
-# id-token; the `publish` job only publishes the tarball built there.
+# id-token; the `stage` job only stages the tarball built there.
 name: Publish to npm
 
 on:
@@ -82,7 +86,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  publish:
+  stage:
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -91,7 +95,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v7
         with:
-          node-version: 24 # ships npm >= 11.5.1 required by Trusted Publishing
+          node-version: 24 # ships npm >= 11.15.0 required by `npm stage`
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
@@ -99,9 +103,27 @@ jobs:
         with:
           name: package
 
-      - name: Publish
+      - name: Stage
+        shell: bash
         env:
           TARBALL: ${{ needs.build.outputs.tarball }}
           DIST_TAG: ${{ needs.build.outputs.dist-tag }}
         # provenance is generated automatically with Trusted Publishing
-        run: npm publish "./$TARBALL" --access public --tag "$DIST_TAG"
+        run: |
+          npm stage publish "./$TARBALL" --access public --tag "$DIST_TAG" | tee stage.log
+          STAGE_ID=$(grep -oE 'staged with id [0-9a-fA-F-]+' stage.log | awk '{print $4}' | tail -n 1 || true)
+          NAME_VERSION=$(tar -xzOf "$TARBALL" package/package.json | node -e "const p=JSON.parse(require('fs').readFileSync(0));console.log(p.name+'@'+p.version)")
+          {
+            echo "## Staged $NAME_VERSION (\`$DIST_TAG\`)"
+            echo
+            echo "The package is not published until a package owner approves it with 2FA:"
+            echo
+            echo "- npmjs.com → \`@kinescope/react-kinescope-player\` → **Staged Packages** → **Approve**, or"
+            if [ -n "$STAGE_ID" ]; then
+              echo "- \`npm stage approve $STAGE_ID\` (npm >= 11.15.0, logged in as an owner)."
+              echo
+              echo "Inspect before approving: \`npm stage view $STAGE_ID\`, \`npm stage download $STAGE_ID\`."
+            else
+              echo "- \`npm stage list @kinescope/react-kinescope-player\`, then \`npm stage approve <stage-id>\`."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
