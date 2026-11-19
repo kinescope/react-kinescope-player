@@ -1,6 +1,6 @@
 {
 	"name": "@kinescope/react-kinescope-player",
-	"version": "0.5.4",
+	"version": "0.6.0-beta.0",
 	"description": "React.js wrapper for Kinescope player",
 	"scripts": {
 		"prettier": "npx prettier --parser typescript --write \"{src,test}/**/*.{tsx,ts}\"",

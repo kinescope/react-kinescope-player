@@ -1,6 +1,33 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [0.6.0-beta.0](https://github.com/kinescope/react-kinescope-player/compare/v0.5.4...v0.6.0-beta.0) (2026-11-19)
+
+### Features
+
+* player publish and types ([e30c76b](https://github.com/kinescope/react-kinescope-player/commit/e30c76b5aa5e485730b94f034845dd789756407f))
+
+### Bug Fixes
+
+* guard consumer callbacks, script load timeout, muted while creating ([71288b8](https://github.com/kinescope/react-kinescope-player/commit/71288b88ffcf8b87caa0ab7f695ba49960cf23e6))
+* script load hangs and player re-creation races ([049cda5](https://github.com/kinescope/react-kinescope-player/commit/049cda585dd468755d89911c7acacf6b767d6225))
+
+### Details
+
+* **IFrame API script loading.** A failed script no longer hangs the other players on the page: every waiting player gets `onJSLoadError`, the failed `<script>` tag is removed and the next mounted player loads the script again. Each attempt fails on a network error or after 15 s without an answer; 3 attempts in total. Loading starts in `componentDidMount`, so the player is created in transitions, time-sliced renders and StrictMode.
+* **Player re-creation.** Fast prop changes (`videoId`, `query`, size, …) and unmount during creation no longer produce `Container … not found` / `contentWindow is null` in `onInitError`, leaked players or `unhandledrejection`. A superseded creation calls neither `onInit` nor `onInitError`.
+* **New props:** `createTimeout`, `attemptTimeout`, `errorScreen` (passed to `IframePlayer.create`), `playerScriptUrl`.
+* **New exported type:** `JSLoadError`.
+* **Package:** only `dist` is published; `@kinescope/player-iframe-api-loader` is a dependency now, so the published types no longer fail with `Cannot find namespace 'Kinescope'`.
+
+### Behavior changes
+
+* `onJSLoadError` receives the error (`Event | Error`) and comes after retries.
+* `onInit` is called after the player has subscribed to its events.
+* Without `onInitError`, a creation error is logged with `console.error` instead of an `unhandledrejection`.
+* An exception thrown by `onInit`, `onInitError`, `onJSLoad` or `onJSLoadError` is reported via `reportError` (the `error` event on `window`) instead of an `unhandledrejection`.
+* A `muted` change made while the player is being created is applied to the created player.
 
 ### [0.5.4](https://github.com/kinescope/react-kinescope-player/compare/v0.5.3...v0.5.4) (2025-04-04)
 
