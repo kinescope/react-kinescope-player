@@ -256,6 +256,30 @@ export default Player;
       <td>true</td>
       <td>No</td>
   </tr>
+  <tr>
+      <td>createTimeout</td>
+      <td>number (ms) — total player creation timeout</td>
+      <td>30000 (IFrame API default)</td>
+      <td>No</td>
+  </tr>
+  <tr>
+      <td>attemptTimeout</td>
+      <td>number (ms) — timeout of a single connection attempt, IFrame API &gt;= 2.201.0</td>
+      <td>15000 (IFrame API default)</td>
+      <td>No</td>
+  </tr>
+  <tr>
+      <td>errorScreen</td>
+      <td>boolean — show the error screen with the "Retry" button if the player fails to load</td>
+      <td>true (IFrame API default)</td>
+      <td>No</td>
+  </tr>
+  <tr>
+      <td>playerScriptUrl</td>
+      <td>string — IFrame API script URL. The first player on the page that loads the script defines it</td>
+      <td>https://player.kinescope.io/latest/iframe.player.js</td>
+      <td>No</td>
+  </tr>
 </table>
 
 ##### Chapter
@@ -363,7 +387,7 @@ type Theme = {
   </tr>
   <tr>
       <td>onJSLoadError</td>
-      <td>No</td>
+      <td>JSLoadError (Event | Error) — IFrame API script failed to load: 3 attempts, each fails on a network error or after 15 s without an answer. Every mounted player waiting for the script gets it; the next mounted player loads the script again</td>
   </tr>
   <tr>
       <td>onInit</td>
@@ -373,7 +397,7 @@ type Theme = {
   </tr>
   <tr>
       <td>onInitError</td>
-      <td>Error</td>
+      <td>Error — player creation failed. Not called for a creation superseded by a newer one (props change) or after unmount</td>
   </tr>
   <tr>
       <td>onReady</td>

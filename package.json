@@ -1,12 +1,15 @@
 {
 	"name": "@kinescope/react-kinescope-player",
-	"version": "0.5.4",
+	"version": "0.6.0-beta.0",
 	"description": "React.js wrapper for Kinescope player",
 	"scripts": {
-		"prettier": "npx prettier --parser typescript --write \"{src,packages}/**/*.{tsx,ts}\"",
+		"prettier": "npx prettier --parser typescript --write \"{src,test}/**/*.{tsx,ts}\"",
 		"dev": "npx microbundle watch --jsx React.createElement --compress false",
 		"build": "npx microbundle --name=KinescopePlayer --globals react=React --jsx React.createElement --compress false --no-sourcemap",
-		"release": "npx standard-version -a"
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"typecheck": "tsc --noEmit -p . && tsc -p tsconfig.test.json",
+		"release": "commit-and-tag-version"
 	},
 	"keywords": [
 		"React",
@@ -22,11 +25,10 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/kinescope/react-kinescope-player.git"
+		"url": "git+https://github.com/kinescope/react-kinescope-player.git"
 	},
 	"publishConfig": {
-		"access": "public",
-		"tag": "latest"
+		"access": "public"
 	},
 	"exports": {
 		".": {
@@ -44,26 +46,39 @@
 	"types": "dist/player.d.ts",
 	"typings": "dist/player.d.ts",
 	"source": "src/player.tsx",
+	"files": [
+		"dist"
+	],
+	"dependencies": {
+		"@kinescope/player-iframe-api-loader": "^0.9.0"
+	},
 	"peerDependencies": {
 		"react": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
 		"react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
 	},
 	"devDependencies": {
-		"@kinescope/player-iframe-api-loader": "^0.0.19",
-		"@types/react": "^18.3.11",
-		"@types/react-dom": "^18.3.1",
+		"@testing-library/dom": "^10.4.2",
+		"@testing-library/react": "^16.3.3",
+		"@types/react": "^18.3.31",
+		"@types/react-dom": "^18.3.7",
+		"commit-and-tag-version": "^13.3.0",
+		"jsdom": "^31.0.1",
 		"microbundle": "^0.15.1",
-		"prettier": "^3.5.0",
+		"prettier": "^3.10.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
-		"react-fast-compare": "^3.2.2",
-		"standard-version": "^9.5.0",
-		"typescript": "^5.7.3"
+		"react-fast-compare": "^3.2.3",
+		"typescript": "^6.0.3",
+		"vitest": "^5.1.1"
 	},
-	"standard-version": {
+	"commit-and-tag-version": {
 		"skip": {
-			"tag": true,
-			"commit": true
-		}
+			"tag": true
+		},
+		"releaseCommitMessageFormat": "chore: release {{currentTag}}"
+	},
+	"overrides": {
+		"rollup-plugin-typescript2": "^0.37.0",
+		"serialize-javascript": "^7.1.4"
 	}
 }

@@ -1,7 +1,12 @@
+/*
+ * Global `Kinescope` types. A reference (not an import) keeps them in the emitted d.ts
+ * without adding a runtime import to the bundle.
+ */
+/// <reference types="@kinescope/player-iframe-api-loader" preserve="true" />
 import React, {Component, createRef} from 'react';
 import isEqual from 'react-fast-compare';
-import '@kinescope/player-iframe-api-loader';
-import Loader from './loader';
+import Loader, {JSLoadError} from './loader';
+import {callSafely} from './tools/callback';
 import {VIDEO_HOST, VIDEO_PLAYLIST_HOST} from './constant';
 
 import Api = Kinescope.IframePlayer;
@@ -63,6 +68,16 @@ export type EventCallBookmarkTypes = Api.Player.EventMap[Api.Player.Events['Call
 
 export type EventErrorTypes = Api.Player.EventMap[Api.Player.Events['Error']];
 
+/** Options supported by IFrame API but missing in `@kinescope/player-iframe-api-loader` types. */
+type CreateOptionsTypes = Api.CreateOptions & {
+	/** Timeout of a single connection attempt, ms. IFrame API >= 2.201.0, defaults to 15000. */
+	attemptTimeout?: number;
+	/** Show the error screen with the "Retry" button when the player fails to load. Defaults to `true`. */
+	errorScreen?: boolean;
+};
+
+export type {JSLoadError};
+
 export type QueryTypes = {
 	seek?: number;
 	duration?: number;
@@ -75,7 +90,20 @@ export type PlayerPropsTypes = {
 	className?: string;
 	style?: any;
 	onJSLoad?: () => void;
-	onJSLoadError?: () => void;
+	/**
+	 * IFrame API script failed to load (after retries).
+	 * Every player waiting for the script gets this callback.
+	 */
+	onJSLoadError?: (error: JSLoadError) => void;
+	/** IFrame API script URL. Defaults to `https://player.kinescope.io/latest/iframe.player.js`. */
+	playerScriptUrl?: string;
+
+	/** Total player creation timeout, ms. IFrame API defaults to 30000. */
+	createTimeout?: number;
+	/** Timeout of a single connection attempt, ms. IFrame API >= 2.201.0, defaults to 15000. */
+	attemptTimeout?: number;
+	/** Show the error screen with the "Retry" button when the player fails to load. Defaults to `true`. */
+	errorScreen?: boolean;
 
 	title?: string;
 	subtitle?: string;
@@ -149,6 +177,14 @@ class Player extends Component<PlayerPropsTypes> {
 	private playerLoad: boolean = false;
 	private readonly parentsRef = createRef<HTMLDivElement>();
 	private player: Api.Player | null = null;
+	/**
+	 * Creation generation. Every `create()` and unmount bumps it; a `create()` whose
+	 * generation is no longer current drops its result (destroying the created player)
+	 * and does not call `onInit`/`onInitError`.
+	 */
+	private createSeq: number = 0;
+	/** Generation of the `create()` in progress, `null` if none. */
+	private creatingSeq: number | null = null;
 
 	static defaultProps = {
 		width: '100%',
@@ -158,26 +194,41 @@ class Player extends Component<PlayerPropsTypes> {
 		playsInline: true,
 	};
 
-	async componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>) {
-		await this.shouldPlayerUpdate(prevProps);
-		await this.shouldPlaylistUpdate(prevProps);
+	componentDidUpdate(prevProps: Readonly<PlayerPropsTypes>) {
+		if (this.shouldPlayerUpdate(prevProps)) {
+			/*
+			 * The new player is created with the current props, playlist options included.
+			 * Until the script is loaded there is nothing to re-create: handleJSLoad creates the player.
+			 */
+			this.playerLoad && this.create();
+			return;
+		}
+		this.shouldPlaylistUpdate(prevProps).catch(() => {});
 	}
 
+	/*
+	 * Callbacks after unmount: Loader drops script load results after its own unmount,
+	 * invalidateCreate() drops the creation in progress.
+	 */
 	componentWillUnmount() {
+		this.invalidateCreate();
 		this.destroy();
 	}
 
-	private handleJSLoad = async () => {
-		if (this.playerLoad) {
+	private handleJSLoad = () => {
+		if (!this.playerLoad) {
+			this.playerLoad = true;
+			const {onJSLoad} = this.props;
+			callSafely(onJSLoad);
+		}
+		if (this.player || this.creatingSeq !== null) {
 			return;
 		}
-		this.playerLoad = true;
-		const {onJSLoad} = this.props;
-		onJSLoad && onJSLoad();
-		await this.create();
+		this.create();
 	};
 
-	private shouldPlayerUpdate = async prevProps => {
+	/** Returns `true` if the player has to be re-created. */
+	private shouldPlayerUpdate = (prevProps: Readonly<PlayerPropsTypes>): boolean => {
 		const {
 			videoId,
 			query,
@@ -198,13 +249,16 @@ class Player extends Component<PlayerPropsTypes> {
 			localStorage,
 			playlistOptions,
 			theme,
+			createTimeout,
+			attemptTimeout,
+			errorScreen,
 		} = this.props;
 
-		if (muted !== prevProps.muted) {
-			muted ? this.mute() : this.unmute();
+		if (muted !== prevProps.muted && this.player) {
+			(muted ? this.mute() : this.unmute()).catch(() => {});
 		}
 
-		if (
+		return (
 			!isEqual(videoId, prevProps.videoId) ||
 			!isEqual(query, prevProps.query) ||
 			width !== prevProps.width ||
@@ -222,10 +276,11 @@ class Player extends Component<PlayerPropsTypes> {
 			!isEqual(watermark, prevProps.watermark) ||
 			!isEqual(localStorage, prevProps.localStorage) ||
 			!isEqual(playlistOptions, prevProps.playlistOptions) ||
-			!isEqual(theme, prevProps.theme)
-		) {
-			await this.create();
-		}
+			!isEqual(theme, prevProps.theme) ||
+			createTimeout !== prevProps.createTimeout ||
+			attemptTimeout !== prevProps.attemptTimeout ||
+			errorScreen !== prevProps.errorScreen
+		);
 	};
 
 	private shouldPlaylistUpdate = async (prevProps: PlayerPropsTypes) => {
@@ -362,12 +417,43 @@ class Player extends Component<PlayerPropsTypes> {
 		await this.setPlaylistItemOptions(options);
 	};
 
-	private create = async () => {
-		const {onInit, onInitError} = this.props;
+	private isCurrentCreate = (seq: number) => seq === this.createSeq;
+
+	/** Marks the `create()` in progress as stale: its result will be dropped. */
+	private invalidateCreate = () => {
+		this.createSeq++;
+		this.creatingSeq = null;
+	};
+
+	/**
+	 * (Re)creates the player. Never rejects: errors of the current generation go to `onInitError`,
+	 * results and errors of stale generations are dropped.
+	 * There is no way to abort `IframePlayer.create`, so a stale creation is not awaited:
+	 * the container is cleared right away and the stale player is destroyed when it arrives.
+	 */
+	private create = async (): Promise<void> => {
+		this.invalidateCreate();
+		const seq = this.createSeq;
+		this.creatingSeq = seq;
+		try {
+			await this.createInternal(seq);
+		} catch (e) {
+			/* unexpected error: user callbacks are already guarded by callSafely */
+			if (this.isCurrentCreate(seq)) {
+				this.handleInitError(e as Error);
+			}
+		} finally {
+			if (this.creatingSeq === seq) {
+				this.creatingSeq = null;
+			}
+		}
+	};
+
+	private createInternal = async (seq: number) => {
 		await this.destroy();
 
 		const parentsRef = this.parentsRef.current;
-		if (!this.playerLoad || !parentsRef) {
+		if (!this.isCurrentCreate(seq) || !this.playerLoad || !parentsRef) {
 			return;
 		}
 
@@ -382,31 +468,63 @@ class Player extends Component<PlayerPropsTypes> {
 		await new Promise(resolve => {
 			setTimeout(resolve, 0);
 		});
-		if (!document.getElementById(playerId)) {
+		if (!this.isCurrentCreate(seq) || !document.getElementById(playerId)) {
 			return;
 		}
-		this.player = await new Promise((resolve, reject) => {
-			this.createPlayer(playerId)
-				.then(player => {
-					resolve(player);
-					onInit && onInit({playerId: playerId});
-				})
-				.catch((e: Error) => {
-					reject(e);
-					onInitError && onInitError(e);
-				});
-		});
+
+		/* muted may change while creating; it is applied to the created player below */
+		const mutedOnCreate = this.props.muted;
+		let player: Api.Player;
+		try {
+			player = await this.createPlayer(playerId);
+		} catch (e) {
+			if (this.isCurrentCreate(seq)) {
+				this.handleInitError(e as Error);
+			}
+			return;
+		}
+
+		if (!this.isCurrentCreate(seq)) {
+			/* superseded or unmounted while creating */
+			this.destroyPlayer(player);
+			return;
+		}
+
+		this.player = player;
 		this.getEventList().forEach(event => {
-			this.player?.on(event[0], event[1]);
+			player.on(event[0], event[1]);
 		});
+		const {muted, onInit} = this.props;
+		if (muted !== undefined && muted !== mutedOnCreate) {
+			(muted ? player.mute() : player.unmute()).catch(() => {});
+		}
+		callSafely(onInit, {playerId: playerId});
+	};
+
+	private handleInitError = (error: Error) => {
+		const {onInitError} = this.props;
+		if (onInitError) {
+			callSafely(onInitError, error);
+			return;
+		}
+		console.error(error);
+	};
+
+	private destroyPlayer = async (player: Api.Player) => {
+		try {
+			await player.destroy();
+		} catch {
+			/* the iframe may be already removed */
+		}
 	};
 
 	private destroy = async () => {
-		if (!this.player) {
+		const player = this.player;
+		if (!player) {
 			return;
 		}
-		await this.player.destroy();
 		this.player = null;
+		await this.destroyPlayer(player);
 	};
 
 	private getEventList = (): EventListTypes => {
@@ -493,9 +611,12 @@ class Player extends Component<PlayerPropsTypes> {
 			localStorage,
 			playlistOptions,
 			theme,
+			createTimeout,
+			attemptTimeout,
+			errorScreen,
 		} = this.props;
 
-		let options: Api.CreateOptions = {
+		let options: CreateOptionsTypes = {
 			url: this.getIFrameUrl(),
 			size: {width: width, height: height},
 			behavior: {
@@ -537,6 +658,15 @@ class Player extends Component<PlayerPropsTypes> {
 				externalId: externalId,
 			},
 		};
+		if (createTimeout !== undefined) {
+			options.timeout = createTimeout;
+		}
+		if (attemptTimeout !== undefined) {
+			options.attemptTimeout = attemptTimeout;
+		}
+		if (errorScreen !== undefined) {
+			options.errorScreen = errorScreen;
+		}
 
 		if (!window.Kinescope?.IframePlayer)
 			throw new Error('Kinescope PLayer: IframeApi is not loaded.');
@@ -754,9 +884,14 @@ class Player extends Component<PlayerPropsTypes> {
 		return this.player.previous();
 	};
 
+	private handleJSLoadError = (error: JSLoadError) => {
+		const {onJSLoadError} = this.props;
+		callSafely(onJSLoadError, error);
+	};
+
 	private handleEventReady: Api.Player.EventHandler<Api.Player.Events['Ready']> = ({data}) => {
 		const {onReady} = this.props;
-		this.readyPlaylistOptions();
+		this.readyPlaylistOptions().catch(() => {});
 		onReady && onReady(data);
 	};
 
@@ -883,10 +1018,14 @@ class Player extends Component<PlayerPropsTypes> {
 	};
 
 	render() {
-		const {className, style, onJSLoadError} = this.props;
+		const {className, style, playerScriptUrl} = this.props;
 
 		return (
-			<Loader onJSLoad={this.handleJSLoad} onJSLoadError={onJSLoadError}>
+			<Loader
+				src={playerScriptUrl}
+				onJSLoad={this.handleJSLoad}
+				onJSLoadError={this.handleJSLoadError}
+			>
 				<span ref={this.parentsRef} className={className} style={style} />
 			</Loader>
 		);

@@ -1,69 +1,49 @@
 import {Component, ReactNode} from 'react';
 import {PLAYER_LATEST} from './constant';
-import {loadScript} from './tools/script';
+import {loadIframeApi} from './tools/script';
 
-const NODE_JS_ID = '__kinescope_player_react_js';
+export const NODE_JS_ID = '__kinescope_player_react_js';
+
+export type JSLoadError = Event | Error;
 
 type LoaderProps = {
 	children: ReactNode;
+	/** IFrame API script URL. Defaults to `latest`. */
+	src?: string;
 	onJSLoad: () => void;
-	onJSLoadError?: (e: ErrorEvent) => void;
+	onJSLoadError?: (e: JSLoadError) => void;
 };
 
 class Loader extends Component<LoaderProps> {
-	constructor(props: LoaderProps) {
-		super(props);
-		this.jsLoading();
+	/** Bumped on every mount/unmount: results of loads started before are ignored. */
+	private generation = 0;
+
+	/*
+	 * Loading starts in componentDidMount, not in the constructor: the constructor runs
+	 * during render, before the container ref is attached (and may run twice in StrictMode
+	 * or be thrown away by a concurrent render).
+	 */
+	componentDidMount() {
+		const generation = ++this.generation;
+		const {src = PLAYER_LATEST} = this.props;
+
+		loadIframeApi({src, id: NODE_JS_ID}).then(
+			() => {
+				generation === this.generation && this.props.onJSLoad();
+			},
+			(e: JSLoadError) => {
+				if (generation !== this.generation) {
+					return;
+				}
+				const {onJSLoadError} = this.props;
+				onJSLoadError && onJSLoadError(e);
+			},
+		);
 	}
 
-	loadJsNotLoad = () => {
-		const el = document.getElementById(NODE_JS_ID);
-		if (el) {
-			el.addEventListener('load', this.loadJs);
-		}
-	};
-
-	loadJs = () => {
-		const el = document.getElementById(NODE_JS_ID);
-		if (el) {
-			el.removeEventListener('load', this.loadJs);
-		}
-		this.handleJSLoad();
-	};
-
-	jsLoading = () => {
-		if (!!window?.Kinescope?.IframePlayer) {
-			this.handleJSLoad();
-			return;
-		}
-
-		if (this.testLoadJS()) {
-			this.loadJsNotLoad();
-			return;
-		}
-
-		loadScript(PLAYER_LATEST, NODE_JS_ID)
-			.then(success => {
-				success && this.handleJSLoad();
-			})
-			.catch(e => {
-				this.handleJSLoadError(e);
-			});
-	};
-
-	testLoadJS = () => {
-		return !!document.getElementById(NODE_JS_ID);
-	};
-
-	handleJSLoad = () => {
-		const {onJSLoad} = this.props;
-		onJSLoad && onJSLoad();
-	};
-
-	handleJSLoadError = (e: ErrorEvent) => {
-		const {onJSLoadError} = this.props;
-		onJSLoadError && onJSLoadError(e);
-	};
+	componentWillUnmount() {
+		this.generation++;
+	}
 
 	render() {
 		const {children} = this.props;
