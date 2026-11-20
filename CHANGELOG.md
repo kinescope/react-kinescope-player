@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.6.0](https://github.com/kinescope/react-kinescope-player/compare/v0.5.4...v0.6.0) (2026-11-20)
+
+### Features
+
+* player publish and types ([e30c76b](https://github.com/kinescope/react-kinescope-player/commit/e30c76b5aa5e485730b94f034845dd789756407f))
+
+### Bug Fixes
+
+* guard consumer callbacks, script load timeout, muted while creating ([71288b8](https://github.com/kinescope/react-kinescope-player/commit/71288b88ffcf8b87caa0ab7f695ba49960cf23e6))
+* script load hangs and player re-creation races ([049cda5](https://github.com/kinescope/react-kinescope-player/commit/049cda585dd468755d89911c7acacf6b767d6225))
+
 ## [0.6.0-beta.0](https://github.com/kinescope/react-kinescope-player/compare/v0.5.4...v0.6.0-beta.0) (2026-11-19)
 
 ### Features
